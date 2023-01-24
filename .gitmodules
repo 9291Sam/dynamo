@@ -10,9 +10,6 @@
 [submodule "inc/sebib"]
 	path = inc/sebib
 	url = https://github.com/9291Sam/sebib
-[submodule "inb/fmt"]
-	path = inb/fmt
-	url = https://github.com/fmtlib/fmt
 [submodule "inc/fmt"]
 	path = inc/fmt
 	url = https://github.com/fmtlib/fmt
