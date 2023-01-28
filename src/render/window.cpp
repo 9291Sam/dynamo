@@ -6,44 +6,25 @@
 
 Window::Window(WindowSize windowSize, const char* windowName)
 {
-    seb::assertFatal(vkfw::init(), "Failed to initialize window");
+    vkfw::init();
 
+    vkfw::setWindowHints(vkfw::WindowHints {.clientAPI {vkfw::ClientAPI::eNone}});
 
-    vkfw::setWindowHints(vkfw::WindowHints {.clientAPI {vkfw::ClientAPI::None}});
+    this->window_ptr = vkfw::createWindowUnique(windowSize.width, windowSize.height, windowName);
 
-    auto [result, maybeWindow] = 
-        vkfw::createWindowUnique(windowSize.width, windowSize.height, windowName);
-
-    seb::assertFatal(result, "Failed to create window");
-
-
-    this->window_ptr = std::move(maybeWindow);
 }
 
 Window::~Window() 
 {
-    seb::assertWarn(
-        this->window_ptr->destroy(),
-        "Failed to destroy VKFW instance"
-    );
+    this->window_ptr->destroy();
 
-    seb::assertWarn(
-        vkfw::terminate(),
-        "Failed to terminate VKFW instance"
-    );
+    vkfw::terminate();
 }
 
 auto Window::getFrameBufferSize() const
     -> WindowSize
 {
-    auto [result, maybeTupleOfWindowSize] = this->window_ptr->getFramebufferSize();
-
-    seb::assertFatal(
-        result,
-        "Failed to poll frame buffer size"
-    );
-
-    auto [width, height] = maybeTupleOfWindowSize;
+    auto [width, height] = this->window_ptr->getFramebufferSize();
 
     return WindowSize {
         .width  {static_cast<std::uint32_t>(width)},
@@ -60,14 +41,7 @@ auto Window::getFrameTimeS() const
 auto Window::shouldClose() const 
     -> bool
 {
-    auto [result, maybeShouldClose] = this->window_ptr->shouldClose();
-    
-    seb::assertFatal(
-        result, 
-        "Failed to check window should close state"
-    );
-
-    return maybeShouldClose;
+    return this->window_ptr->shouldClose();
 }
 
 auto Window::createSurface(const vk::Instance& instance) const
@@ -78,10 +52,7 @@ auto Window::createSurface(const vk::Instance& instance) const
 
 void Window::pollEvents() 
 {
-    seb::assertFatal(
-        vkfw::pollEvents(),
-        "Failed to poll window events"
-    );
+    vkfw::pollEvents();
 
     FPSTimePoint currentTime = FPSClock::now();
 

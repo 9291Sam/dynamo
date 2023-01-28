@@ -3,8 +3,13 @@ cmake_minimum_required(VERSION 3.23)
 set(SOURCES_CPP
   # mainfiles
   src/main.cpp
-  src/dynamo.cpp
+
+  # Render
+  src/render/device.cpp
   src/render/instance.cpp
+  src/render/renderer.cpp
+  src/render/vulkan_includes.cpp
+  src/render/window.cpp
 )
 
 add_executable(Dynamo ${SOURCES_CPP})
@@ -37,7 +42,7 @@ target_compile_options(Dynamo PUBLIC -Wpointer-arith )
 target_compile_options(Dynamo PUBLIC -Wcast-qual)
 target_compile_options(Dynamo PUBLIC -Wredundant-move)
 target_compile_options(Dynamo PUBLIC -Wpessimizing-move)
-target_compile_options(Dynamo PUBLIC -Wuseless-cast)
+# target_compile_options(Dynamo PUBLIC -Wuseless-cast) thanks vulkan!
 target_compile_options(Dynamo PUBLIC -Wconversion)
 target_compile_options(Dynamo PUBLIC -Wdouble-promotion)
 target_compile_options(Dynamo PUBLIC -Wnonnull)
@@ -104,10 +109,6 @@ endif()
 add_library(vma INTERFACE)
 target_include_directories(vma INTERFACE ${CMAKE_SOURCE_DIR}/inc/vma/include)
 target_link_libraries(Dynamo vma)
-
-add_library(vma_hpp INTERFACE)
-target_include_directories(vma_hpp INTERFACE ${CMAKE_SOURCE_DIR}/inc/ulkanMemoryAllocator-Hpp/include)
-target_link_libraries(Dynamo vma_hpp)
 
 # Add tinyobjloader
 add_library(tinyobjloader INTERFACE)

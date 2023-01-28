@@ -11,7 +11,7 @@ namespace render
     class Device
     {
     public:
-        Device();
+        Device(vk::Instance, vk::SurfaceKHR);
         ~Device();
 
         Device(const Device&)            = delete;
@@ -20,14 +20,16 @@ namespace render
         Device& operator=(Device&&)      = delete;
 
         [[nodiscard]] vk::PhysicalDevice asPhysicalDevice() const;
-        [[nodiscard]] vk::device asLogicalDevice() const;
-        [[nodiscard]] vma::Allocator getAllocator() const;
-        [[nodiscard]] vk::Queue getQueue() const;
+        [[nodiscard]] vk::Device asLogicalDevice() const;
+        [[nodiscard]] VmaAllocator getAllocator() const;
+        [[nodiscard]] vk::Queue getRenderQueue() const;
 
     private:
-        vk::physicalDevice physical_device;
+        vk::PhysicalDevice physical_device;
         vk::UniqueDevice logical_device;
-        vma::UniqueAllocator allocator;
-        vk::UniqueQueue queue;
-    }
-}
+        VmaAllocator allocator;
+        vk::Queue queue;
+    }; // class Device
+} // namespace render 
+
+#endif // SRC_RENDER_DEVICE_HPP

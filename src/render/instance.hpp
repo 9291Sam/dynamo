@@ -25,7 +25,7 @@ namespace render
     private:
         vk::UniqueInstance instance;
         VkDebugUtilsMessengerEXT debug_messenger;
-    } // class Instance
+    }; // class Instance
 } // namespace render
 
 #endif // SRC_RENDER_INSTANCE_HPP

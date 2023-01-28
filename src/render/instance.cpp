@@ -1,4 +1,4 @@
-#include <vulkan/vulkan_to_string.hpp>
+#include "vulkan_includes.hpp"
 
 #include <sebib/seblog.hpp>
 
@@ -18,8 +18,8 @@
         [[maybe_unused]] void* pUserData)
     {
         seb::logFatal("Validation Layer Message: Severity: {} | Type: {} | \n{}",
-            vk::to_string(messageSeverity),
-            vk::to_string(messageType),
+            messageSeverity,
+            messageType,
             pCallbackData->pMessage
         );
 
@@ -102,7 +102,7 @@ namespace render
                 vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation |
                 vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance
             },
-            .pfnUserCallback {debugCallback},
+            .pfnUserCallback {debugMessageCallback},
             .pUserData       {nullptr},
         };
 
@@ -125,12 +125,12 @@ namespace render
         []{
             #ifdef VULKAN_INSTANCE_ENABLE_VALIDATION_LAYERS
 
-                auto availableLayers = vk::enumerateInstanceLayerProperties();
-
-                if (std::find(availableLayers.cbegin(), availableLayers.cend(), 
-                    "VK_LAYER_KHRONOS_validation") != availableLayers.cend())
+                for (vk::LayerProperties layer : vk::enumerateInstanceLayerProperties())
                 {
-                    return std::vector<const char*> {"VK_LAYER_KHRONOS_validation"};
+                    if (std::strcmp(layer.layerName, "VK_LAYER_KHRONOS_validation") == 0)
+                    {
+                        return std::vector<const char*> {"VK_LAYER_KHRONOS_validation"};
+                    }
                 }
 
             #endif // VULKAN_INSTANCE_ENABLE_VALIDATION_LAYERS
@@ -188,17 +188,20 @@ namespace render
 
         this->instance = vk::createInstanceUnique(instanceCreateInfo);
 
+        seb::logWarn("fix this shit");
+        const VkDebugUtilsMessengerCreateInfoEXT copy = debugMessengerCreateInfo;
+
         #ifdef VULKAN_INSTANCE_ENABLE_VALIDATION_LAYERS
 
             seb::assertFatal(
                 dynVkCreateDebugUtilsMessengerEXT(
                     static_cast<VkInstance>(*this->instance),
-                    &debugMessengerCreateInfo, // this comes from the first line 
+                    &copy, // this comes from the first line 
                     nullptr,
                     &this->debug_messenger
                 ),
-                "Failed to initialize debug messenger
-            ");
+                "Failed to initialize debug messenger"
+            );
 
         #endif
 
