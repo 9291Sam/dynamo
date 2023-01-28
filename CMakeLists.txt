@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.23)
 set(SOURCES_CPP
   # mainfiles
   src/main.cpp
+  src/dynamo.cpp
+  src/render/instance.cpp
 )
 
 add_executable(Dynamo ${SOURCES_CPP})
@@ -102,6 +104,10 @@ endif()
 add_library(vma INTERFACE)
 target_include_directories(vma INTERFACE ${CMAKE_SOURCE_DIR}/inc/vma/include)
 target_link_libraries(Dynamo vma)
+
+add_library(vma_hpp INTERFACE)
+target_include_directories(vma_hpp INTERFACE ${CMAKE_SOURCE_DIR}/inc/ulkanMemoryAllocator-Hpp/include)
+target_link_libraries(Dynamo vma_hpp)
 
 # Add tinyobjloader
 add_library(tinyobjloader INTERFACE)

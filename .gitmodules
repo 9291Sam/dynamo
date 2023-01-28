@@ -13,3 +13,6 @@
 [submodule "inc/fmt"]
 	path = inc/fmt
 	url = https://github.com/fmtlib/fmt
+[submodule "inc/VulkanMemoryAllocator-Hpp"]
+	path = inc/VulkanMemoryAllocator-Hpp
+	url = https://github.com/YaaZ/VulkanMemoryAllocator-Hpp
