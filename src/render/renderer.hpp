@@ -15,7 +15,7 @@ namespace render
     public:
 
         Renderer();
-        ~Renderer();
+        ~Renderer()                          = default;
 
         Renderer(const Renderer&)            = delete;
         Renderer(Renderer&&)                 = delete;
@@ -26,8 +26,8 @@ namespace render
         Window window;
 
         std::unique_ptr<Instance> instance;
-        std::unique_ptr<Device> device;
         vk::UniqueSurfaceKHR draw_surface;
+        std::unique_ptr<Device> device;
         
     }; // class Renderer
 } // namespace render

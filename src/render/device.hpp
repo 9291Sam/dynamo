@@ -19,10 +19,10 @@ namespace render
         Device& operator=(const Device&) = delete;
         Device& operator=(Device&&)      = delete;
 
-        [[nodiscard]] vk::PhysicalDevice asPhysicalDevice() const;
-        [[nodiscard]] vk::Device asLogicalDevice() const;
-        [[nodiscard]] VmaAllocator getAllocator() const;
-        [[nodiscard]] vk::Queue getRenderQueue() const;
+        [[nodiscard, gnu::pure]] vk::PhysicalDevice asPhysicalDevice() const;
+        [[nodiscard, gnu::pure]] vk::Device asLogicalDevice() const;
+        [[nodiscard, gnu::pure]] VmaAllocator getAllocator() const;
+        [[nodiscard, gnu::pure]] vk::Queue getRenderQueue() const;
 
     private:
         vk::PhysicalDevice physical_device;

@@ -12,7 +12,7 @@ namespace render
     {
     public:
 
-        Instance();
+        Instance(PFN_vkGetInstanceProcAddr);
         ~Instance();
 
         Instance(const Instance&)            = delete;
@@ -20,10 +20,11 @@ namespace render
         Instance& operator=(const Instance&) = delete;
         Instance& operator=(Instance&&)      = delete;
 
-        [[nodiscard]] vk::Instance operator*() const;
+        [[nodiscard, gnu::pure]] vk::Instance operator*() const;
 
     private:
         vk::UniqueInstance instance;
+        PFN_vkGetInstanceProcAddr dyn_vk_get_instance_proc_addr;
         VkDebugUtilsMessengerEXT debug_messenger;
     }; // class Instance
 } // namespace render

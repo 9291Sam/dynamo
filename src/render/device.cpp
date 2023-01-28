@@ -31,7 +31,7 @@ namespace render
         this->physical_device = instance.enumeratePhysicalDevices().at(0);
 
         const float One = 1.0f;
-        std::vector<vk::DeviceQueueCreateInfo> queueCreateInfos
+        const std::vector<vk::DeviceQueueCreateInfo> queueCreateInfos
         {
             vk::DeviceQueueCreateInfo
             {
@@ -46,6 +46,15 @@ namespace render
             }
         };
 
+        const std::vector<const char*> DeviceExtensions {
+            VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+            #ifdef __APPLE__
+                VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME,
+            #endif // __APPLE__
+        };
+
+        const vk::PhysicalDeviceFeatures DeviceFeatures = {};
+
         const vk::DeviceCreateInfo deviceCreateInfo
         {
             .sType                   {vk::StructureType::eDeviceCreateInfo},
@@ -55,20 +64,19 @@ namespace render
             .pQueueCreateInfos       {queueCreateInfos.data()},
             .enabledLayerCount       {0}, // These are depreciated
             .ppEnabledLayerNames     {nullptr},
-            .enabledExtensionCount   {},
-            .ppEnabledExtensionNames {},
-            .pEnabledFeatures        {},
+            .enabledExtensionCount   {static_cast<std::uint32_t>(DeviceExtensions.size())},
+            .ppEnabledExtensionNames {DeviceExtensions.data()},
+            .pEnabledFeatures        {&DeviceFeatures},
         };
 
-        seb::todo("Allocator and queues");
+        seb::logWarn("Implement queues and allocator");
 
-        //.createDeviceUnique()
-        // vk::Device device = physicalDevices[0].createDevice({}, nullptr);
+        this->logical_device = this->physical_device.createDeviceUnique(deviceCreateInfo);
     }
 
     Device::~Device()
     {
-        seb::todo("not fini");
+        seb::logWarn("implement allocator free");
     }
 
     [[nodiscard]] vk::PhysicalDevice Device::asPhysicalDevice() const

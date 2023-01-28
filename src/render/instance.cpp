@@ -30,6 +30,7 @@
     // aren't loaded yet. Only vkGetInstanceProcAddr so we have to bootstrap
     // the instance so it can init everything else 
     [[nodiscard]] static auto dynVkCreateDebugUtilsMessengerEXT(
+        PFN_vkGetInstanceProcAddr dynVkGetInstanceProcAddr,
         VkInstance instance,
         const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
         const VkAllocationCallbacks* pAllocator,
@@ -38,7 +39,7 @@
     {
         auto maybeVkCreateDebugUtilsMessengerExt =
             reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(
-                vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT")
+                dynVkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT")
             );
         
         seb::assertFatal(
@@ -55,13 +56,14 @@
     }
 
     static void dynVkDestroyDebugUtilsMessengerEXT(
+        PFN_vkGetInstanceProcAddr dynVkGetInstanceProcAddr,
         VkInstance instance,
         VkDebugUtilsMessengerEXT messenger,
         [[maybe_unused]] const VkAllocationCallbacks* pAllocator)
     {
         auto maybeVkDestroyDebugUtilsMessengerEXT =
             reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(
-                vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT")
+                dynVkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT")
             );
         
         seb::assertFatal(
@@ -83,7 +85,8 @@
 
 namespace render
 {
-    Instance::Instance()
+    Instance::Instance(PFN_vkGetInstanceProcAddr dynVkGetInstanceProcAddr)
+        : dyn_vk_get_instance_proc_addr {dynVkGetInstanceProcAddr}
     {
         const vk::DebugUtilsMessengerCreateInfoEXT debugMessengerCreateInfo
         {
@@ -118,7 +121,7 @@ namespace render
             .engineVersion      {
                 VK_MAKE_API_VERSION(VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_TWEAK)
             },
-            .apiVersion         {VK_VERSION_1_0},
+            .apiVersion         {VK_API_VERSION_1_0},
         };
 
         const std::vector<const char*> instanceLayers =
@@ -195,12 +198,13 @@ namespace render
 
             seb::assertFatal(
                 dynVkCreateDebugUtilsMessengerEXT(
+                    this->dyn_vk_get_instance_proc_addr,
                     static_cast<VkInstance>(*this->instance),
                     &copy, // this comes from the first line 
                     nullptr,
                     &this->debug_messenger
-                ),
-                "Failed to initialize debug messenger"
+                ) == VK_SUCCESS,
+                "Failed to initalize debug Messenger"
             );
 
         #endif
@@ -210,6 +214,16 @@ namespace render
 
     Instance::~Instance()
     {
-        dynVkDestroyDebugUtilsMessengerEXT(*this->instance,  this->debug_messenger, nullptr);
+        dynVkDestroyDebugUtilsMessengerEXT(
+            this->dyn_vk_get_instance_proc_addr,
+            *this->instance, 
+            this->debug_messenger,
+            nullptr
+        );
+    }
+
+    vk::Instance Instance::operator*() const
+    {
+        return *this->instance;
     }
 } // namespace render
