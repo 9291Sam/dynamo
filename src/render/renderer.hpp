@@ -3,6 +3,7 @@
 #ifndef SRC_RENDER_RENDERER_HPP
 #define SRC_RENDER_RENDERER_HPP
 
+#include "allocator.hpp"
 #include "device.hpp"
 #include "instance.hpp"
 #include "window.hpp"
@@ -28,6 +29,8 @@ namespace render
         std::unique_ptr<Instance> instance;
         vk::UniqueSurfaceKHR draw_surface;
         std::unique_ptr<Device> device;
+
+        std::unique_ptr<Allocator> allocator;
         
     }; // class Renderer
 } // namespace render

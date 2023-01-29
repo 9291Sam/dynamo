@@ -5,6 +5,7 @@ set(SOURCES_CPP
   src/main.cpp
 
   # Render
+  src/render/allocator.cpp
   src/render/device.cpp
   src/render/instance.cpp
   src/render/renderer.cpp

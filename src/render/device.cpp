@@ -25,8 +25,6 @@ std::uint32_t findIndexOfGraphicsAndPresentQueue(vk::PhysicalDevice pD, vk::Surf
 
 std::size_t getDeviceRating(vk::PhysicalDevice device)
 {
-    
-        std::cerr << "score" << std::endl;
     std::size_t score = 0;
 
     auto deviceLimits {device.getProperties().limits};
@@ -53,9 +51,9 @@ namespace render
 {
     Device::Device(vk::Instance instance, vk::SurfaceKHR drawSurface)
     {
-        std::cerr << static_cast<void*>(instance) << std::endl;
         this->physical_device = findBestDevice(instance.enumeratePhysicalDevices());
         
+
         const float One = 1.0f;
         const std::vector<vk::DeviceQueueCreateInfo> queueCreateInfos
         {
@@ -95,10 +93,9 @@ namespace render
             .pEnabledFeatures        {&DeviceFeatures},
         };
 
-        seb::logWarn("Implement queues and allocator");
-        
-        std::cerr << "arrived2" << std::endl;
         this->logical_device = this->physical_device.createDeviceUnique(deviceCreateInfo);
+
+        seb::logWarn("Implement queues");
     }
 
     Device::~Device()
@@ -114,11 +111,6 @@ namespace render
     [[nodiscard]] vk::Device Device::asLogicalDevice() const
     {
         return *this->logical_device;
-    }
-
-    [[nodiscard]] VmaAllocator Device::getAllocator() const
-    {
-        return this->allocator;
     }
 
     [[nodiscard]] vk::Queue Device::getRenderQueue() const
