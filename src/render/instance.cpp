@@ -37,7 +37,7 @@
         VkDebugUtilsMessengerEXT* pMessenger)
         -> VkResult
     {
-        auto maybeVkCreateDebugUtilsMessengerExt =
+        const auto maybeVkCreateDebugUtilsMessengerExt =
             reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(
                 dynVkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT")
             );
@@ -61,7 +61,7 @@
         VkDebugUtilsMessengerEXT messenger,
         [[maybe_unused]] const VkAllocationCallbacks* pAllocator)
     {
-        auto maybeVkDestroyDebugUtilsMessengerEXT =
+        const auto maybeVkDestroyDebugUtilsMessengerEXT =
             reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(
                 dynVkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT")
             );

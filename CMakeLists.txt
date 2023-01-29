@@ -9,6 +9,7 @@ set(SOURCES_CPP
   src/render/device.cpp
   src/render/instance.cpp
   src/render/renderer.cpp
+  src/render/swapchain.cpp
   src/render/vulkan_includes.cpp
   src/render/window.cpp
 )
@@ -43,7 +44,7 @@ target_compile_options(Dynamo PUBLIC -Wpointer-arith )
 target_compile_options(Dynamo PUBLIC -Wcast-qual)
 target_compile_options(Dynamo PUBLIC -Wredundant-move)
 target_compile_options(Dynamo PUBLIC -Wpessimizing-move)
-# target_compile_options(Dynamo PUBLIC -Wuseless-cast) thanks vulkan!
+target_compile_options(Dynamo PUBLIC -Wuseless-cast)
 target_compile_options(Dynamo PUBLIC -Wconversion)
 target_compile_options(Dynamo PUBLIC -Wdouble-promotion)
 target_compile_options(Dynamo PUBLIC -Wnonnull)

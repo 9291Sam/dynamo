@@ -15,6 +15,7 @@ namespace render
         Instance(PFN_vkGetInstanceProcAddr);
         ~Instance();
 
+        Instance()                           = delete;
         Instance(const Instance&)            = delete;
         Instance(Instance&&)                 = delete;
         Instance& operator=(const Instance&) = delete;

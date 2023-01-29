@@ -11,9 +11,11 @@ namespace render
     class Device
     {
     public:
+    
         Device(vk::Instance, vk::SurfaceKHR);
         ~Device();
 
+        Device()                         = delete;
         Device(const Device&)            = delete;
         Device(Device&&)                 = delete;
         Device& operator=(const Device&) = delete;

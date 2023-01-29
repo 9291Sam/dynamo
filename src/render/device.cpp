@@ -27,7 +27,7 @@ std::size_t getDeviceRating(vk::PhysicalDevice device)
 {
     std::size_t score = 0;
 
-    auto deviceLimits {device.getProperties().limits};
+    const auto deviceLimits {device.getProperties().limits};
 
     score += deviceLimits.maxImageDimension2D; 
     score += deviceLimits.maxImageDimension3D;

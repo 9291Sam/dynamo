@@ -35,7 +35,16 @@ namespace render
             dynVkGetInstanceProcAddr,
             dl.getProcAddress<PFN_vkGetDeviceProcAddr>("vkGetDeviceProcAddr")
         );
-        
+
+        this->swapchain = std::make_unique<Swapchain>(
+            this->device->asPhysicalDevice(),
+            this->device->asLogicalDevice(),
+            *this->draw_surface,
+            vk::Extent2D {
+                .width {1200},
+                .height {1200},
+            }
+        );
 
         seb::todo<>("");
     }

@@ -21,7 +21,7 @@ namespace render
         allocatorCreateInfo.instance                    = {instance};
         allocatorCreateInfo.vulkanApiVersion            = {VK_API_VERSION_1_0};
 
-        VkResult result = vmaCreateAllocator(&allocatorCreateInfo, &this->allocator);
+        const VkResult result = vmaCreateAllocator(&allocatorCreateInfo, &this->allocator);
         seb::assertFatal(
             result == VK_SUCCESS,
             "Failed to create vma allocator {}",
@@ -32,5 +32,10 @@ namespace render
     Allocator::~Allocator()
     {
         vmaDestroyAllocator(this->allocator);
+    }
+
+    VmaAllocator Allocator::operator*() const
+    {
+        return this->allocator;
     }
 } // namespace render
