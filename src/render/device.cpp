@@ -23,13 +23,39 @@ std::uint32_t findIndexOfGraphicsAndPresentQueue(vk::PhysicalDevice pD, vk::Surf
     seb::panic("Failed to find a suitable Graphics + Present queue");
 }
 
+std::size_t getDeviceRating(vk::PhysicalDevice device)
+{
+    
+        std::cerr << "score" << std::endl;
+    std::size_t score = 0;
+
+    auto deviceLimits {device.getProperties().limits};
+
+    score += deviceLimits.maxImageDimension2D; 
+    score += deviceLimits.maxImageDimension3D;
+
+    return score;
+}
+
+vk::PhysicalDevice findBestDevice(const std::vector<vk::PhysicalDevice>& devices)
+{
+    return *std::max_element(
+        devices.begin(),
+        devices.end(), 
+        [](vk::PhysicalDevice dev1, vk::PhysicalDevice dev2)
+        {
+            return getDeviceRating(dev1) < getDeviceRating(dev2);
+        }
+    );
+}
+
 namespace render
 {
     Device::Device(vk::Instance instance, vk::SurfaceKHR drawSurface)
     {
-        seb::logWarn("Picking first device TODO: select best gpu");
-        this->physical_device = instance.enumeratePhysicalDevices().at(0);
-
+        std::cerr << static_cast<void*>(instance) << std::endl;
+        this->physical_device = findBestDevice(instance.enumeratePhysicalDevices());
+        
         const float One = 1.0f;
         const std::vector<vk::DeviceQueueCreateInfo> queueCreateInfos
         {
@@ -70,7 +96,8 @@ namespace render
         };
 
         seb::logWarn("Implement queues and allocator");
-
+        
+        std::cerr << "arrived2" << std::endl;
         this->logical_device = this->physical_device.createDeviceUnique(deviceCreateInfo);
     }
 

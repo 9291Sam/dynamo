@@ -191,8 +191,7 @@ namespace render
 
         this->instance = vk::createInstanceUnique(instanceCreateInfo);
 
-        seb::logWarn("fix this shit");
-        const VkDebugUtilsMessengerCreateInfoEXT copy = debugMessengerCreateInfo;
+        const VkDebugUtilsMessengerCreateInfoEXT copyCreateInfo = debugMessengerCreateInfo;
 
         #ifdef VULKAN_INSTANCE_ENABLE_VALIDATION_LAYERS
 
@@ -200,7 +199,7 @@ namespace render
                 dynVkCreateDebugUtilsMessengerEXT(
                     this->dyn_vk_get_instance_proc_addr,
                     static_cast<VkInstance>(*this->instance),
-                    &copy, // this comes from the first line 
+                    &copyCreateInfo, // this comes from the first line 
                     nullptr,
                     &this->debug_messenger
                 ) == VK_SUCCESS,

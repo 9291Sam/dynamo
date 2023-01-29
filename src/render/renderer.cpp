@@ -1,5 +1,7 @@
 #include "vulkan_includes.hpp"
 
+#include <sebib/seblog.hpp>
+
 #include "renderer.hpp"
 
 namespace render
@@ -16,12 +18,15 @@ namespace render
 
         this->instance = std::make_unique<Instance>(dynVkGetInstanceProcAddr);
 
+        VULKAN_HPP_DEFAULT_DISPATCHER.init(**this->instance);
+
         this->draw_surface = window.createSurface(**this->instance);
 
         this->device = std::make_unique<Device>(**this->instance, *this->draw_surface);
 
         VULKAN_HPP_DEFAULT_DISPATCHER.init(**this->instance, this->device->asLogicalDevice());
 
+        seb::todo<>("");
     }
 
 } // namespace render
