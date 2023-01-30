@@ -6,6 +6,7 @@
 #include "allocator.hpp"
 #include "device.hpp"
 #include "instance.hpp"
+#include "image.hpp"
 #include "swapchain.hpp"
 #include "window.hpp"
 
@@ -28,11 +29,13 @@ namespace render
 
     private:
         Window window;
-        std::unique_ptr<Instance> instance;
-        vk::UniqueSurfaceKHR draw_surface;
-        std::unique_ptr<Device> device;
+        std::unique_ptr<Instance>  instance;
+        vk::UniqueSurfaceKHR       draw_surface;
+        std::unique_ptr<Device>    device;
         std::unique_ptr<Allocator> allocator;
-        std::unique_ptr<Swapchain> swapchain;  
+        std::unique_ptr<Swapchain> swapchain;
+        std::unique_ptr<Image2D>   depth_buffer;
+        // TODO: make image class, update swapchai nwith image class and then add depth buffer here
     }; // class Renderer
 } // namespace render
 

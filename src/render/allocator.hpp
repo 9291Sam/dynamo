@@ -7,8 +7,6 @@
 
 namespace render
 {
-    class Allocation;
-
     class Allocator
     {
     public:

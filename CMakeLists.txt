@@ -7,6 +7,7 @@ set(SOURCES_CPP
   # Render
   src/render/allocator.cpp
   src/render/device.cpp
+  src/render/image.cpp
   src/render/instance.cpp
   src/render/renderer.cpp
   src/render/swapchain.cpp

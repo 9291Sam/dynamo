@@ -76,7 +76,7 @@ namespace render
 
         this->swapchain = device.asLogicalDevice().createSwapchainKHRUnique(SwapchainCreateInfoKHR);
         this->images = device.asLogicalDevice().getSwapchainImagesKHR(*this->swapchain);
-        // TODO: fix this shit
+        
         this->image_views = [this, &device]{
             
             std::vector<vk::UniqueImageView> output {};

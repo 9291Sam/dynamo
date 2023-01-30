@@ -7,11 +7,13 @@
 namespace render
 {
     Renderer::Renderer()
-        : window {{1200, 1200}, "Dynamo"}
-        , instance {nullptr}
+        : window       {{1200, 1200}, "Dynamo"}
+        , instance     {nullptr}
         , draw_surface {nullptr}
-        , device {nullptr}
-        , allocator {nullptr}
+        , device       {nullptr}
+        , allocator    {nullptr}
+        , swapchain    {nullptr}
+        , depth_buffer {nullptr}
     {
         const vk::DynamicLoader dl;
         const PFN_vkGetInstanceProcAddr dynVkGetInstanceProcAddr = 
@@ -43,6 +45,17 @@ namespace render
                 .width {1200},
                 .height {1200},
             }
+        );
+
+        this->depth_buffer = std::make_unique<Image2D>(
+            *this->allocator,
+            this->device->asLogicalDevice(),
+            vk::Extent2D {1200, 1200}, // swapchain extent
+            vk::Format::eD32Sfloat,
+            vk::ImageUsageFlagBits::eDepthStencilAttachment,
+            vk::ImageAspectFlagBits::eDepth,
+            vk::ImageTiling::eOptimal,
+            vk::MemoryPropertyFlagBits::eDeviceLocal
         );
 
         using namespace std::chrono_literals;
