@@ -13,7 +13,7 @@ namespace render
     public:
     
         Device(vk::Instance, vk::SurfaceKHR);
-        ~Device();
+        ~Device()                        = default;
 
         Device()                         = delete;
         Device(const Device&)            = delete;
@@ -23,13 +23,13 @@ namespace render
 
         [[nodiscard, gnu::pure]] vk::PhysicalDevice asPhysicalDevice() const;
         [[nodiscard, gnu::pure]] vk::Device asLogicalDevice() const;
-        [[nodiscard, gnu::pure]] VmaAllocator getAllocator() const;
+        [[nodiscard, gnu::pure]] std::uint32_t getRenderQueueIndex() const;
         [[nodiscard, gnu::pure]] vk::Queue getRenderQueue() const;
 
     private:
         vk::PhysicalDevice physical_device;
         vk::UniqueDevice logical_device;
-        VmaAllocator allocator;
+        std::uint32_t queue_index;
         vk::Queue queue;
     }; // class Device
 } // namespace render 

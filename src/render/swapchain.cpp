@@ -1,9 +1,10 @@
+#include <sebib/seblog.hpp>
+
 #include "swapchain.hpp"
 
 namespace render
 {
-    Swapchain::Swapchain(vk::PhysicalDevice physicalDevice, vk::Device logicalDevice, 
-        vk::SurfaceKHR surface, vk::Extent2D extent_)
+    Swapchain::Swapchain(const Device& device, vk::SurfaceKHR surface, vk::Extent2D extent_)
         : extent {extent_} // TODO: do we need this extent?
     {
         const vk::SurfaceFormatKHR idealSurfaceFormat
@@ -11,8 +12,8 @@ namespace render
             .format {vk::Format::eB8G8R8A8Srgb},
             .colorSpace {vk::ColorSpaceKHR::eSrgbNonlinear}
         };
-        const std::vector<vk::Format> availableSurfaceFormats = 
-            physicalDevice.getSurfaceFormatsKHR(surface);
+        const auto availableSurfaceFormats = 
+            device.asPhysicalDevice().getSurfaceFormatsKHR(surface);
         if (std::find(
                 availableSurfaceFormats.begin(),
                 availableSurfaceFormats.end(),
@@ -22,28 +23,34 @@ namespace render
             // TODO: find closest
             seb::panic("Failed to find ideal surface format!");
         }
-        this->format = idealSurfaceFormat
+        this->format = idealSurfaceFormat;
 
 
         const vk::SurfaceCapabilitiesKHR surfaceCapabilities =
-            physicalDevice.getSurfaceCapabilitiesKHR(surface);
-
+            device.asPhysicalDevice().getSurfaceCapabilitiesKHR(surface);
+        const vk::Extent2D minExtent = surfaceCapabilities.minImageExtent;
+        const vk::Extent2D maxExtent = surfaceCapabilities.maxImageExtent;
+        seb::assertFatal(minExtent.width  < this->extent.width,  "Desired image extent width less than available)");
+        seb::assertFatal(minExtent.height < this->extent.height, "Desired image extent height less than available)");
+        seb::assertFatal(maxExtent.width  > this->extent.width,  "Desired image extent width greater than available");
+        seb::assertFatal(maxExtent.height > this->extent.height, "Desired image extent height greater than available");
+        
 
         const std::vector<vk::PresentModeKHR> availablePresentModes =
-            physicalDevice.getSurfacePresentModesKHR(surface);
-        const selectedPresentMode = std::find(
+            device.asPhysicalDevice().getSurfacePresentModesKHR(surface);
+        const vk::PresentModeKHR selectedPresentMode = std::find(
                 availablePresentModes.cbegin(), 
                 availablePresentModes.cend(), 
                 vk::PresentModeKHR::eMailbox
             ) != availablePresentModes.cend()
             ? vk::PresentModeKHR::eMailbox
-            : vk::PresentModeKHR::eFifo
+            : vk::PresentModeKHR::eFifo;
 
         
-
+        const std::array<std::uint32_t, 1> QueueFamilyIndicies {device.getRenderQueueIndex()};
         const vk::SwapchainCreateInfoKHR SwapchainCreateInfoKHR
         {
-            .sTyoe   {vk::StructureType::eSwapchainCreateInfoKHR},
+            .sType   {vk::StructureType::eSwapchainCreateInfoKHR},
             .pNext   {nullptr},
             .flags   {},
             .surface {surface},
@@ -52,40 +59,56 @@ namespace render
                 ? surfaceCapabilities.minImageCount + 1
                 : surfaceCapabilities.maxImageCount
             },
-            .format          {this->format.format},
-            .imageColorSpace {this->format.colorSpace},
-            .imageExtent     {[&]{
-                // weird macOS case where the display manager wants a different size
-                if (surfaceCapabilities.currentExtent.width == 
-                    std::numeric_limits<std::uint32_t>::max()
-                    &&
-                    surfaceCapabilities.currentExtent.height ==
-                    std::numeric_limits<std::uint32_t>::max())
-                {
-                    auto [unclampedWidth, unclampedHeight] = window.getFrameBufferSize();
+            .imageFormat           {this->format.format},
+            .imageColorSpace       {this->format.colorSpace},
+            .imageExtent           {this->extent},
+            .imageArrayLayers      {1},
+            .imageUsage            {vk::ImageUsageFlagBits::eColorAttachment},
+            .imageSharingMode      {vk::SharingMode::eExclusive},
+            .queueFamilyIndexCount {static_cast<std::uint32_t>(QueueFamilyIndicies.size())},
+            .pQueueFamilyIndices   {QueueFamilyIndicies.data()},
+            .preTransform          {surfaceCapabilities.currentTransform},
+            .compositeAlpha        {vk::CompositeAlphaFlagBitsKHR::eOpaque},
+            .presentMode           {selectedPresentMode},
+            .clipped               {true},
+            .oldSwapchain          {nullptr}
+        };
 
-                    return vk::Extent2D {
-                        std::clamp(
-                            unclampedWidth,
-                            swapchainSupport.capabilities.minImageExtent.width,
-                            swapchainSupport.capabilities.maxImageExtent.width
-                        ),
-                        std::clamp(
-                            unclampedHeight,
-                            swapchainSupport.capabilities.minImageExtent.height,
-                            swapchainSupport.capabilities.maxImageExtent.height
-                        )
-                    };
-                }
-                else
-                {
-                    return surfaceCapabilities.currentExtent;
-                }
-            }},
-            .imageSharingMode {vk::SharingMode::eExclusive},
-            .queueFamilyIndexCount {// TODO: pass in index
-        }
+        this->swapchain = device.asLogicalDevice().createSwapchainKHRUnique(SwapchainCreateInfoKHR);
+        this->images = device.asLogicalDevice().getSwapchainImagesKHR(*this->swapchain);
+        // TODO: fix this shit
+        this->image_views = [this, &device]{
+            
+            std::vector<vk::UniqueImageView> output {};
+            output.reserve(this->images.size());
 
+            for (const vk::Image& i : this->images)
+            {
+                vk::ImageViewCreateInfo createInfo {
+                    .sType            {vk::StructureType::eImageViewCreateInfo},
+                    .pNext            {nullptr},
+                    .flags            {},
+                    .image            {i},
+                    .viewType         {vk::ImageViewType::e2D},
+                    .format           {this->format.format},
+                    .components       {
+                        .r {vk::ComponentSwizzle::eIdentity},
+                        .g {vk::ComponentSwizzle::eIdentity},
+                        .b {vk::ComponentSwizzle::eIdentity},
+                        .a {vk::ComponentSwizzle::eIdentity},
+                    },
+                    .subresourceRange {
+                        .aspectMask     {vk::ImageAspectFlagBits::eColor},
+                        .baseMipLevel   {0},
+                        .levelCount     {1},
+                        .baseArrayLayer {0},
+                        .layerCount     {1},
+                    },
+                };
 
+                output.push_back(device.asLogicalDevice().createImageViewUnique(createInfo));
+            }
+            return output;
+        }();
     }
 } // namespace render

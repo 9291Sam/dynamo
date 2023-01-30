@@ -53,7 +53,7 @@ namespace render
     {
         this->physical_device = findBestDevice(instance.enumeratePhysicalDevices());
         
-
+        this->queue_index = findIndexOfGraphicsAndPresentQueue(this->physical_device, drawSurface);
         const float One = 1.0f;
         const std::vector<vk::DeviceQueueCreateInfo> queueCreateInfos
         {
@@ -62,9 +62,7 @@ namespace render
                 .sType            {vk::StructureType::eDeviceQueueCreateInfo},
                 .pNext            {nullptr},
                 .flags            {},
-                .queueFamilyIndex {
-                    findIndexOfGraphicsAndPresentQueue(this->physical_device, drawSurface)
-                },
+                .queueFamilyIndex {this->queue_index},
                 .queueCount       {1},
                 .pQueuePriorities {&One},
             }
@@ -95,12 +93,7 @@ namespace render
 
         this->logical_device = this->physical_device.createDeviceUnique(deviceCreateInfo);
 
-        seb::logWarn("Implement queues");
-    }
-
-    Device::~Device()
-    {
-        seb::logWarn("implement allocator free");
+        this->queue = this->logical_device->getQueue(this->queue_index, 0);
     }
 
     [[nodiscard]] vk::PhysicalDevice Device::asPhysicalDevice() const
@@ -111,6 +104,12 @@ namespace render
     [[nodiscard]] vk::Device Device::asLogicalDevice() const
     {
         return *this->logical_device;
+    }
+
+
+    [[nodiscard, gnu::pure]] std::uint32_t Device::getRenderQueueIndex() const
+    {
+        return this->queue_index;
     }
 
     [[nodiscard]] vk::Queue Device::getRenderQueue() const

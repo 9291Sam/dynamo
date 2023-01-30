@@ -37,14 +37,16 @@ namespace render
         );
 
         this->swapchain = std::make_unique<Swapchain>(
-            this->device->asPhysicalDevice(),
-            this->device->asLogicalDevice(),
+            *this->device,
             *this->draw_surface,
-            vk::Extent2D {
+            vk::Extent2D { // TODO: once we get this from the window, ensure its within range by modifying the wondows code to make sure its right
                 .width {1200},
                 .height {1200},
             }
         );
+
+        using namespace std::chrono_literals;
+        std::this_thread::sleep_for(1s);
 
         seb::todo<>("");
     }

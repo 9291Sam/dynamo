@@ -5,14 +5,16 @@
 
 #include "vulkan_includes.hpp"
 
+#include "device.hpp"
+
 namespace render
 {
     class Swapchain
     {
     public:
 
-        Swapchain(vk::PhysicalDevice, vk::Device, vk::SurfaceKHR, vk::Extent2D);
-        ~Swapchain();
+        Swapchain(const Device&, vk::SurfaceKHR, vk::Extent2D);
+        ~Swapchain()                           = default;
 
         Swapchain()                            = delete;
         Swapchain(const Swapchain&)            = delete;
@@ -25,7 +27,8 @@ namespace render
         vk::SurfaceFormatKHR   format;
         vk::UniqueSwapchainKHR swapchain;
 
-        /* Image images */
+        std::vector<vk::Image> images; /* TODO: replace with an image class*/
+        std::vector<vk::UniqueImageView> image_views;
     }; // class Swapchain
 } // namespace render
 
