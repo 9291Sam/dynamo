@@ -21,7 +21,8 @@ namespace render
         Swapchain& operator=(Swapchain&&)      = delete; 
 
     private:
-        vk::Extent2D extent;
+        vk::Extent2D           extent;
+        vk::SurfaceFormatKHR   format;
         vk::UniqueSwapchainKHR swapchain;
 
         /* Image images */
