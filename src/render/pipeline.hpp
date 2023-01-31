@@ -11,8 +11,8 @@ namespace render
     {
     public:
     
-        Pipeline(vk::Device, vk::RenderPass&, vk::UniqueShaderModule&& vertexShader,
-            vk::UniqueShaderModule&& fragmentShader);
+        Pipeline(vk::Device, vk::RenderPass, vk::Extent2D swapchainExtent,
+            vk::UniqueShaderModule&& vertexShader, vk::UniqueShaderModule&& fragmentShader);
         ~Pipeline()                          = default;
 
         Pipeline()                           = delete;

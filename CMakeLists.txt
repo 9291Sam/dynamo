@@ -13,6 +13,7 @@ set(SOURCES_CPP
   src/render/render_pass.cpp
   src/render/renderer.cpp
   src/render/swapchain.cpp
+  src/render/vertex.cpp
   src/render/vulkan_includes.cpp
   src/render/window.cpp
 )
@@ -124,6 +125,11 @@ target_link_libraries(Dynamo tinyobjloader)
 add_library(sebib INTERFACE)
 target_include_directories(sebib INTERFACE ${CMAKE_SOURCE_DIR}/inc/)
 target_link_libraries(Dynamo sebib)
+
+# Add glm
+add_library(glm INTERFACE)
+target_include_directories(glm INTERFACE ${CMAKE_SOURCE_DIR}/inc/glm)
+target_link_libraries(Dynamo glm)
 # Compile shaders function Stack overflow #60420700
 # find_package(Vulkan COMPONENTS glslc)
 # find_program(glslc_executable NAMES glslc HINTS Vulkan::glslc)
