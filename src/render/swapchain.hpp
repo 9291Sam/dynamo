@@ -20,7 +20,9 @@ namespace render
         Swapchain(const Swapchain&)            = delete;
         Swapchain(Swapchain&&)                 = delete;
         Swapchain& operator=(const Swapchain&) = delete;
-        Swapchain& operator=(Swapchain&&)      = delete; 
+        Swapchain& operator=(Swapchain&&)      = delete;
+
+        [[nodiscard, gnu::pure]] vk::SurfaceFormatKHR getSurfaceFormat() const;
 
     private:
         vk::Extent2D           extent;

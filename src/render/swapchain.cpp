@@ -30,10 +30,16 @@ namespace render
             device.asPhysicalDevice().getSurfaceCapabilitiesKHR(surface);
         const vk::Extent2D minExtent = surfaceCapabilities.minImageExtent;
         const vk::Extent2D maxExtent = surfaceCapabilities.maxImageExtent;
-        seb::assertFatal(minExtent.width  < this->extent.width,  "Desired image extent width less than available)");
-        seb::assertFatal(minExtent.height < this->extent.height, "Desired image extent height less than available)");
-        seb::assertFatal(maxExtent.width  > this->extent.width,  "Desired image extent width greater than available");
-        seb::assertFatal(maxExtent.height > this->extent.height, "Desired image extent height greater than available");
+        // seb::logTrace(
+        //     "minExtent {} {} | maxExtent {} {} | reqExtent {} {}",
+        //     minExtent.width, minExtent.height,
+        //     maxExtent.width, maxExtent.height,
+        //     this->extent.width, this->extent.height
+        // );
+        seb::assertFatal(minExtent.width  <= this->extent.width,  "Desired image extent width less than available)");
+        seb::assertFatal(minExtent.height <= this->extent.height, "Desired image extent height less than available)");
+        seb::assertFatal(maxExtent.width  >= this->extent.width,  "Desired image extent width greater than available");
+        seb::assertFatal(maxExtent.height >= this->extent.height, "Desired image extent height greater than available");
         
 
         const std::vector<vk::PresentModeKHR> availablePresentModes =
@@ -110,5 +116,10 @@ namespace render
             }
             return output;
         }();
+    }
+
+    vk::SurfaceFormatKHR Swapchain::getSurfaceFormat() const
+    {
+        return this->format;
     }
 } // namespace render

@@ -9,6 +9,8 @@ set(SOURCES_CPP
   src/render/device.cpp
   src/render/image.cpp
   src/render/instance.cpp
+  src/render/pipeline.cpp
+  src/render/render_pass.cpp
   src/render/renderer.cpp
   src/render/swapchain.cpp
   src/render/vulkan_includes.cpp

@@ -14,6 +14,8 @@ namespace render
         , allocator    {nullptr}
         , swapchain    {nullptr}
         , depth_buffer {nullptr}
+        , render_pass  {nullptr}
+        , pipeline     {nullptr}
     {
         const vk::DynamicLoader dl;
         const PFN_vkGetInstanceProcAddr dynVkGetInstanceProcAddr = 
