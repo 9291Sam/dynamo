@@ -118,8 +118,19 @@ namespace render
         }();
     }
 
+    vk::Extent2D Swapchain::getExtent() const
+    {
+        return this->extent;
+    }
+
     vk::SurfaceFormatKHR Swapchain::getSurfaceFormat() const
     {
         return this->format;
+    }
+
+    auto Swapchain::getImageViews() const
+        -> const std::vector<vk::UniqueImageView>&
+    {
+        return this->image_views;
     }
 } // namespace render

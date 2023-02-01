@@ -11,6 +11,7 @@
 #include "image.hpp"
 #include "swapchain.hpp"
 #include "window.hpp"
+#include "vulkan_includes.hpp"
 
 namespace render
 {
@@ -31,14 +32,15 @@ namespace render
 
     private:
         Window window;
-        std::unique_ptr<Instance>   instance;
-        vk::UniqueSurfaceKHR        draw_surface;
-        std::unique_ptr<Device>     device;
-        std::unique_ptr<Allocator>  allocator;
-        std::unique_ptr<Swapchain>  swapchain;
-        std::unique_ptr<Image2D>    depth_buffer;
-        std::unique_ptr<RenderPass> render_pass;
-        std::unique_ptr<Pipeline>   pipeline;
+        std::unique_ptr<Instance>          instance;
+        vk::UniqueSurfaceKHR               draw_surface;
+        std::unique_ptr<Device>            device;
+        std::unique_ptr<Allocator>         allocator;
+        std::unique_ptr<Swapchain>         swapchain;
+        std::unique_ptr<Image2D>           depth_buffer;
+        std::unique_ptr<RenderPass>        render_pass;
+        std::unique_ptr<Pipeline>          pipeline;
+        std::vector<vk::UniqueFramebuffer> framebuffers;
     }; // class Renderer
 } // namespace render
 

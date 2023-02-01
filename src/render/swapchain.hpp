@@ -22,7 +22,12 @@ namespace render
         Swapchain& operator=(const Swapchain&) = delete;
         Swapchain& operator=(Swapchain&&)      = delete;
 
+        [[nodiscard, gnu::pure]] vk::Extent2D getExtent() const;
+
         [[nodiscard, gnu::pure]] vk::SurfaceFormatKHR getSurfaceFormat() const;
+
+        [[nodiscard, gnu::pure]] auto getImageViews() const
+            -> const std::vector<vk::UniqueImageView>&;
 
     private:
         vk::Extent2D           extent;

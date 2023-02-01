@@ -16,6 +16,7 @@ namespace render
         , depth_buffer {nullptr}
         , render_pass  {nullptr}
         , pipeline     {nullptr}
+        , framebuffers {0}
     {
         const vk::DynamicLoader dl;
         const PFN_vkGetInstanceProcAddr dynVkGetInstanceProcAddr = 
@@ -52,7 +53,7 @@ namespace render
         this->depth_buffer = std::make_unique<Image2D>(
             *this->allocator,
             this->device->asLogicalDevice(),
-            vk::Extent2D {1200, 1200}, // swapchain extent
+            this->swapchain->getExtent(),
             vk::Format::eD32Sfloat,
             vk::ImageUsageFlagBits::eDepthStencilAttachment,
             vk::ImageAspectFlagBits::eDepth,
@@ -60,10 +61,43 @@ namespace render
             vk::MemoryPropertyFlagBits::eDeviceLocal
         );
 
+        this->render_pass = std::make_unique<RenderPass>(
+            this->device->asLogicalDevice(),
+            *this->swapchain,
+            *this->depth_buffer
+        );
+
+        // framebuffer creation
+        for (const vk::UniqueImageView& view : this->swapchain->getImageViews())
+        {
+            std::array<vk::ImageView, 2> attachments
+            {
+                *view,
+                **this->depth_buffer
+            };
+
+            vk::FramebufferCreateInfo frameBufferCreateInfo {
+                .sType           {vk::StructureType::eFramebufferCreateInfo},
+                .pNext           {nullptr},
+                .flags           {},
+                .renderPass      {**this->render_pass},
+                .attachmentCount {attachments.size()},
+                .pAttachments    {attachments.data()},
+                .width           {this->swapchain->getExtent().width},
+                .height          {this->swapchain->getExtent().height},
+                .layers          {1},
+            };
+
+            this->framebuffers.push_back(
+                this->device->asLogicalDevice()
+                    .createFramebufferUnique(frameBufferCreateInfo)
+            );
+        }
+
         using namespace std::chrono_literals;
         std::this_thread::sleep_for(1s);
 
-        seb::todo<>("");
+        seb::todo<>("End of execution!");
     }
 
 } // namespace render
