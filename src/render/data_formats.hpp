@@ -3,6 +3,8 @@
 #ifndef SRC_RENDER_VERTEX_HPP
 #define SRC_RENDER_VERTEX_HPP
 
+#include "vulkan_includes.hpp"
+
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
@@ -20,6 +22,10 @@
 
 namespace render
 {
+    /// NOTE:
+    /// If you change any of these, dont forget to update their corresponding
+    /// structs in the shaders!
+
     struct Vertex
     {
         glm::vec3 position;
@@ -34,7 +40,17 @@ namespace render
             -> const std::array<vk::VertexInputAttributeDescription, 4>*;
 
         [[nodiscard]] operator std::string() const;
-    }
+    };
+
+    struct PushConstants
+    {
+        glm::mat4 model_view_projection;
+    };
+
+    struct UniformBuffer
+    {
+
+    };
 } // namespace render
 
 #endif // SRC_RENDER_VERTEX_HPP

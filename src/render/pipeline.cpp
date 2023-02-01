@@ -1,4 +1,6 @@
-#include "vertex.hpp"
+#include <sebib/seblog.hpp>
+
+#include "data_formats.hpp"
 
 #include "pipeline.hpp"
 
@@ -148,14 +150,7 @@ namespace render
             .pPushConstantRanges    {&pushConstantsInformation},
         };
 
-        // Create pipeline layout
-        {
-            auto [result, maybePipelineLayoutInfo] =    
-                device.getLogicalDevice().createPipelineLayoutUnique(pipelineLayoutInfo);
-
-            seb::assertFatal(result, "Failed to create pipeline layout");
-            this->pipeline_layout = std::move(maybePipelineLayoutInfo);
-        }
+        this->layout = device.createPipelineLayoutUnique(pipelineLayoutInfo);
 
         vk::PipelineDepthStencilStateCreateInfo depthStencilActivator {
             .sType                 {vk::StructureType::ePipelineDepthStencilStateCreateInfo},
@@ -172,34 +167,40 @@ namespace render
             .maxDepthBounds        {1.0f},
         };
 
-        // Create graphics pipeline pipeline
-        {
-            vk::GraphicsPipelineCreateInfo graphicsPipelineCreateInfo {
-                .sType               {vk::StructureType::eGraphicsPipelineCreateInfo},
-                .pNext               {nullptr},
-                .flags               {},
-                .stageCount          {shaderStages.size()},
-                .pStages             {shaderStages.data()},
-                .pVertexInputState   {&pipeVertexCreateInfo},
-                .pInputAssemblyState {&inputAssemblyCreateInfo},
-                .pTessellationState  {nullptr},
-                .pViewportState      {&viewportState},
-                .pRasterizationState {&rasterizationCreateInfo},
-                .pMultisampleState   {&multiSampleStateCreateInfo},
-                .pDepthStencilState  {&depthStencilActivator},
-                .pColorBlendState    {&colorBlendCreateInfo},
-                .pDynamicState       {nullptr},
-                .layout              {this->pipeline_layout.get()},
-                .renderPass          {this->render_pass.get()},
-                .subpass             {0},
-                .basePipelineHandle  {nullptr},
-                .basePipelineIndex   {-1},
-            };
 
-            auto [result, maybeGraphicsPipeline] = device.getLogicalDevice()
-                .createGraphicsPipelineUnique(nullptr, graphicsPipelineCreateInfo);
-            seb::assertFatal(result, "Failed to create graphics pipeline");
-            this->graphics_pipeline = std::move(maybeGraphicsPipeline);
+
+        vk::GraphicsPipelineCreateInfo graphicsPipelineCreateInfo {
+            .sType               {vk::StructureType::eGraphicsPipelineCreateInfo},
+            .pNext               {nullptr},
+            .flags               {},
+            .stageCount          {shaderStages.size()},
+            .pStages             {shaderStages.data()},
+            .pVertexInputState   {&pipeVertexCreateInfo},
+            .pInputAssemblyState {&inputAssemblyCreateInfo},
+            .pTessellationState  {nullptr},
+            .pViewportState      {&viewportState},
+            .pRasterizationState {&rasterizationCreateInfo},
+            .pMultisampleState   {&multiSampleStateCreateInfo},
+            .pDepthStencilState  {&depthStencilActivator},
+            .pColorBlendState    {&colorBlendCreateInfo},
+            .pDynamicState       {nullptr},
+            .layout              {*this->layout},
+            .renderPass          {renderPass},
+            .subpass             {0},
+            .basePipelineHandle  {nullptr},
+            .basePipelineIndex   {-1},
+        };
+
+        auto [result, maybeGraphicsPipeline] = device.
+            createGraphicsPipelineUnique(
+                nullptr, graphicsPipelineCreateInfo);
+
+        seb::assertFatal(
+            result == vk::Result::eSuccess,
+            "Failed to create graphics pipeline"
+        );
+
+        this->pipeline = std::move(maybeGraphicsPipeline);
     }
 
 } // namespace render
