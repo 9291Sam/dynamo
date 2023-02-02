@@ -17,6 +17,7 @@ namespace render
         , render_pass  {nullptr}
         , pipeline     {nullptr}
         , framebuffers {0}
+        , command_pool {nullptr}
     {
         const vk::DynamicLoader dl;
         const PFN_vkGetInstanceProcAddr dynVkGetInstanceProcAddr = 
@@ -93,6 +94,8 @@ namespace render
                     .createFramebufferUnique(frameBufferCreateInfo)
             );
         }
+
+        this->command_pool = std::make_unique<CommandPool>(*this->device);
 
         using namespace std::chrono_literals;
         std::this_thread::sleep_for(1s);

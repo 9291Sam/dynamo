@@ -6,6 +6,7 @@ set(SOURCES_CPP
 
   # Render
   src/render/allocator.cpp
+  src/render/command_pool.cpp
   src/render/data_formats.cpp
   src/render/device.cpp
   src/render/image.cpp

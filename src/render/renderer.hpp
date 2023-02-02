@@ -4,6 +4,7 @@
 #define SRC_RENDER_RENDERER_HPP
 
 #include "allocator.hpp"
+#include "command_pool.hpp"
 #include "device.hpp"
 #include "instance.hpp"
 #include "pipeline.hpp"
@@ -41,6 +42,9 @@ namespace render
         std::unique_ptr<RenderPass>        render_pass;
         std::unique_ptr<Pipeline>          pipeline;
         std::vector<vk::UniqueFramebuffer> framebuffers;
+
+        std::unique_ptr<CommandPool>       command_pool;
+        
     }; // class Renderer
 } // namespace render
 
