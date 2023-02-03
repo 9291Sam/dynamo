@@ -33,7 +33,7 @@ namespace render
 
     private:
         Window window;
-        std::unique_ptr<Instance>          instance;
+        Instance          instance;
         vk::UniqueSurfaceKHR               draw_surface;
         std::unique_ptr<Device>            device;
         std::unique_ptr<Allocator>         allocator;
