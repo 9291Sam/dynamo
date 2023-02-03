@@ -19,9 +19,9 @@ namespace render
 
         Image2D()                          = delete;
         Image2D(const Image2D&)            = delete;
-        Image2D(Image2D&&);
+        Image2D(Image2D&&)                 = delete;
         Image2D& operator=(const Image2D&) = delete;
-        Image2D& operator=(Image2D&&);
+        Image2D& operator=(Image2D&&)      = delete;
 
         [[nodiscard, gnu::pure]] vk::ImageView operator*() const;
         [[nodiscard, gnu::pure]] vk::Format getFormat() const;

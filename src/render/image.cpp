@@ -99,28 +99,18 @@ namespace render
         }
     }
 
-    Image2D::Image2D(Image2D&& other)
-    {
-        this->image          = other.image;
-        this->format         = other.format;
-        this->view           = std::move(other.view);
-        this->memory         = other.memory;
-        this->maybeAllocator = other.maybeAllocator;
+    // Image2D::Image2D(Image2D&& other)
+    // {
+    //     this->image          = other.image;
+    //     this->format         = other.format;
+    //     this->view           = std::move(other.view);
+    //     this->memory         = other.memory;
+    //     this->maybeAllocator = other.maybeAllocator;
 
-        other.image = nullptr;
-        other.memory = nullptr;
-        other.maybeAllocator = nullptr;
-    }
-
-    Image2D& Image2D::operator=(Image2D&& other)
-    {
-        if (&other != this)
-        {
-            new(this) Image2D {std::forward<Image2D&&>(other)};
-        }
-
-        return *this;
-    }
+    //     other.image = nullptr;
+    //     other.memory = nullptr;
+    //     other.maybeAllocator = nullptr;
+    // }
 
     vk::ImageView Image2D::operator*() const
     {
