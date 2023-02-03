@@ -22,6 +22,8 @@ namespace render
         Swapchain& operator=(const Swapchain&) = delete;
         Swapchain& operator=(Swapchain&&)      = delete;
 
+        [[nodiscard, gnu::pure]] vk::SwapchainKHR operator*() const;
+
         [[nodiscard, gnu::pure]] vk::Extent2D getExtent() const;
 
         [[nodiscard, gnu::pure]] vk::SurfaceFormatKHR getSurfaceFormat() const;

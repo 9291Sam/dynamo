@@ -118,6 +118,11 @@ namespace render
         }();
     }
 
+    vk::SwapchainKHR Swapchain::operator*() const
+    {
+        return *this->swapchain;
+    }
+
     vk::Extent2D Swapchain::getExtent() const
     {
         return this->extent;

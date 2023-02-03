@@ -21,6 +21,8 @@ namespace render
         Device& operator=(const Device&) = delete;
         Device& operator=(Device&&)      = delete;
 
+        [[nodiscard]] bool shouldBuffersStage() const;
+
         [[nodiscard, gnu::pure]] vk::PhysicalDevice asPhysicalDevice() const;
         [[nodiscard, gnu::pure]] vk::Device asLogicalDevice() const;
         [[nodiscard, gnu::pure]] std::uint32_t getRenderQueueIndex() const;
@@ -28,9 +30,10 @@ namespace render
 
     private:
         vk::PhysicalDevice physical_device;
-        vk::UniqueDevice logical_device;
-        std::uint32_t queue_index;
-        vk::Queue queue;
+        vk::UniqueDevice   logical_device;
+        std::uint32_t      queue_index;
+        vk::Queue          queue;
+        bool               stage_buffers;
     }; // class Device
 } // namespace render 
 

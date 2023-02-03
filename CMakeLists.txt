@@ -6,13 +6,16 @@ set(SOURCES_CPP
 
   # Render
   src/render/allocator.cpp
+  src/render/buffer.cpp
   src/render/command_pool.cpp
-  src/render/data_formats.cpp
   src/render/device.cpp
+  src/render/frame.cpp
+  src/render/gpu_structs.cpp
   src/render/image.cpp
   src/render/instance.cpp
   src/render/pipeline.cpp
   src/render/render_pass.cpp
+  src/render/render_structs.cpp
   src/render/renderer.cpp
   src/render/swapchain.cpp
   src/render/vulkan_includes.cpp

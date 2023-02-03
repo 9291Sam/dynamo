@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef SRC_RENDER_VERTEX_HPP
-#define SRC_RENDER_VERTEX_HPP
+#ifndef SRC_RENDER_GPU__DATA_HPP
+#define SRC_RENDER_GPU__DATA_HPP
 
 #include "vulkan_includes.hpp"
 
@@ -25,7 +25,6 @@ namespace render
     /// NOTE:
     /// If you change any of these, dont forget to update their corresponding
     /// structs in the shaders!
-
     struct Vertex
     {
         glm::vec3 position;
@@ -42,6 +41,8 @@ namespace render
         [[nodiscard]] operator std::string() const;
     };
 
+    using Index = std::uint32_t;
+
     struct PushConstants
     {
         glm::mat4 model_view_projection;
@@ -53,4 +54,4 @@ namespace render
     };
 } // namespace render
 
-#endif // SRC_RENDER_VERTEX_HPP
+#endif // SRC_RENDER_GPU__DATA_HPP

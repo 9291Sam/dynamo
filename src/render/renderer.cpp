@@ -12,12 +12,14 @@ namespace render
         , draw_surface {nullptr}
         , device       {nullptr}
         , allocator    {nullptr}
+        , command_pool {nullptr}
         , swapchain    {nullptr}
         , depth_buffer {nullptr}
         , render_pass  {nullptr}
         , pipeline     {nullptr}
         , framebuffers {0}
-        , command_pool {nullptr}
+        , render_index {static_cast<std::size_t>(-1)}
+        , frames       {nullptr, nullptr}
     {
         const vk::DynamicLoader dl;
         const PFN_vkGetInstanceProcAddr dynVkGetInstanceProcAddr = 
@@ -33,6 +35,8 @@ namespace render
         this->device = std::make_unique<Device>(**this->instance, *this->draw_surface);
 
         VULKAN_HPP_DEFAULT_DISPATCHER.init(**this->instance, this->device->asLogicalDevice());
+
+        this->command_pool = std::make_unique<CommandPool>(*this->device);
 
         this->allocator = std::make_unique<Allocator>(
             **this->instance,
@@ -95,7 +99,6 @@ namespace render
             );
         }
 
-        this->command_pool = std::make_unique<CommandPool>(*this->device);
 
         using namespace std::chrono_literals;
         std::this_thread::sleep_for(1s);
