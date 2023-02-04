@@ -10,9 +10,11 @@ namespace render
     class Pipeline
     {
     public:
+        static vk::UniqueShaderModule createShaderFromFile(vk::Device, const std::string& filePath);
+    public:
     
         Pipeline(vk::Device, vk::RenderPass, vk::Extent2D swapchainExtent,
-            vk::UniqueShaderModule&& vertexShader, vk::UniqueShaderModule&& fragmentShader);
+            vk::UniqueShaderModule vertexShader, vk::UniqueShaderModule fragmentShader);
         ~Pipeline()                          = default;
 
         Pipeline()                           = delete;

@@ -1,14 +1,50 @@
+#include <fstream>
+
 #include <sebib/seblog.hpp>
 
 #include "gpu_structs.hpp"
 
 #include "pipeline.hpp"
 
+static inline auto loadFileAsBytes(const std::string& filePath)
+    -> std::vector<char>
+{
+    std::ifstream fileStream {filePath, std::ios::in | std::ios::binary | std::ios::ate};
+    seb::assertFatal(fileStream.is_open(), "Failed to open file [{}]", filePath);
+
+    std::vector<char> outputBuffer(static_cast<std::size_t>(fileStream.tellg()));
+
+    fileStream.seekg(0); // Read from beginning  
+    fileStream.read(outputBuffer.data(), outputBuffer.size());
+
+    return outputBuffer;
+}
+
+static inline auto createShaderModuleFromSPIRV(
+    vk::Device device, 
+    const std::vector<char>& spirvBytes)
+    -> vk::UniqueShaderModule
+{
+    vk::ShaderModuleCreateInfo createInfo {
+        .sType    {vk::StructureType::eShaderModuleCreateInfo},
+        .pNext    {nullptr},
+        .flags    {},
+        .codeSize {spirvBytes.size()}, // std::vector's default allocator ensures this is fine
+        .pCode    {reinterpret_cast<const uint32_t*>(spirvBytes.data())}, 
+    };
+
+    return device.createShaderModuleUnique(createInfo);
+}
+
 namespace render
 {
-
+    vk::UniqueShaderModule Pipeline::createShaderFromFile(vk::Device device, const std::string& filePath)
+    {
+        return createShaderModuleFromSPIRV(device, loadFileAsBytes(filePath));
+    }    
+    
     Pipeline::Pipeline(vk::Device device, vk::RenderPass renderPass, vk::Extent2D swapchainExtent,
-        vk::UniqueShaderModule&& vertexShader, vk::UniqueShaderModule&& fragmentShader)
+        vk::UniqueShaderModule vertexShader, vk::UniqueShaderModule fragmentShader)
     {
         vk::PipelineShaderStageCreateInfo vertexCreateInfo {
             .sType               {vk::StructureType::ePipelineShaderStageCreateInfo},

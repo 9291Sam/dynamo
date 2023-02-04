@@ -17,7 +17,7 @@ namespace render
         , render_pass  {nullptr}
         , pipeline     {nullptr}
         , framebuffers {0}
-        , render_index {static_cast<std::size_t>(-1)}
+        , render_index {0}
         , frames       {nullptr, nullptr}
     {
         const vk::DynamicLoader dl;
@@ -70,6 +70,21 @@ namespace render
             *this->swapchain,
             *this->depth_buffer
         );
+
+        this->pipeline = std::make_unique<Pipeline>(
+            this->device->asLogicalDevice(),
+            **this->render_pass,
+            this->swapchain->getExtent(),
+            Pipeline::createShaderFromFile(
+                this->device->asLogicalDevice(),
+                "src/render/shaders/shader.vert.bin"
+            ),
+            Pipeline::createShaderFromFile(
+                this->device->asLogicalDevice(),
+                "src/render/shaders/shader.frag.bin"
+            )
+        );
+
 
         // framebuffer creation
         for (const vk::UniqueImageView& view : this->swapchain->getImageViews())

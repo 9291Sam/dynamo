@@ -106,7 +106,7 @@ namespace render
                 this->allocator, 
                 this->allocation,
                 &mappedPtr
-            ), "Failed to map buffer memory"
+            ) == VK_SUCCESS, "Failed to map buffer memory"
         );
         seb::assertFatal(mappedPtr != nullptr, "Tried to map a nullptr");
 
