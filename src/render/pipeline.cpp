@@ -1,6 +1,6 @@
 #include <sebib/seblog.hpp>
 
-#include "data_formats.hpp"
+#include "gpu_structs.hpp"
 
 #include "pipeline.hpp"
 
@@ -201,6 +201,16 @@ namespace render
         );
 
         this->pipeline = std::move(maybeGraphicsPipeline);
+    }
+    
+    vk::Pipeline Pipeline::operator*() const
+    {
+        return *this->pipeline;
+    }
+
+    vk::PipelineLayout Pipeline::getLayout() const
+    {
+        return *this->layout;
     }
 
 } // namespace render

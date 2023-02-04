@@ -28,18 +28,22 @@ namespace render
         [[nodiscard]] glm::mat4 asRotationMatrix() const;
         [[nodiscard]] glm::mat4 asScaleMatrix() const;
 
-        [[nodiscard]] glm::vec3 getForwardVector() const;
-        [[nodiscard]] glm::vec3 getUpVector() const;
-        [[nodiscard]] glm::vec3 getRightVector() const;
+        [[nodiscard, gnu::pure]] glm::vec3 getForwardVector() const;
+        [[nodiscard, gnu::pure]] glm::vec3 getUpVector() const;
+        [[nodiscard, gnu::pure]] glm::vec3 getRightVector() const;
 
         [[nodiscard]] explicit operator std::string() const;
     };
 
     // TODO: figure out how to stage if persistent
+    // acrtually a good use of an abstract class?
     class Object
     {
     public:
-        Object(vk::Device, std::vector<Vertex>, std::optional<std::vector<Index>>);
+        static auto readVerticesFromFile(const std::string& filepath)
+            -> std::pair<std::vector<render::Vertex>, std::vector<uint32_t>>;
+            
+        Object(VmaAllocator, std::vector<Vertex>, std::optional<std::vector<Index>>);
         ~Object()                        = default;
 
         Object()                         = delete;
@@ -48,14 +52,12 @@ namespace render
         Object& operator=(const Object&) = delete; 
         Object& operator=(Object&&)      = default;
 
-        static void bind(std::span<Object>, vk::CommandBuffer);
         void bind(vk::CommandBuffer) const;
         void draw(vk::CommandBuffer) const;
 
-        const Transform& getTransform() const;
+        Transform transform;
 
     private:
-        Transform transform;
         
         std::vector<Vertex> vertices;
         std::optional<std::vector<Index>> indicies;
@@ -65,10 +67,45 @@ namespace render
 
     }; // class Object
 
+    // TODO: This is quite a bad stateful design, try and fix this.
     class Camera
     {
+    public:
 
-    }; 
+        Camera(const glm::vec3& position, float pitch_, float yaw_);
+
+        void addPosition(const glm::vec3& positionToAdd);
+
+        void updateFromKeys(std::function<bool(vkfw::Key)>, float deltaTime);
+
+        void addPitch(float pitchToAdd);
+        void addYaw(float yawToAdd);
+
+        [[nodiscard, gnu::pure]] auto getForwardVector()
+            -> glm::vec3;
+        [[nodiscard, gnu::pure]] auto getRightVector()
+            -> glm::vec3;
+        [[nodiscard, gnu::pure]] auto getUpVector()
+            -> glm::vec3;
+
+        [[nodiscard]] explicit operator std::string() const;
+
+        auto asViewMatrix() const
+            -> glm::mat4;
+        
+        static auto getPerspectiveMatrix(float fovY, float aspectRatio,
+            float closeClippingPlaneDistance, float farClippingPlaneDistance)
+            -> glm::mat4;
+
+    private:
+
+        void updateRotation();
+
+        Transform transform;
+        float pitch;
+        float yaw;
+
+    };
 
 } // namespace render
 

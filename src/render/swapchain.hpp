@@ -28,7 +28,7 @@ namespace render
 
         [[nodiscard, gnu::pure]] vk::SurfaceFormatKHR getSurfaceFormat() const;
 
-        [[nodiscard, gnu::pure]] auto getImageViews() const
+        [[nodiscard, gnu::const]] auto getImageViews() const
             -> const std::vector<vk::UniqueImageView>&;
 
     private:

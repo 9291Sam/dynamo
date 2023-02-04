@@ -5,7 +5,8 @@
 
 #include "vulkan_includes.hpp"
 
-#include "object.hpp"
+#include "pipeline.hpp"
+#include "render_structs.hpp"
 #include "render_pass.hpp"
 #include "swapchain.hpp"
 
@@ -24,8 +25,8 @@ namespace render
         Frame& operator=(Frame&&)      = delete;
 
         // TODO: add objects and cameras!
-        vk::Result render(vk::Device, const Swapchain&, const RenderPass&, vk::Pipeline, 
-            const std::vector<vk::UniqueFramebuffer>&, const std::vector<Object>&);
+        vk::Result render(const Device&, const Swapchain&, const RenderPass&, const Pipeline&, 
+            const std::vector<vk::UniqueFramebuffer>&, const std::vector<Object>&, const Camera&);
 
     private:
         vk::UniqueCommandBuffer command_buffer;

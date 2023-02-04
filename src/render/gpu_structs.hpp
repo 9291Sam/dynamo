@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef SRC_RENDER_GPU__DATA_HPP
-#define SRC_RENDER_GPU__DATA_HPP
+#ifndef SRC_RENDER_GPU__STRUCTS_HPP
+#define SRC_RENDER_GPU__STRUCTS_HPP
 
 #include "vulkan_includes.hpp"
 
@@ -18,7 +18,6 @@
 #include <glm/ext/scalar_constants.hpp> 
 #include <glm/gtc/quaternion.hpp> 
 #include <glm/gtx/quaternion.hpp>
-#include <glm/gtx/string_cast.hpp>
 
 namespace render
 {
@@ -39,6 +38,7 @@ namespace render
             -> const std::array<vk::VertexInputAttributeDescription, 4>*;
 
         [[nodiscard]] operator std::string() const;
+        [[nodiscard]] bool operator==(const Vertex&) const = default;
     };
 
     using Index = std::uint32_t;
@@ -54,4 +54,43 @@ namespace render
     };
 } // namespace render
 
-#endif // SRC_RENDER_GPU__DATA_HPP
+// Vertex hash implementation
+namespace std
+{
+    template<>
+    struct hash<render::Vertex>
+    {
+        [[nodiscard]] auto operator()(const render::Vertex& vertex)
+            const noexcept -> size_t
+        {
+            std::size_t seed {0};
+            std::hash<float> hasher;
+            
+            auto hashCombine = [](std::size_t& seed_, std::size_t hash_)
+            {
+                hash_ += 0x9e3779b9 + (seed_ << 6) + (seed_ >> 2);
+                seed_ ^= hash_;
+            };
+
+            hashCombine(seed, hasher(vertex.position.x));
+            hashCombine(seed, hasher(vertex.position.y));
+            hashCombine(seed, hasher(vertex.position.z));
+
+            hashCombine(seed, hasher(vertex.color.x));
+            hashCombine(seed, hasher(vertex.color.y));
+            hashCombine(seed, hasher(vertex.color.z));
+
+            hashCombine(seed, hasher(vertex.normal.x));
+            hashCombine(seed, hasher(vertex.normal.y));
+            hashCombine(seed, hasher(vertex.normal.z));
+
+            hashCombine(seed, hasher(vertex.uv.x));
+            hashCombine(seed, hasher(vertex.uv.y));
+
+            return seed;
+        }
+    };
+    
+} // namespace std
+
+#endif // SRC_RENDER_GPU__STRUCTS_HPP

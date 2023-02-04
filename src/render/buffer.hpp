@@ -27,10 +27,12 @@ namespace render
         Buffer& operator=(const Buffer&) = delete;
         Buffer& operator=(Buffer&&);
 
+        [[nodiscard, gnu::pure]] vk::Buffer operator*() const;
         [[nodiscard, gnu::const]] std::size_t sizeBytes() const;
 
         void write(std::span<const std::byte>) const;
         void copyFrom(const Buffer&, vk::CommandBuffer) const; 
+
 
     private:
         VmaAllocator         allocator;

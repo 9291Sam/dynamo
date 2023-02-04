@@ -46,35 +46,46 @@ namespace render
     {
     public:
 
-        Renderer();
-        ~Renderer()                          = default;
+        Renderer(const Window&);
+        ~Renderer();
 
         Renderer(const Renderer&)            = delete;
         Renderer(Renderer&&)                 = delete;
         Renderer& operator=(const Renderer&) = delete;
         Renderer& operator=(Renderer&&)      = delete;
 
-        // void drawFrame(CameraPosition, float cameraPitch, float cameraYaw, std::vector<Model> toDraw)
+        Object createObject(std::vector<Vertex>, std::optional<std::vector<Index>>) const;
+
+        /// @brief draws given objects from the perspective of the given camera
+        /// @return true onn success
+        bool drawFrame(const Camera&, const std::vector<Object>&);
+        void resize(const Window&);
 
     private:
-
-        Window window;
+        // TODO: split this up as follows
+        // Window
+        // Vulkan Instance
+        // Vulkan Pipeline
+        // Render thread
 
         // Vulkan Initialization 
-        std::unique_ptr<Instance>          instance;
-        vk::UniqueSurfaceKHR               draw_surface;
-        std::unique_ptr<Device>            device;
-        std::unique_ptr<Allocator>         allocator;
-        std::unique_ptr<CommandPool>       command_pool; // one pool per thread
+        std::unique_ptr<Instance>    instance;
+        vk::UniqueSurfaceKHR         draw_surface;
+        std::unique_ptr<Device>      device;
+        std::unique_ptr<Allocator>   allocator;
+        std::unique_ptr<CommandPool> command_pool; // one pool per thread
 
         // Vulkan Rendering 
-        std::unique_ptr<Swapchain>         swapchain;
-        std::unique_ptr<Image2D>           depth_buffer;
-        std::unique_ptr<RenderPass>        render_pass;
-        std::unique_ptr<Pipeline>          pipeline;
-        std::vector<vk::UniqueFramebuffer> framebuffers;
-        std::size_t                        render_index;
-        std::array<std::unique_ptr<Frame>, 2>               frames;
+        std::unique_ptr<Swapchain>            swapchain;
+        std::unique_ptr<Image2D>              depth_buffer;
+        std::unique_ptr<RenderPass>           render_pass;
+        std::unique_ptr<Pipeline>             pipeline;
+        std::vector<vk::UniqueFramebuffer>    framebuffers;
+
+        // Single threaded renderer
+        std::size_t                                           render_index;
+        constexpr static std::size_t                          MaxFramesInFlight = 2;
+        std::array<std::unique_ptr<Frame>, MaxFramesInFlight> frames;
         
     }; // class Renderer
 } // namespace render

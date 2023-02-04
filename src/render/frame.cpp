@@ -1,6 +1,6 @@
 #include <sebib/seblog.hpp>
 
-#include "data_formats.hpp"
+#include "gpu_structs.hpp"
 #include "frame.hpp"
 
 namespace render
@@ -27,18 +27,23 @@ namespace render
         this->frame_in_flight = device.createFenceUnique(fenceCreateInfo);
     }
 
-    vk::Result Frame::render(vk::Device device, const Swapchain& swapchain, const RenderPass& renderPass,
-        vk::Pipeline pipeline, const std::vector<vk::UniqueFramebuffer>& framebuffers, 
-        const std::vector<Object>& objectsToDraw)
+    vk::Result Frame::render(const Device& device, const Swapchain& swapchain, const RenderPass& renderPass,
+        const Pipeline& pipeline, const std::vector<vk::UniqueFramebuffer>& framebuffers, 
+        const std::vector<Object>& objectsToDraw, const Camera& camera)
     {
         const auto timeout = std::numeric_limits<std::uint64_t>::max();
 
-        device.waitForFences(*this->frame_in_flight, true, timeout);
+        auto result = device.asLogicalDevice().waitForFences(*this->frame_in_flight, true, timeout);
+        seb::assertFatal(
+            result == vk::Result::eSuccess || result == vk::Result::eTimeout,
+            "Failed to wait for render fence {}", vk::to_string(result)
+        );
 
-        const auto [result, maybeNextIdx] = device.acquireNextImageKHR(*swapchain, timeout, *this->image_available);
-        seb::assertFatal(result == vk::Result::eSuccess, "Failed to acquire next Image {}", vk::to_string(result));
+        const auto [result1, maybeNextIdx] = device.asLogicalDevice()
+            .acquireNextImageKHR(*swapchain, timeout, *this->image_available);
+        seb::assertFatal(result1 == vk::Result::eSuccess, "Failed to acquire next Image {}", vk::to_string(result));
 
-        device.resetFences(*this->frame_in_flight);
+        device.asLogicalDevice().resetFences(*this->frame_in_flight);
 
         this->command_buffer->reset();
 
@@ -88,16 +93,109 @@ namespace render
         };
 
         this->command_buffer->beginRenderPass(renderPassBeginInfo, vk::SubpassContents::eInline);
-        this->command_buffer->bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
+        this->command_buffer->bindPipeline(vk::PipelineBindPoint::eGraphics, *pipeline);
 
         for (const Object& o : objectsToDraw)
         {
-            o.bind(*this->command_buffer);
+            o.bind(this->command_buffer.get());
 
-            PushConst
+            std::array<PushConstants, 1> pushConstants {
+                PushConstants
+                {
+                    .model_view_projection {
+                        Camera::getPerspectiveMatrix(
+                            glm::radians(70.f),
+                            static_cast<float>(swapchain.getExtent().width) / 
+                            static_cast<float>(swapchain.getExtent().height),
+                            0.1f,
+                            200.0f
+                        ) * 
+                        camera.asViewMatrix() * 
+                        o.transform.asModelMatrix()
+                    }
+                },
+            };
+            
+
+            this->command_buffer->pushConstants<render::PushConstants>(
+                pipeline.getLayout(),
+                vk::ShaderStageFlagBits::eVertex,
+                0,
+                pushConstants
+            );
+
+            o.draw(this->command_buffer.get());
         }
 
+        this->command_buffer->endRenderPass();
+        this->command_buffer->end();
 
+
+
+        // Submission to graphics card
+        const vk::PipelineStageFlags waitStages = vk::PipelineStageFlagBits::eColorAttachmentOutput;
+    
+        std::array<vk::SubmitInfo, 1> submitInfos
+        {
+            vk::SubmitInfo
+            {
+                .sType                {vk::StructureType::eSubmitInfo},
+                .pNext                {nullptr},
+                .waitSemaphoreCount   {1},
+                .pWaitSemaphores      {&*this->image_available},
+                .pWaitDstStageMask    {&waitStages},
+                .commandBufferCount   {1},
+                .pCommandBuffers      {&*this->command_buffer}, 
+                .signalSemaphoreCount {1},
+                .pSignalSemaphores    {&*this->render_finished},
+            }
+        };
+
+        device.getRenderQueue().submit(submitInfos, *this->frame_in_flight);
+
+        vk::SwapchainKHR swapchainPtr = *swapchain;
+
+        vk::PresentInfoKHR presentInfo
+        {
+            .sType              {vk::StructureType::ePresentInfoKHR},
+            .pNext              {nullptr},
+            .waitSemaphoreCount {1},
+            .pWaitSemaphores    {&*this->render_finished},
+            .swapchainCount     {1},
+            .pSwapchains        {&swapchainPtr},
+            .pImageIndices      {&maybeNextIdx},
+            .pResults           {nullptr},
+        };
+
+        // also present queue TODO: fix
+        auto result2 = device.getRenderQueue().presentKHR(presentInfo);
+
+        seb::assertFatal(
+            device.asLogicalDevice().waitForFences(
+                *this->frame_in_flight,
+                true,
+                std::numeric_limits<std::uint64_t>::max()
+            ) == vk::Result::eSuccess,
+            "Failed to wait for frame to complete drawing"
+        );
+
+        switch (result2)
+        {
+            case vk::Result::eSuccess:
+                return vk::Result::eSuccess;
+
+            case vk::Result::eSuboptimalKHR:
+            case vk::Result::eErrorOutOfDateKHR:
+                return vk::Result::eErrorOutOfDateKHR;
+
+            default:
+                seb::panic(
+                    "Failed to present image Result: {}",
+                    vk::to_string(vk::Result {result})
+                );
+                break;
+        }
     }
+
 } // namespace render
 

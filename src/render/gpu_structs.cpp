@@ -1,6 +1,6 @@
 #include <fmt/format.h>
 
-#include "data_formats.hpp"
+#include "gpu_structs.hpp"
 
 namespace render
 {

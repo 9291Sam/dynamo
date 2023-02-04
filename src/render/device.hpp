@@ -8,6 +8,7 @@
 namespace render
 {
     /// @brief Abstraction over a combined physical and logical device
+    /// TODO: update to seperate render / present queues
     class Device
     {
     public:
@@ -21,7 +22,7 @@ namespace render
         Device& operator=(const Device&) = delete;
         Device& operator=(Device&&)      = delete;
 
-        [[nodiscard]] bool shouldBuffersStage() const;
+        [[nodiscard, gnu::pure]] bool shouldBuffersStage() const;
 
         [[nodiscard, gnu::pure]] vk::PhysicalDevice asPhysicalDevice() const;
         [[nodiscard, gnu::pure]] vk::Device asLogicalDevice() const;

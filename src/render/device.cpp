@@ -94,25 +94,42 @@ namespace render
         this->logical_device = this->physical_device.createDeviceUnique(deviceCreateInfo);
 
         this->queue = this->logical_device->getQueue(this->queue_index, 0);
+
+        
+
+        this->stage_buffers = [this]
+        {
+            // auto memoryProperties = this->physical_device.getMemoryProperties();
+
+            seb::logWarn("add staging buffer test");
+
+            return true;
+        }();
     }
 
-    [[nodiscard]] vk::PhysicalDevice Device::asPhysicalDevice() const
+    bool Device::shouldBuffersStage() const
+    {
+        return this->stage_buffers;
+    }
+
+
+    vk::PhysicalDevice Device::asPhysicalDevice() const
     {
         return this->physical_device;
     }
 
-    [[nodiscard]] vk::Device Device::asLogicalDevice() const
+    vk::Device Device::asLogicalDevice() const
     {
         return *this->logical_device;
     }
 
 
-    [[nodiscard, gnu::pure]] std::uint32_t Device::getRenderQueueIndex() const
+    std::uint32_t Device::getRenderQueueIndex() const
     {
         return this->queue_index;
     }
 
-    [[nodiscard]] vk::Queue Device::getRenderQueue() const
+    vk::Queue Device::getRenderQueue() const
     {
         return this->queue;
     }

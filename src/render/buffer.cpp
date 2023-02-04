@@ -4,12 +4,12 @@
 
 namespace render
 {
-    Buffer::Buffer(VmaAllocator allocator,  std::size_t sizeBytes, 
-        vk::BufferUsageFlags usage, vk::MemoryPropertyFlags memoryProperty)
-        : allocator  {allocator}
+    Buffer::Buffer(VmaAllocator allocator_,  std::size_t sizeBytes, 
+        vk::BufferUsageFlags usage_, vk::MemoryPropertyFlags memoryProperty)
+        : allocator  {allocator_}
         , buffer     {nullptr}
         , allocation {nullptr}
-        , usage      {usage}
+        , usage      {usage_}
         , size_bytes       {sizeBytes}
     {
         const VkBufferCreateInfo bufferCreateInfo
@@ -48,6 +48,11 @@ namespace render
             "Failed to allocate buffer"
         );
     }
+    
+    Buffer::~Buffer()
+    {
+        vmaDestroyBuffer(this->allocator, this->buffer, this->allocation);
+    }
 
     Buffer::Buffer(Buffer&& other)
         : allocator  {other.allocator}
@@ -72,6 +77,13 @@ namespace render
         other.buffer     = nullptr;
         other.allocation = nullptr;
         other.size_bytes = 0;
+
+        return *this;
+    }
+
+    vk::Buffer Buffer::operator*() const
+    {
+        return vk::Buffer {this->buffer};
     }
 
     std::size_t Buffer::sizeBytes() const
@@ -161,11 +173,11 @@ namespace render
         }
     }
 
-    void StagingBuffer::stage(vk::CommandBuffer commandBuffer) const
+    void StagedBuffer::stage(vk::CommandBuffer commandBuffer) const
     {
         if (this->staging_buffer.has_value())
         {
-            this->gpu_local_buffer.write(this->staging_buffer, commandBuffer);
+            this->gpu_local_buffer.copyFrom(*this->staging_buffer, commandBuffer);
         }
     }
 }
