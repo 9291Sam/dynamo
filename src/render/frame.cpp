@@ -61,7 +61,7 @@ namespace render
         {
             vk::ClearValue
             {
-                .color {vk::ClearColorValue {std::array<float, 4>{0.0f, 0.7f, 0.7f, 1.0f}}}
+                .color {vk::ClearColorValue {std::array<float, 4>{0.02f, 0.02f, 0.02f, 1.0f}}}
             },
             vk::ClearValue
             {
@@ -108,7 +108,7 @@ namespace render
                             static_cast<float>(swapchain.getExtent().width) / 
                             static_cast<float>(swapchain.getExtent().height),
                             0.1f,
-                            200.0f
+                            200000.0f
                         ) * 
                         camera.asViewMatrix() * 
                         o.transform.asModelMatrix()
@@ -171,7 +171,7 @@ namespace render
 
         try
         {
-            device.getRenderQueue().presentKHR(presentInfo);
+            (void)device.getRenderQueue().presentKHR(presentInfo);
         }
         catch (vk::OutOfDateKHRError& e)
         {

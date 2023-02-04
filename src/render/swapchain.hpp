@@ -36,7 +36,7 @@ namespace render
         vk::SurfaceFormatKHR   format;
         vk::UniqueSwapchainKHR swapchain;
 
-        std::vector<vk::Image> images; /* TODO: replace with an image class*/
+        std::vector<vk::Image> images;
         std::vector<vk::UniqueImageView> image_views;
     }; // class Swapchain
 } // namespace render

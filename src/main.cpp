@@ -39,6 +39,8 @@ int main()
                 return window.isKeyPressed(key);
             };
 
+            seb::logLog("FPS: {}", 1.0f / window.getFrameTimeS());
+
             window.pollEvents();
 
             camera.updateFromKeys(keyCallback, window.getFrameTimeS());
