@@ -13,22 +13,15 @@
 class Window 
 {
 public:
-
-    struct WindowSize {
-        std::uint32_t width;
-        std::uint32_t height;
-    };
-    
     typedef std::chrono::steady_clock FPSClock;
     typedef std::chrono::time_point<FPSClock> FPSTimePoint;
-
 public:
 
     /// @brief Creates a blank window with @param windowSize as it's size
     /// and @param windowName as it's title bar title. @param windowName
     /// must be a pointer to a valid C-Style string
     /// @todo add custom window icon
-    Window(WindowSize windowSize, const char* windowName);
+    Window(vk::Extent2D windowSize, const char* windowName);
     ~Window();
 
     Window()                         = delete;
@@ -38,8 +31,7 @@ public:
     Window& operator=(Window&&)      = default;
 
     /// @brief Returns the window's drawable area. 
-    [[nodiscard]] auto getFrameBufferSize() const
-        -> WindowSize;
+    [[nodiscard, gnu::pure]] vk::Extent2D getSize() const;
     
     /// @brief returns the delta frame time
     [[nodiscard, gnu::pure]] auto getFrameTimeS() const 

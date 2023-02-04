@@ -26,8 +26,6 @@ namespace render
     /// make sure header guards match
     /// Final member list should look like
     /// 
-    /// Window window
-    ///
     /// // Vulkan Initialization 
     /// Instance
     /// vk::UniqueSurfaceKHR
@@ -62,6 +60,8 @@ namespace render
         void resize(const Window&);
 
     private:
+
+        void initializeRenderer(const Window&);
         // TODO: split this up as follows
         // Window
         // Vulkan Instance

@@ -203,7 +203,7 @@ namespace render
                     nullptr,
                     &this->debug_messenger
                 ) == VK_SUCCESS,
-                "Failed to initalize debug Messenger"
+                "Failed to initialize debug Messenger"
             );
 
         #endif

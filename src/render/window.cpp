@@ -4,7 +4,7 @@
 
 #include "window.hpp"
 
-Window::Window(WindowSize windowSize, const char* windowName)
+Window::Window(vk::Extent2D windowSize, const char* windowName)
 {
     vkfw::init();
 
@@ -21,12 +21,11 @@ Window::~Window()
     vkfw::terminate();
 }
 
-auto Window::getFrameBufferSize() const
-    -> WindowSize
+vk::Extent2D Window::getSize() const
 {
     auto [width, height] = this->window_ptr->getFramebufferSize();
 
-    return WindowSize {
+    return vk::Extent2D {
         .width  {static_cast<std::uint32_t>(width)},
         .height {static_cast<std::uint32_t>(height)},
     };

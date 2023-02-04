@@ -168,7 +168,15 @@ namespace render
         };
 
         // also present queue TODO: fix
-        auto result2 = device.getRenderQueue().presentKHR(presentInfo);
+
+        try
+        {
+            device.getRenderQueue().presentKHR(presentInfo);
+        }
+        catch (vk::OutOfDateKHRError& e)
+        {
+            return vk::Result::eErrorOutOfDateKHR;
+        }
 
         seb::assertFatal(
             device.asLogicalDevice().waitForFences(
@@ -179,22 +187,7 @@ namespace render
             "Failed to wait for frame to complete drawing"
         );
 
-        switch (result2)
-        {
-            case vk::Result::eSuccess:
-                return vk::Result::eSuccess;
-
-            case vk::Result::eSuboptimalKHR:
-            case vk::Result::eErrorOutOfDateKHR:
-                return vk::Result::eErrorOutOfDateKHR;
-
-            default:
-                seb::panic(
-                    "Failed to present image Result: {}",
-                    vk::to_string(vk::Result {result})
-                );
-                break;
-        }
+        return vk::Result::eSuccess;
     }
 
 } // namespace render

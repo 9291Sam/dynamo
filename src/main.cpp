@@ -51,6 +51,6 @@ int main()
     }
     catch (const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        seb::logFatal("Exception propagated to main! | {}", e.what());
     }
 }
