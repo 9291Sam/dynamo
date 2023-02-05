@@ -21,6 +21,7 @@ namespace render
     /// TOOD: persistently mapped world data stuff
     /// TODO: Multiple depth buffers, currently they're racing
     /// move the frame buffer up
+    /// TODO: allow referencesto be stored to static members
     /// Create a Frame class that holds all the command buffers and all the index stuff
     /// the goal is that you only get one index and index into one vector
     /// make sure header guards match
@@ -44,7 +45,7 @@ namespace render
     {
     public:
 
-        Renderer(const Window&);
+        Renderer(vk::Extent2D defaultSize, std::string name);
         ~Renderer();
 
         Renderer(const Renderer&)            = delete;
@@ -52,21 +53,20 @@ namespace render
         Renderer& operator=(const Renderer&) = delete;
         Renderer& operator=(Renderer&&)      = delete;
 
-        Object createObject(std::vector<Vertex>, std::optional<std::vector<Index>>) const;
+        // This function list is a mess TODO: redesign
+        [[nodiscard, gnu::pure]] Object createObject(std::vector<Vertex>, std::optional<std::vector<Index>>) const;
+        [[nodiscard, gnu::const]] auto getKeyCallback() const -> std::function<bool(vkfw::Key)>;
+        [[nodiscard, gnu::pure]] float getDeltaTimeSeconds() const;
+        [[nodiscard, gnu::pure]] bool shouldClose() const;
 
-        /// @brief draws given objects from the perspective of the given camera
-        /// @return true onn success
-        bool drawFrame(const Camera&, const std::vector<Object>&);
-        void resize(const Window&);
+        void drawFrame(const Camera&, const std::vector<Object>&);
+        void resize();
 
     private:
+        void initializeRenderer();
 
-        void initializeRenderer(const Window&);
-        // TODO: split this up as follows
-        // Window
-        // Vulkan Instance
-        // Vulkan Pipeline
-        // Render thread
+
+        Window window;
 
         // Vulkan Initialization 
         std::unique_ptr<Instance>    instance;

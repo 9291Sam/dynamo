@@ -15,9 +15,8 @@ int main()
 
     try
     {
-        
-        Window window {{1200, 1200}, "Sebgen-vkhp"};
-        render::Renderer renderer {window};
+        render::Renderer renderer {{1200, 1200}, "Dynamo"};
+        auto keyCallback = renderer.getKeyCallback();
 
         std::vector<render::Object> objects;
 
@@ -32,23 +31,13 @@ int main()
 
         render::Camera camera {{}, 0, 0};
 
-        while (!window.shouldClose())
+        while (!renderer.shouldClose())
         {
-            auto keyCallback = [&window](vkfw::Key key) -> bool
-            {
-                return window.isKeyPressed(key);
-            };
+            seb::logLog("FPS: {}", 1.0f / renderer.getDeltaTimeSeconds());
 
-            seb::logLog("FPS: {}", 1.0f / window.getFrameTimeS());
+            camera.updateFromKeys(keyCallback, renderer.getDeltaTimeSeconds());
 
-            window.pollEvents();
-
-            camera.updateFromKeys(keyCallback, window.getFrameTimeS());
-
-            if (!renderer.drawFrame(camera, objects))
-            {
-                renderer.resize(window);
-            }
+            renderer.drawFrame(camera, objects);
         }
     }
     catch (const std::exception& e)

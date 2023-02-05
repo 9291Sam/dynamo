@@ -4,13 +4,13 @@
 
 #include "window.hpp"
 
-Window::Window(vk::Extent2D windowSize, const char* windowName)
+Window::Window(vk::Extent2D size, std::string name)
 {
     vkfw::init();
 
     vkfw::setWindowHints(vkfw::WindowHints {.clientAPI {vkfw::ClientAPI::eNone}});
 
-    this->window_ptr = vkfw::createWindowUnique(windowSize.width, windowSize.height, windowName);
+    this->window_ptr = vkfw::createWindowUnique(size.width, size.height, name.c_str());
 
 }
 
@@ -21,7 +21,7 @@ Window::~Window()
     vkfw::terminate();
 }
 
-vk::Extent2D Window::getSize() const
+vk::Extent2D Window::size() const
 {
     auto [width, height] = this->window_ptr->getFramebufferSize();
 
@@ -31,20 +31,17 @@ vk::Extent2D Window::getSize() const
     };
 }
 
-auto Window::getFrameTimeS() const
-    -> float
+float Window::getDeltaTimeSeconds() const
 {
     return static_cast<float>(this->last_frame_duration.count()) / 1'000'000'000.0f;
 }
 
-auto Window::shouldClose() const 
-    -> bool
+bool Window::shouldClose() const
 {
     return this->window_ptr->shouldClose();
 }
 
-auto Window::createSurface(const vk::Instance& instance) const
-    -> vk::UniqueSurfaceKHR
+vk::UniqueSurfaceKHR Window::createSurface(vk::Instance instance) const
 {
     return vkfw::createWindowSurfaceUnique(instance, *this->window_ptr); 
 }
@@ -53,7 +50,7 @@ void Window::pollEvents()
 {
     vkfw::pollEvents();
 
-    FPSTimePoint currentTime = FPSClock::now();
+    auto currentTime = std::chrono::steady_clock::now();
 
     this->last_frame_duration = currentTime - this->last_frame_time;
 
@@ -62,34 +59,14 @@ void Window::pollEvents()
 
 void Window::blockThisThreadIfMinimized() const
 {
-    int width = 0, height = 0;
-    glfwGetFramebufferSize(
-            static_cast<GLFWwindow*>(this->window_ptr.get()), &width, &height);
-    while (width == 0 || height == 0) {
-        glfwGetFramebufferSize(
-            static_cast<GLFWwindow*>(this->window_ptr.get()), &width, &height);
-        glfwWaitEvents();
-
-        // This lessens the impact of this function busy waiting
+    while (this->size().width == 0 || this->size().height == 0)
+    {
+        vkfw::waitEvents();
         std::this_thread::yield();
     }
 }
 
 bool Window::isKeyPressed(vkfw::Key key) const
 {
-    int keyState = glfwGetKey(
-        static_cast<GLFWwindow*>(*this->window_ptr), 
-        static_cast<int>(key)
-    );
-
-    const char* maybeError;
-
-    glfwGetError(&maybeError);
-
-    if (maybeError == nullptr)
-    {
-        return keyState == GLFW_PRESS;
-    }
-
-    seb::panic("Glfw error: {}", maybeError);
+    return this->window_ptr->getKey(key);
 }

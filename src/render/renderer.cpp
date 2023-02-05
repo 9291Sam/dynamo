@@ -6,8 +6,9 @@
 
 namespace render
 {
-    Renderer::Renderer(const Window& window)
-        : instance     {nullptr}
+    Renderer::Renderer(vk::Extent2D size, std::string name)
+        : window       {size, name}
+        , instance     {nullptr}
         , draw_surface {nullptr}
         , device       {nullptr}
         , allocator    {nullptr}
@@ -29,7 +30,7 @@ namespace render
 
         VULKAN_HPP_DEFAULT_DISPATCHER.init(**this->instance);
 
-        this->draw_surface = window.createSurface(**this->instance);
+        this->draw_surface = this->window.createSurface(**this->instance);
 
         this->device = std::make_unique<Device>(**this->instance, *this->draw_surface);
 
@@ -45,7 +46,7 @@ namespace render
             dl.getProcAddress<PFN_vkGetDeviceProcAddr>("vkGetDeviceProcAddr")
         );
 
-        this->initializeRenderer(window);
+        this->initializeRenderer();
 
         const vk::CommandBufferAllocateInfo commandBuffersAllocateInfo
         {
@@ -85,8 +86,27 @@ namespace render
         };
     }
 
-    bool Renderer::drawFrame(const Camera& camera, const std::vector<Object>& objects)
+    bool Renderer::shouldClose() const
     {
+        return this->window.shouldClose();
+    }
+
+    std::function<bool(vkfw::Key)> Renderer::getKeyCallback() const
+    {
+        return [this](vkfw::Key key) -> bool
+        {
+            return this->window.isKeyPressed(key);
+        };
+    }
+
+    float Renderer::getDeltaTimeSeconds() const
+    {
+        return this->window.getDeltaTimeSeconds();
+    }
+
+    void Renderer::drawFrame(const Camera& camera, const std::vector<Object>& objects)
+    {
+        this->window.pollEvents();
         auto result = this->frames.at(this->render_index)->render(
             *this->device, *this->swapchain, *this->render_pass, *this->pipeline,
             this->framebuffers, objects, camera
@@ -97,20 +117,21 @@ namespace render
         switch (result)
         {
             case vk::Result::eSuccess:
-                return true;
+                return;
             case vk::Result::eErrorOutOfDateKHR:
-                return false;
+                this->resize();
+                return;
             default:
                 seb::panic("Draw frame failed result: {}", vk::to_string(result));
         }
     }
 
-    void Renderer::resize(const Window& window)
+    void Renderer::resize()
     {
         seb::logTrace("Renderer resizimg!");
 
         // Sanity checks
-        window.blockThisThreadIfMinimized();
+        this->window.blockThisThreadIfMinimized();
         this->device->asLogicalDevice().waitIdle();
 
         this->framebuffers.clear();
@@ -119,15 +140,15 @@ namespace render
         this->depth_buffer.reset();
         this->swapchain.reset();
         
-        this->initializeRenderer(window);
+        this->initializeRenderer();
     }
 
-    void Renderer::initializeRenderer(const Window& window)
+    void Renderer::initializeRenderer()
     {
         this->swapchain = std::make_unique<Swapchain>(
             *this->device,
             *this->draw_surface,
-            window.getSize()
+            this->window.size()
         );
 
         this->depth_buffer = std::make_unique<Image2D>(
