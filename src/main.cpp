@@ -2,10 +2,10 @@
 
 #include <sebib/seblog.hpp>
 #include <render/renderer.hpp>
+#include <world/world.hpp>
 
 int main()
 {
-    
     seb::logLog("Dynamo started | Version: {}.{}.{}.{}",
         VERSION_MAJOR,
         VERSION_MINOR,
@@ -16,18 +16,11 @@ int main()
     try
     {
         render::Renderer renderer {{1200, 1200}, "Dynamo"};
-        auto keyCallback = renderer.getKeyCallback();
+        world::World world {};
+        
+        std::unordered_map<world::Object, std::weak_ptr<render::Object>> objectMap;
 
-        std::vector<render::Object> objects;
-
-        auto [v, i] = render::Object::readVerticesFromFile("../models/gizmo.obj");
-        objects.push_back(renderer.createObject(std::move(v), std::move(i)));
-        objects.at(0).transform.scale = {4.0f, 4.0f, 4.0f};
-
-        auto [b, j] = render::Object::readVerticesFromFile("../models/floor.obj");
-        objects.push_back(renderer.createObject(std::move(b), std::move(j)));
-        objects.at(1).transform.scale = {100.0f, 100.0f, 100.0f};
-        objects.at(1).transform.translation.y -= 10.0f;
+        
 
         render::Camera camera {{}, 0, 0};
 
@@ -35,7 +28,23 @@ int main()
         {
             seb::logLog("FPS: {}", 1.0f / renderer.getDeltaTimeSeconds());
 
-            camera.updateFromKeys(keyCallback, renderer.getDeltaTimeSeconds());
+            camera.updateFromKeys(renderer.getKeyCallback(), renderer.getDeltaTimeSeconds());
+
+            world.tick();
+
+            objectMap.addIfNotAlreadyIn();
+
+            for (auto [worldObject, renderObject] : objectMap)
+            {
+                if (world.contains(worldObject))
+                {
+                    // do nothing
+                }
+                else
+                {
+                    // free object
+                }
+            }
 
             renderer.drawFrame(camera, objects);
         }
