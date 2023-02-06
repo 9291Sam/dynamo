@@ -16,37 +16,39 @@ int main()
     try
     {
         render::Renderer renderer {{1200, 1200}, "Dynamo"};
-        world::World world {};
-        
-        std::unordered_map<world::Object, std::weak_ptr<render::Object>> objectMap;
-
-        
+        world::World world {renderer};        
 
         render::Camera camera {{}, 0, 0};
 
         while (!renderer.shouldClose())
         {
-            seb::logLog("FPS: {}", 1.0f / renderer.getDeltaTimeSeconds());
+            if (renderer.getKeyCallback()(vkfw::Key::eJ))
+            {
+                seb::logLog("FPS: {} | Camera: {:.52}", 
+                    1.0f / renderer.getDeltaTimeSeconds(), 
+                    static_cast<std::string>(camera)
+                );
+            }
 
             camera.updateFromKeys(renderer.getKeyCallback(), renderer.getDeltaTimeSeconds());
 
-            world.tick();
+            // world.tick();
 
-            objectMap.addIfNotAlreadyIn();
+            // objectMap.addIfNotAlreadyIn();
 
-            for (auto [worldObject, renderObject] : objectMap)
-            {
-                if (world.contains(worldObject))
-                {
-                    // do nothing
-                }
-                else
-                {
-                    // free object
-                }
-            }
+            // for (auto [worldObject, renderObject] : objectMap)
+            // {
+            //     if (world.contains(worldObject))
+            //     {
+            //         // do nothing
+            //     }
+            //     else
+            //     {
+            //         // free object
+            //     }
+            // }
 
-            renderer.drawFrame(camera, objects);
+            renderer.drawFrame(camera, world.getObjects());
         }
     }
     catch (const std::exception& e)

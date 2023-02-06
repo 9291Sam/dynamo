@@ -41,6 +41,13 @@ namespace render
 
         const auto [result1, maybeNextIdx] = device.asLogicalDevice()
             .acquireNextImageKHR(*swapchain, timeout, *this->image_available);
+
+        if (result1 == vk::Result::eErrorOutOfDateKHR || result1 == vk::Result::eSuboptimalKHR)
+        {
+            // this->image_available->
+            // device.asLogicalDevice().Semaphore
+            return vk::Result::eErrorOutOfDateKHR;
+        }
         seb::assertFatal(result1 == vk::Result::eSuccess, "Failed to acquire next Image {}", vk::to_string(result));
 
         device.asLogicalDevice().resetFences(*this->frame_in_flight);

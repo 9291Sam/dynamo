@@ -3,29 +3,35 @@
 #ifndef SRC_WORLD_WORLD_HPP
 #define SRC_WORLD_WORLD_HPP
 
-#include <vector>
 #include <cstdint>
+#include <vector>
 #include <unordered_set>
+#include <ranges>
 
-#include "object.hpp"
+#include <render/renderer.hpp>
 
-class World
+
+namespace world
 {
-public:
-    World();
-    ~World();
+    class World
+    {
+    public:
+        World(const render::Renderer&);
+        ~World()                       = default;
 
-    World(const World&)            = delete;
-    World(World&&)                 = delete;
-    World& operator=(const World&) = delete;
-    World& operator=(World&&)      = delete;
+        World(const World&)            = delete;
+        World(World&&)                 = delete;
+        World& operator=(const World&) = delete;
+        World& operator=(World&&)      = delete;
 
-    void tick();
-    bool contains(const Object&) const;
+        void tick();
+        // bool contains(const Object&) const;
+        [[nodiscard]] const std::vector<render::Object>& getObjects() const;
 
 
-public:
-    std::unordered_set<Object> objects;
-};
+    public:
+        std::vector<render::Object> objects;
+    };
+}
 
 #endif // SRC_WORLD_WORLD_HPP

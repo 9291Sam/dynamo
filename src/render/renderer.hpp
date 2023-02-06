@@ -3,6 +3,8 @@
 #ifndef SRC_RENDER_RENDERER_HPP
 #define SRC_RENDER_RENDERER_HPP
 
+#include <ranges>
+
 #include "allocator.hpp"
 #include "command_pool.hpp"
 #include "device.hpp"
@@ -59,7 +61,9 @@ namespace render
         [[nodiscard, gnu::pure]] float getDeltaTimeSeconds() const;
         [[nodiscard, gnu::pure]] bool shouldClose() const;
 
+        // template<std::ranges::input_range R>
         void drawFrame(const Camera&, const std::vector<Object>&);
+            // requires std::same_as<Object, std::ranges::range_reference_t<R>>;
         void resize();
 
     private:

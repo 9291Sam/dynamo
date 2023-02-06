@@ -121,7 +121,7 @@ namespace render
             .engineVersion      {
                 VK_MAKE_API_VERSION(VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_TWEAK)
             },
-            .apiVersion         {VK_API_VERSION_1_0},
+            .apiVersion         {VK_API_VERSION_1_2},
         };
 
         const std::vector<const char*> instanceLayers =

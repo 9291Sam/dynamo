@@ -11,9 +11,13 @@ layout(push_constant) uniform PushConstantsGLSL
 } in_push_constants;
 
 layout(location = 0) out vec3 out_frag_color;
+layout(location = 1) out vec3 out_frag_pos;
+layout(location = 2) out vec3 out_normal_world;
 
 void main() 
 {
     gl_Position = in_push_constants.model_view_projection_matrix * vec4(in_position, 1.0);
     out_frag_color = in_color;
+    out_frag_pos = in_position.xyz;
+    out_normal_world = in_normal;
 }

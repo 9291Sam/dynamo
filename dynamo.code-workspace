@@ -99,7 +99,9 @@
 			"locale": "cpp",
 			"queue": "cpp",
 			"stack": "cpp",
-			"filesystem": "cpp"
+			"filesystem": "cpp",
+			"unordered_set": "cpp",
+			"ranges": "cpp"
 		},
 	}
 }

@@ -19,7 +19,7 @@ namespace render
         allocatorCreateInfo.device                      = {logicalDevice};
         allocatorCreateInfo.pVulkanFunctions            = {&vulkanFunctions}; 
         allocatorCreateInfo.instance                    = {instance};
-        allocatorCreateInfo.vulkanApiVersion            = {VK_API_VERSION_1_0};
+        allocatorCreateInfo.vulkanApiVersion            = {VK_API_VERSION_1_2};
 
         const VkResult result = vmaCreateAllocator(&allocatorCreateInfo, &this->allocator);
         seb::assertFatal(

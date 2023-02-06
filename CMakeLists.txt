@@ -20,6 +20,9 @@ set(SOURCES_CPP
   src/render/swapchain.cpp
   src/render/vulkan_includes.cpp
   src/render/window.cpp
+
+  # World
+  src/world/world.cpp
 )
 
 add_executable(Dynamo ${SOURCES_CPP})
