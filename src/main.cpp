@@ -18,7 +18,7 @@ int main()
         render::Renderer renderer {{1200, 1200}, "Dynamo"};
         world::World world {renderer};        
 
-        render::Camera camera {{}, 0, 0};
+        render::Camera camera {{-35.0f, 35.0f, 35.0f}, -0.570792479f, 0.785398f};
 
         while (!renderer.shouldClose())
         {
