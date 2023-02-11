@@ -32,22 +32,6 @@ int main()
 
             camera.updateFromKeys(renderer.getKeyCallback(), renderer.getDeltaTimeSeconds());
 
-            // world.tick();
-
-            // objectMap.addIfNotAlreadyIn();
-
-            // for (auto [worldObject, renderObject] : objectMap)
-            // {
-            //     if (world.contains(worldObject))
-            //     {
-            //         // do nothing
-            //     }
-            //     else
-            //     {
-            //         // free object
-            //     }
-            // }
-
             renderer.drawFrame(camera, world.getObjects());
         }
     }
