@@ -48,27 +48,6 @@ namespace render
 
         this->initializeRenderer();
 
-        const vk::CommandBufferAllocateInfo commandBuffersAllocateInfo
-        {
-            .sType              {vk::StructureType::eCommandBufferAllocateInfo},
-            .pNext              {},
-            .commandPool        {**this->command_pool},
-            .level              {vk::CommandBufferLevel::ePrimary},
-            .commandBufferCount {static_cast<std::uint32_t>(this->MaxFramesInFlight)},
-        };
-
-        auto commandBufferVector = 
-            this->device->asLogicalDevice()
-                .allocateCommandBuffersUnique(commandBuffersAllocateInfo);
-
-        for (std::size_t i = 0; i < this->MaxFramesInFlight; ++i)
-        {
-            this->frames.at(i) = std::make_unique<Frame>(
-                this->device->asLogicalDevice(), 
-                std::move(commandBufferVector.at(i))
-            );
-        }
-
         seb::logTrace("Renderer initalized successfully");
     }
 
@@ -134,12 +113,16 @@ namespace render
         this->window.blockThisThreadIfMinimized();
         this->device->asLogicalDevice().waitIdle();
 
+        for (std::unique_ptr<Frame>& f : this->frames)
+        {
+            f.reset();
+        }
         this->framebuffers.clear();
         this->pipeline.reset();
         this->render_pass.reset(); // TODO: does this need to be reset?
         this->depth_buffer.reset();
         this->swapchain.reset();
-        
+ 
         this->initializeRenderer();
     }
 
@@ -207,6 +190,28 @@ namespace render
             this->framebuffers.push_back(
                 this->device->asLogicalDevice()
                     .createFramebufferUnique(frameBufferCreateInfo)
+            );
+        }
+
+        // recreate frames
+        const vk::CommandBufferAllocateInfo commandBuffersAllocateInfo
+        {
+            .sType              {vk::StructureType::eCommandBufferAllocateInfo},
+            .pNext              {},
+            .commandPool        {**this->command_pool},
+            .level              {vk::CommandBufferLevel::ePrimary},
+            .commandBufferCount {static_cast<std::uint32_t>(this->MaxFramesInFlight)},
+        };
+
+        auto commandBufferVector = 
+            this->device->asLogicalDevice()
+                .allocateCommandBuffersUnique(commandBuffersAllocateInfo);
+
+        for (std::size_t i = 0; i < this->MaxFramesInFlight; ++i)
+        {
+            this->frames.at(i) = std::make_unique<Frame>(
+                this->device->asLogicalDevice(), 
+                std::move(commandBufferVector.at(i))
             );
         }
     }
