@@ -1,0 +1,4 @@
+
+
+TODO:
+static mesh abstraction:
