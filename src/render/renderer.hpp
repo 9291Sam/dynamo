@@ -23,26 +23,7 @@ namespace render
 {
     /// @brief Abstraction over a vulkan instance with debug layers
     /// TOOD: persistently mapped world data stuff
-    /// TODO: Multiple depth buffers, currently they're racing
-    /// move the frame buffer up
-    /// TODO: allow referencesto be stored to static members
-    /// Create a Recorder class that holds all the command buffers and all the index stuff
-    /// the goal is that you only get one index and index into one vector
-    /// make sure header guards match
-    /// Final member list should look like
-    /// 
-    /// // Vulkan Initialization 
-    /// Instance
-    /// vk::UniqueSurfaceKHR
-    /// Device
-    /// Allocator
-    /// CommandPool // Eventually one per thread submitting commands
-    ///
-    /// // Vulkan Rendering
-    /// std::unique_ptr<Swapchain>
-    /// std::unique_ptr<RenderPass>
-    /// std::unique_ptr<Pipeline>
-    /// std::size_t renderingIndex
+    /// TODO: make a class that combines render_pass and frame buffers
     ///
     class Renderer
     {
@@ -106,7 +87,7 @@ namespace render
         std::unique_ptr<Pipeline>             pipeline;
         std::vector<vk::UniqueFramebuffer>    framebuffers;
 
-        // Single threaded renderer
+        // renderer
         std::size_t                                           render_index;
         constexpr static std::size_t                          MaxFramesInFlight = 2;
         std::array<std::unique_ptr<Recorder>, MaxFramesInFlight> frames;
