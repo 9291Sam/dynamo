@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef SRC_RENDER_FRAME_HPP
-#define SRC_RENDER_FRAME_HPP
+#ifndef SRC_RENDER_RECORDER_HPP
+#define SRC_RENDER_RECORDER_HPP
 
 #include "vulkan_includes.hpp"
 
@@ -12,17 +12,17 @@
 
 namespace render
 {
-    class Frame
+    class Recorder
     {
     public:
-        Frame(vk::Device, vk::UniqueCommandBuffer);
-        ~Frame()                       = default;
+        Recorder(vk::Device, vk::UniqueCommandBuffer);
+        ~Recorder()                       = default;
 
-        Frame()                        = delete;
-        Frame(const Frame&)            = delete;
-        Frame(Frame&&)                 = delete;
-        Frame& operator=(const Frame&) = delete;
-        Frame& operator=(Frame&&)      = delete;
+        Recorder()                        = delete;
+        Recorder(const Recorder&)            = delete;
+        Recorder(Recorder&&)                 = delete;
+        Recorder& operator=(const Recorder&) = delete;
+        Recorder& operator=(Recorder&&)      = delete;
 
         // TODO: add objects and cameras!
         vk::Result render(const Device&, const Swapchain&, const RenderPass&, const Pipeline&, 
@@ -33,7 +33,7 @@ namespace render
         vk::UniqueSemaphore     image_available;
         vk::UniqueSemaphore     render_finished;
         vk::UniqueFence         frame_in_flight;
-    }; // class Frame
+    }; // class Recorder
 } // namespace render
 
-#endif // SRC_RENDER_FRAME_HPP
+#endif // SRC_RENDER_RECORDER_HPP

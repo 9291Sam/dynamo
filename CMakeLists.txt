@@ -9,11 +9,11 @@ set(SOURCES_CPP
   src/render/buffer.cpp
   src/render/command_pool.cpp
   src/render/device.cpp
-  src/render/frame.cpp
   src/render/gpu_structs.cpp
   src/render/image.cpp
   src/render/instance.cpp
   src/render/pipeline.cpp
+  src/render/recorder.cpp
   src/render/render_pass.cpp
   src/render/render_structs.cpp
   src/render/renderer.cpp

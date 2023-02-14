@@ -91,7 +91,7 @@ namespace render
         this->window.blockThisThreadIfMinimized();
         this->device->asLogicalDevice().waitIdle();
 
-        for (std::unique_ptr<Frame>& f : this->frames)
+        for (std::unique_ptr<Recorder>& f : this->frames)
         {
             f.reset();
         }
@@ -187,7 +187,7 @@ namespace render
 
         for (std::size_t i = 0; i < this->MaxFramesInFlight; ++i)
         {
-            this->frames.at(i) = std::make_unique<Frame>(
+            this->frames.at(i) = std::make_unique<Recorder>(
                 this->device->asLogicalDevice(), 
                 std::move(commandBufferVector.at(i))
             );

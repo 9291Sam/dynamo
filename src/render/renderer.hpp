@@ -10,7 +10,7 @@
 #include "allocator.hpp"
 #include "command_pool.hpp"
 #include "device.hpp"
-#include "frame.hpp"
+#include "recorder.hpp"
 #include "instance.hpp"
 #include "pipeline.hpp"
 #include "render_pass.hpp"
@@ -26,7 +26,7 @@ namespace render
     /// TODO: Multiple depth buffers, currently they're racing
     /// move the frame buffer up
     /// TODO: allow referencesto be stored to static members
-    /// Create a Frame class that holds all the command buffers and all the index stuff
+    /// Create a Recorder class that holds all the command buffers and all the index stuff
     /// the goal is that you only get one index and index into one vector
     /// make sure header guards match
     /// Final member list should look like
@@ -43,7 +43,6 @@ namespace render
     /// std::unique_ptr<RenderPass>
     /// std::unique_ptr<Pipeline>
     /// std::size_t renderingIndex
-    /// std::array<Frames, 2> frames
     ///
     class Renderer
     {
@@ -110,7 +109,7 @@ namespace render
         // Single threaded renderer
         std::size_t                                           render_index;
         constexpr static std::size_t                          MaxFramesInFlight = 2;
-        std::array<std::unique_ptr<Frame>, MaxFramesInFlight> frames;
+        std::array<std::unique_ptr<Recorder>, MaxFramesInFlight> frames;
         
     }; // class Renderer
 } // namespace render

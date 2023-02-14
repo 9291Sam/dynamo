@@ -1,11 +1,11 @@
 #include <sebib/seblog.hpp>
 
 #include "gpu_structs.hpp"
-#include "frame.hpp"
+#include "recorder.hpp"
 
 namespace render
 {
-    Frame::Frame(vk::Device device, vk::UniqueCommandBuffer commandBuffer)
+    Recorder::Recorder(vk::Device device, vk::UniqueCommandBuffer commandBuffer)
         : command_buffer {std::move(commandBuffer)}
     {
         const vk::SemaphoreCreateInfo semaphoreCreateInfo
@@ -27,7 +27,7 @@ namespace render
         this->frame_in_flight = device.createFenceUnique(fenceCreateInfo);
     }
 
-    vk::Result Frame::render(const Device& device, const Swapchain& swapchain, const RenderPass& renderPass,
+    vk::Result Recorder::render(const Device& device, const Swapchain& swapchain, const RenderPass& renderPass,
         const Pipeline& pipeline, const std::vector<vk::UniqueFramebuffer>& framebuffers, 
         const std::vector<Object>& objectsToDraw, const Camera& camera)
     {
