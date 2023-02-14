@@ -5,6 +5,8 @@
 
 #include <ranges>
 
+#include <sebib/seblog.hpp>
+
 #include "allocator.hpp"
 #include "command_pool.hpp"
 #include "device.hpp"
@@ -61,9 +63,28 @@ namespace render
         [[nodiscard, gnu::pure]] float getDeltaTimeSeconds() const;
         [[nodiscard, gnu::pure]] bool shouldClose() const;
 
-        // template<std::ranges::input_range R>
-        void drawFrame(const Camera&, const std::vector<Object>&);
-            // requires std::same_as<Object, std::ranges::range_reference_t<R>>;
+        void drawFrame(const Camera& camera, std::ranges::input_range auto& objectView)
+        {
+            this->window.pollEvents();
+            auto result = this->frames.at(this->render_index)->render(
+                *this->device, *this->swapchain, *this->render_pass, *this->pipeline,
+                this->framebuffers, objectView, camera
+            );
+
+            this->render_index = (this->render_index + 1) % this->MaxFramesInFlight;
+
+            switch (result)
+            {
+                case vk::Result::eSuccess:
+                    return;
+                case vk::Result::eErrorOutOfDateKHR:
+                    this->resize();
+                    return;
+                default:
+                    seb::panic("Draw frame failed result: {}", vk::to_string(result));
+            }
+        }
+        
         void resize();
 
     private:

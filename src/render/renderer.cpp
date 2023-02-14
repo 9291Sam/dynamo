@@ -83,28 +83,6 @@ namespace render
         return this->window.getDeltaTimeSeconds();
     }
 
-    void Renderer::drawFrame(const Camera& camera, const std::vector<Object>& objects)
-    {
-        this->window.pollEvents();
-        auto result = this->frames.at(this->render_index)->render(
-            *this->device, *this->swapchain, *this->render_pass, *this->pipeline,
-            this->framebuffers, objects, camera
-        );
-
-        this->render_index = (this->render_index + 1) % this->MaxFramesInFlight;
-
-        switch (result)
-        {
-            case vk::Result::eSuccess:
-                return;
-            case vk::Result::eErrorOutOfDateKHR:
-                this->resize();
-                return;
-            default:
-                seb::panic("Draw frame failed result: {}", vk::to_string(result));
-        }
-    }
-
     void Renderer::resize()
     {
         seb::logTrace("Renderer resizimg!");

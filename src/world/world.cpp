@@ -15,7 +15,7 @@ namespace world
 
         auto [k, l] = render::Object::readVerticesFromFile("../models/cube.obj");
         this->objects.push_back(renderer.createObject(std::move(k), std::move(l)));
-        this->objects.at(2).transform.scale = {15.0f, 15.0f, 15.0f};
+        this->objects.at(2).transform.scale = {1.0f, 1.0f, 1.0f};
         this->objects.at(2).transform.translation.y += 50.0f;
     }
 
