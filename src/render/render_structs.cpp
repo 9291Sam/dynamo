@@ -1,7 +1,10 @@
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuseless-cast"
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
+#pragma GCC diagnostic pop
+
 #include <fmt/format.h>
-#include <glm/gtx/string_cast.hpp>
 
 #include <sebib/seblog.hpp>
 

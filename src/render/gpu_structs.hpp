@@ -7,6 +7,10 @@
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-attribute=format"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuseless-cast"
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
@@ -20,6 +24,9 @@
 #include <glm/ext/scalar_constants.hpp> 
 #include <glm/gtc/quaternion.hpp> 
 #include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/string_cast.hpp>
+#pragma GCC diagnostic pop
+#pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
 
 namespace render
