@@ -9,6 +9,7 @@
 
 #include "allocator.hpp"
 #include "command_pool.hpp"
+#include "descriptor_pool.hpp"
 #include "device.hpp"
 #include "recorder.hpp"
 #include "instance.hpp"
@@ -74,11 +75,12 @@ namespace render
         Window window;
 
         // Vulkan Initialization 
-        std::unique_ptr<Instance>    instance;
-        vk::UniqueSurfaceKHR         draw_surface;
-        std::unique_ptr<Device>      device;
-        std::unique_ptr<Allocator>   allocator;
-        std::unique_ptr<CommandPool> command_pool; // one pool per thread
+        std::unique_ptr<Instance>       instance;
+        vk::UniqueSurfaceKHR            draw_surface;
+        std::unique_ptr<Device>         device;
+        std::unique_ptr<Allocator>      allocator;
+        std::unique_ptr<CommandPool>    command_pool; // one pool per thread
+        std::unique_ptr<DescriptorPool> descriptor_pool; // one pool per thread
 
         // Vulkan Rendering 
         std::unique_ptr<Swapchain>            swapchain;

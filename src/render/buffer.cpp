@@ -10,7 +10,8 @@ namespace render
         , buffer     {nullptr}
         , allocation {nullptr}
         , usage      {usage_}
-        , size_bytes       {sizeBytes}
+        , size_bytes {sizeBytes}
+        , mapped_ptr {nullptr}
     {
         const VkBufferCreateInfo bufferCreateInfo
         {
@@ -89,6 +90,20 @@ namespace render
     std::size_t Buffer::sizeBytes() const
     {
         return this->size_bytes;
+    }
+
+    void* Buffer::persistent_map()
+    {
+        seb::assertFatal(
+            vmaMapMemory(
+                this->allocator, 
+                this->allocation,
+                &this->mapped_ptr
+            ) == VK_SUCCESS, "Failed to map buffer memory"
+        );
+        seb::assertFatal(this->mapped_ptr != nullptr, "Tried to map a nullptr");
+
+        return this->mapped_ptr;
     }
 
     void Buffer::write(std::span<const std::byte> byteSpan) const
