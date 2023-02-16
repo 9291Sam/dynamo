@@ -8,6 +8,7 @@ set(SOURCES_CPP
   src/render/allocator.cpp
   src/render/buffer.cpp
   src/render/command_pool.cpp
+  src/render/descriptor_pool.cpp
   src/render/device.cpp
   src/render/gpu_structs.cpp
   src/render/image.cpp
