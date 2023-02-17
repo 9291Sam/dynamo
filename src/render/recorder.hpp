@@ -27,7 +27,7 @@ namespace render
         vk::Result render(
             const Device&, const Swapchain&, const RenderPass&, const Pipeline&, 
             const std::vector<vk::UniqueFramebuffer>&, 
-            const std::vector<std::unique_ptr<Buffer>> uniformBuffers,
+            const Buffer& uniformBuffer,
             const std::vector<Object>&, const Camera&
         );
 

@@ -13,7 +13,7 @@ namespace render
     public:
 
         DescriptorPool(vk::Device);
-        ~DescriptorPool();
+        ~DescriptorPool() = default;
 
         // DescriptorPool()                                 = delete;
         DescriptorPool(const DescriptorPool&)            = delete;

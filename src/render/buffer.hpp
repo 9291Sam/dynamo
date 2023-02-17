@@ -29,7 +29,7 @@ namespace render
         [[nodiscard, gnu::pure]] vk::Buffer operator*() const;
         [[nodiscard, gnu::const]] std::size_t sizeBytes() const;
 
-        void* persistent_map();
+        void* get_persistent_ptr();
 
         void write(std::span<const std::byte>) const;
         void copyFrom(const Buffer&, vk::CommandBuffer) const; 

@@ -47,9 +47,25 @@ namespace render
         void drawFrame(const Camera& camera, std::ranges::input_range auto& objectView)
         {
             this->window.pollEvents();
+
+            // update Uniform Buffers TODO: refactor
+            *reinterpret_cast<UniformBuffer*>(
+                this->uniform_buffers.at(this->render_index)->get_persistent_ptr()
+            ) = UniformBuffer {
+                .numberOfLights {4},
+                .lights {
+                    glm::vec4 {10.0f, -10.0f, 0.0f, 1.0f},
+                    glm::vec4 {10.0f, -10.0f, 10.0f, 1.0f},
+                    glm::vec4 {10.0f, -10.0f, -0.0f, 1.0f},
+                    glm::vec4 {10.0f, -10.0f, -10.0f, 1.0f},
+                },
+            };
+
             auto result = this->frames.at(this->render_index)->render(
                 *this->device, *this->swapchain, *this->render_pass, *this->pipeline,
-                this->framebuffers, objectView, camera
+                this->framebuffers,
+                *this->uniform_buffers.at(this->render_index),
+                objectView, camera
             );
 
             this->render_index = (this->render_index + 1) % this->MaxFramesInFlight;

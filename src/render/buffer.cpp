@@ -52,6 +52,10 @@ namespace render
     
     Buffer::~Buffer()
     {
+        if (this->mapped_ptr)
+        {
+            vmaUnmapMemory(this->allocator, this->allocation);
+        }
         vmaDestroyBuffer(this->allocator, this->buffer, this->allocation);
     }
 
@@ -61,10 +65,12 @@ namespace render
         , allocation {other.allocation}
         , usage      {other.usage}
         , size_bytes {other.size_bytes}
+        , mapped_ptr {other.mapped_ptr}
     {
         other.buffer     = nullptr;
         other.allocation = nullptr;
         other.size_bytes = 0;
+        other.mapped_ptr = nullptr;
     }
 
     Buffer& Buffer::operator=(Buffer&& other)
@@ -74,10 +80,12 @@ namespace render
         this->allocation = other.allocation;
         this->usage      = other.usage;
         this->size_bytes = other.size_bytes;
+        this->mapped_ptr = other.mapped_ptr;
 
         other.buffer     = nullptr;
         other.allocation = nullptr;
         other.size_bytes = 0;
+        other.mapped_ptr = nullptr;
 
         return *this;
     }
@@ -92,16 +100,19 @@ namespace render
         return this->size_bytes;
     }
 
-    void* Buffer::persistent_map()
+    void* Buffer::get_persistent_ptr()
     {
-        seb::assertFatal(
-            vmaMapMemory(
-                this->allocator, 
-                this->allocation,
-                &this->mapped_ptr
-            ) == VK_SUCCESS, "Failed to map buffer memory"
-        );
-        seb::assertFatal(this->mapped_ptr != nullptr, "Tried to map a nullptr");
+        if (!this->mapped_ptr)
+        {
+            seb::assertFatal(
+                vmaMapMemory(
+                    this->allocator, 
+                    this->allocation,
+                    &this->mapped_ptr
+                ) == VK_SUCCESS, "Failed to map buffer memory"
+            );
+            seb::assertFatal(this->mapped_ptr != nullptr, "Tried to map a nullptr");
+        }
 
         return this->mapped_ptr;
     }
