@@ -25,6 +25,8 @@ namespace render
 
         [[nodiscard, gnu::pure]] vk::Pipeline operator*() const;
         [[nodiscard, gnu::pure]] vk::PipelineLayout getLayout() const;
+        [[nodiscard, gnu::pure]] auto getDescriptorSetLayout() const
+            -> vk::DescriptorSetLayout;
 
     private:
         vk::UniqueDescriptorSetLayout descriptor_layout;

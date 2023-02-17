@@ -269,4 +269,9 @@ namespace render
         return *this->layout;
     }
 
+    vk::DescriptorSetLayout Pipeline::getDescriptorSetLayout() const
+    {
+        return *this->descriptor_layout;
+    }
+
 } // namespace render

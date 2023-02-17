@@ -12,18 +12,23 @@ namespace render
     {
     public:
 
-        DescriptorPool(vk::Device);
-        ~DescriptorPool() = default;
+        DescriptorPool(vk::Device, std::size_t numberOfSets);
+        ~DescriptorPool()                                = default;
 
-        // DescriptorPool()                                 = delete;
+        DescriptorPool()                                 = delete;
         DescriptorPool(const DescriptorPool&)            = delete;
         DescriptorPool(DescriptorPool&&)                 = delete;
         DescriptorPool& operator=(const DescriptorPool&) = delete;
         DescriptorPool& operator=(DescriptorPool&&)      = delete;
+
+        [[nodiscard, gnu::pure]] vk::DescriptorPool operator*() const;
+        [[nodiscard, gnu::pure]] auto allocate(vk::DescriptorSetLayout) const 
+            -> std::vector<vk::UniqueDescriptorSet>;
     
     private:
-
-        // vk::DescriptorSetLayoutBinding uniform_binding;
+        vk::Device device;
+        vk::UniqueDescriptorPool pool;
+        std::size_t number_of_sets;
 
     }; // class DescriptorPool
 

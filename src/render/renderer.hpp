@@ -91,21 +91,22 @@ namespace render
         Window window;
 
         // Vulkan Initialization 
-        std::unique_ptr<Instance>       instance;
-        vk::UniqueSurfaceKHR            draw_surface;
-        std::unique_ptr<Device>         device;
-        std::unique_ptr<Allocator>      allocator;
-        std::unique_ptr<CommandPool>    command_pool; // one pool per thread
-        std::unique_ptr<DescriptorPool> descriptor_pool; // one pool per thread
+        std::unique_ptr<Instance>    instance;
+        vk::UniqueSurfaceKHR         draw_surface;
+        std::unique_ptr<Device>      device;
+        std::unique_ptr<Allocator>   allocator;
+        std::unique_ptr<CommandPool> command_pool; // one pool per thread
 
         // Vulkan Rendering 
-        std::unique_ptr<Swapchain>  swapchain;
-        std::unique_ptr<Image2D>    depth_buffer;
-        std::unique_ptr<RenderPass> render_pass;
-        std::unique_ptr<Pipeline>   pipeline;
+        std::unique_ptr<Swapchain>      swapchain;
+        std::unique_ptr<Image2D>        depth_buffer;
+        std::unique_ptr<RenderPass>     render_pass;
+        std::unique_ptr<Pipeline>       pipeline;
+        std::unique_ptr<DescriptorPool> descriptor_pool; // one pool per thread
+
 
         // Frames in Flight
-        std::vector<vk::UniqueFramebuffer> framebuffers;
+        std::vector<vk::UniqueFramebuffer>   framebuffers;
 
 
         // TODO: re-do the Recorder abstraction to properly handle multi threaded recording
@@ -117,6 +118,7 @@ namespace render
         std::size_t                                           render_index;
         constexpr static std::size_t                          MaxFramesInFlight = 2;
         std::array<std::unique_ptr<Buffer>, MaxFramesInFlight>   uniform_buffers;
+        std::vector<vk::UniqueDescriptorSet> descriptor_sets;
         std::array<std::unique_ptr<Recorder>, MaxFramesInFlight> frames; // wait why the fuck do you need multiple frame buffers
         
     }; // class Renderer

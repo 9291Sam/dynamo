@@ -143,6 +143,9 @@ namespace render
             )
         );
 
+        this->descriptor_pool = std::make_unique<DescriptorPool>(
+            this->device->asLogicalDevice(), this->MaxFramesInFlight
+        );
 
         // framebuffer creation
         for (const vk::UniqueImageView& view : this->swapchain->getImageViews())
@@ -182,6 +185,46 @@ namespace render
                 vk::MemoryPropertyFlagBits::eHostCoherent
             );
         }
+
+        // bind uniform buffers to descriptor sets
+        // allocate
+        this->descriptor_sets = this->descriptor_pool->allocate(this->pipeline->getDescriptorSetLayout());
+        seb::assertFatal(
+            this->descriptor_sets.size() == this->MaxFramesInFlight,
+            "Incorrect number of Descriptor sets returned!"
+        );
+
+        // update
+        for (std::size_t i = 0; i < this->MaxFramesInFlight; i++)
+        {
+            const vk::DescriptorBufferInfo uniformBufferBindingInfo
+            {
+                .buffer {**this->uniform_buffers.at(i)},
+                .offset {0},
+                .range  {sizeof(UniformBuffer)},
+            };
+
+            std::array<vk::WriteDescriptorSet, 1> writeInfo
+            {
+                vk::WriteDescriptorSet
+                {
+                    .sType            {vk::StructureType::eWriteDescriptorSet},
+                    .pNext            {nullptr},
+                    .dstSet           {*this->descriptor_sets.at(i)},
+                    .dstBinding       {0},
+                    .dstArrayElement  {0},
+                    .descriptorCount  {1},
+                    .descriptorType   {vk::DescriptorType::eUniformBuffer},
+                    .pImageInfo       {nullptr},
+                    .pBufferInfo      {&uniformBufferBindingInfo},
+                    .pTexelBufferView {nullptr},
+                }
+            };
+
+
+            this->device->asLogicalDevice().updateDescriptorSets(writeInfo, nullptr);
+        }
+
 
         // recreate frames
         const vk::CommandBufferAllocateInfo commandBuffersAllocateInfo

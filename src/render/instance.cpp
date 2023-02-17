@@ -208,6 +208,7 @@ namespace render
 
         #endif
 
+        
         seb::logTrace("Vulkan initalized successfully");
     }
 
