@@ -99,9 +99,32 @@ namespace render
 
         this->stage_buffers = [this]
         {
-            // auto memoryProperties = this->physical_device.getMemoryProperties();
+            auto memoryProperties = this->physical_device.getMemoryProperties();
 
-            seb::logWarn("add staging buffer test");
+            std::vector<vk::MemoryType> memoryTypes;
+            std::vector<vk::MemoryHeap> memoryHeaps;
+            
+            for (std::size_t i = 0; i < memoryProperties.memoryTypeCount; i++)
+            {
+                memoryTypes.push_back(memoryProperties.memoryTypes[i]);
+            }
+
+            for (std::size_t i = 0; i < memoryProperties.memoryHeapCount; i++)
+            {
+                memoryHeaps.push_back(memoryProperties.memoryHeaps[i]);
+            }
+
+            for (auto t : memoryTypes)
+            {
+                seb::logLog("Flags: {} | Idx: {}", vk::to_string(t.propertyFlags), t.heapIndex);
+            }
+
+            for (auto h : memoryHeaps)
+            {
+                seb::logLog("Flags: {} | Size: {}", vk::to_string(h.flags), h.size);
+            }
+
+            seb::logWarn("Test for staging buffer support on a DMA system");
 
             return true;
         }();

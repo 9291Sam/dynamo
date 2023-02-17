@@ -13,7 +13,6 @@
 
 namespace render
 {
-    /// TODO: ask how to structure this
     class Buffer
     {
     public:
@@ -30,16 +29,19 @@ namespace render
         [[nodiscard, gnu::pure]] vk::Buffer operator*() const;
         [[nodiscard, gnu::const]] std::size_t sizeBytes() const;
 
+        void* persistent_map();
+
         void write(std::span<const std::byte>) const;
         void copyFrom(const Buffer&, vk::CommandBuffer) const; 
 
-
     private:
+
         VmaAllocator         allocator;
         VkBuffer             buffer;
         VmaAllocation        allocation;
         vk::BufferUsageFlags usage;
         std::size_t          size_bytes;
+        void*                mapped_ptr;
     };
 
     class StagedBuffer
