@@ -24,9 +24,12 @@ namespace render
         Recorder& operator=(const Recorder&) = delete;
         Recorder& operator=(Recorder&&)      = delete;
 
-        // TODO: add objects and cameras!
-        vk::Result render(const Device&, const Swapchain&, const RenderPass&, const Pipeline&, 
-            const std::vector<vk::UniqueFramebuffer>&, const std::vector<Object>&, const Camera&);
+        vk::Result render(
+            const Device&, const Swapchain&, const RenderPass&, const Pipeline&, 
+            const std::vector<vk::UniqueFramebuffer>&, 
+            const std::vector<std::unique_ptr<Buffer>> uniformBuffers,
+            const std::vector<Object>&, const Camera&
+        );
 
     private:
         vk::UniqueCommandBuffer command_buffer;

@@ -171,6 +171,18 @@ namespace render
             );
         }
 
+        // uniform buffer creation
+        for (std::size_t i = 0; i < this->MaxFramesInFlight; ++i)
+        {
+            this->uniform_buffers.at(i) = std::make_unique<Buffer>(
+                **this->allocator,
+                sizeof(UniformBuffer),
+                vk::BufferUsageFlagBits::eUniformBuffer,
+                vk::MemoryPropertyFlagBits::eHostVisible |
+                vk::MemoryPropertyFlagBits::eHostCoherent
+            );
+        }
+
         // recreate frames
         const vk::CommandBufferAllocateInfo commandBuffersAllocateInfo
         {

@@ -176,12 +176,32 @@ namespace render
             .size       {sizeof(PushConstants)},
         };
 
+        const vk::DescriptorSetLayoutBinding descriptorSetBinding
+        {
+            .binding            {0},
+            .descriptorType     {vk::DescriptorType::eUniformBuffer},
+            .descriptorCount    {1},
+            .stageFlags         {vk::ShaderStageFlagBits::eAllGraphics},
+            .pImmutableSamplers {nullptr},
+        };
+
+        const vk::DescriptorSetLayoutCreateInfo descriptorSetLayoutInfo
+        {
+            .sType        {vk::StructureType::eDescriptorSetLayoutCreateInfo},
+            .pNext        {nullptr},
+            .flags        {},
+            .bindingCount {1},
+            .pBindings    {&descriptorSetBinding},
+        };
+
+        this->descriptor_layout = device.createDescriptorSetLayoutUnique(descriptorSetLayoutInfo);
+
         vk::PipelineLayoutCreateInfo pipelineLayoutInfo {
             .sType                  {vk::StructureType::ePipelineLayoutCreateInfo},
             .pNext                  {nullptr},
             .flags                  {},
-            .setLayoutCount         {0},
-            .pSetLayouts            {nullptr},
+            .setLayoutCount         {1},
+            .pSetLayouts            {&*this->descriptor_layout},
             .pushConstantRangeCount {1},
             .pPushConstantRanges    {&pushConstantsInformation},
         };

@@ -81,16 +81,25 @@ namespace render
         std::unique_ptr<CommandPool> command_pool; // one pool per thread
 
         // Vulkan Rendering 
-        std::unique_ptr<Swapchain>            swapchain;
-        std::unique_ptr<Image2D>              depth_buffer;
-        std::unique_ptr<RenderPass>           render_pass;
-        std::unique_ptr<Pipeline>             pipeline;
-        std::vector<vk::UniqueFramebuffer>    framebuffers;
+        std::unique_ptr<Swapchain>  swapchain;
+        std::unique_ptr<Image2D>    depth_buffer;
+        std::unique_ptr<RenderPass> render_pass;
+        std::unique_ptr<Pipeline>   pipeline;
+
+        // Frames in Flight
+        std::vector<vk::UniqueFramebuffer> framebuffers;
+
+
+        // TODO: re-do the Recorder abstraction to properly handle multi threaded recording
+        
+        // Frame in flight
+            // Each one can have a Recorder Thread
 
         // renderer
         std::size_t                                           render_index;
         constexpr static std::size_t                          MaxFramesInFlight = 2;
-        std::array<std::unique_ptr<Recorder>, MaxFramesInFlight> frames;
+        std::array<std::unique_ptr<Buffer>, MaxFramesInFlight>   uniform_buffers;
+        std::array<std::unique_ptr<Recorder>, MaxFramesInFlight> frames; // wait why the fuck do you need multiple frame buffers
         
     }; // class Renderer
 } // namespace render

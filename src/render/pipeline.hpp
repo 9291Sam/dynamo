@@ -27,8 +27,9 @@ namespace render
         [[nodiscard, gnu::pure]] vk::PipelineLayout getLayout() const;
 
     private:
-        vk::UniquePipelineLayout layout;
-        vk::UniquePipeline       pipeline;
+        vk::UniqueDescriptorSetLayout descriptor_layout;
+        vk::UniquePipelineLayout      layout;
+        vk::UniquePipeline            pipeline;
     }; // class Pipeline
 } // namespace render
 
