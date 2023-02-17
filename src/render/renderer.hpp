@@ -64,7 +64,7 @@ namespace render
             auto result = this->frames.at(this->render_index)->render(
                 *this->device, *this->swapchain, *this->render_pass, *this->pipeline,
                 this->framebuffers,
-                *this->uniform_buffers.at(this->render_index),
+                *this->descriptor_sets.at(this->render_index),
                 objectView, camera
             );
 

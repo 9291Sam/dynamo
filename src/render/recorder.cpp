@@ -31,10 +31,10 @@ namespace render
         const Device& device, const Swapchain& swapchain,
         const RenderPass& renderPass, const Pipeline& pipeline, 
         const std::vector<vk::UniqueFramebuffer>& framebuffers, 
-        const Buffer& uniformBuffer,
+        vk::DescriptorSet descriptorSet,
         const std::vector<Object>& objectsToDraw, const Camera& camera)
     {
-        seb::logWarn("BIND UNIFORMB UFF");
+        // seb::logWarn("BIND UNIFORMB UFF");
         const auto timeout = std::numeric_limits<std::uint64_t>::max();
 
         auto result = device.asLogicalDevice().waitForFences(*this->frame_in_flight, true, timeout);
@@ -131,6 +131,14 @@ namespace render
                 vk::ShaderStageFlagBits::eVertex,
                 0,
                 pushConstants
+            );
+
+            this->command_buffer->bindDescriptorSets(
+                vk::PipelineBindPoint::eGraphics,
+                pipeline.getLayout(), 
+                0,
+                std::array<vk::DescriptorSet, 1> {descriptorSet},
+                nullptr
             );
 
             o.draw(this->command_buffer.get());
