@@ -14,16 +14,17 @@ layout(location = 0) out vec4 out_color;
 
 void main() 
 {
-    
+    out_color = vec4(0.0, 0.0, 0.0, 1.0);
+
     for (int i = 0; i < in_uniform_buffer.number_of_lights; ++i)
     {
         const vec3 normal_vector = normalize(in_normal);
-        const vec3 distance_to_light = in_uniform_buffer.lights[i].xyz - in_pos
+        const vec3 distance_to_light = in_uniform_buffer.lights[i].xyz - in_pos;
         const vec3 direction_to_light = normalize(distance_to_light);
 
         // Diffuse lighting component
-        out_color.xyz += (in_color * max(dot(normal_vector, direction_to_light), 0.0) * (1.0 / (dot(distance_to_light, distance_to_light))));
+        out_color.xyz += 
+            (in_color * max(dot(normal_vector, direction_to_light), 0.0) * out_color.w *
+            (1.0 / (dot(distance_to_light, distance_to_light))));
     }
-
-    out_color.w = 1.0;
 }
