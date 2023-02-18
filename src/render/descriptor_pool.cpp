@@ -17,7 +17,7 @@ namespace render
         {
             .sType         {vk::StructureType::eDescriptorPoolCreateInfo},
             .pNext         {nullptr},
-            .flags         {},
+            .flags         {vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet},
             .maxSets       {static_cast<std::uint32_t>(numberOfSets)},
             .poolSizeCount {1},
             .pPoolSizes    {&poolSize}
