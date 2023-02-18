@@ -61,6 +61,7 @@ namespace render
     struct UniformBuffer
     {
         std::uint32_t numberOfLights;
+        std::array<std::uint32_t, 3> _padding;
         std::array<glm::vec4, 32> lights;
     };
 } // namespace render

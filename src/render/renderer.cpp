@@ -95,7 +95,13 @@ namespace render
         {
             f.reset();
         }
+        this->descriptor_sets.clear();
+        for (std::unique_ptr<Buffer>& b : this->uniform_buffers)
+        {
+            b.reset();
+        }
         this->framebuffers.clear();
+        this->descriptor_pool.reset();
         this->pipeline.reset();
         this->render_pass.reset(); // TODO: does this need to be reset?
         this->depth_buffer.reset();
