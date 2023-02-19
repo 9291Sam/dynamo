@@ -48,16 +48,20 @@ namespace render
         {
             this->window.pollEvents();
 
+            static float idx = 0.0f;
+
+            idx += 0.001;
+
             // update Uniform Buffers TODO: refactor
 
             UniformBuffer uniformBuffer {
-                .numberOfLights {4},
+                .numberOfLights {1},
                 ._padding {},
                 .lights {
-                    glm::vec4 {0.0f, 55.0f, 0.0f, 100.0f},
-                    glm::vec4 {30.0f, 10.0f, 10.0f, 100.0f},
-                    glm::vec4 {10.0f, -10.0f, 15.2f, 100.0f},
-                    glm::vec4 {10.0f, -8.0f, -10.0f, 100.0f},
+                    glm::vec4 {25 * std::cos(idx), 22.0 * std::cos(idx), 25 * std::sin(idx), 10.0f},
+                    // glm::vec4 {30.0f, 8 + 3 * std::sin(idx), 10.0f, 100.0f},
+                    // glm::vec4 {10.0f, -10.0f, 15.2f, 100.0f},
+                    // glm::vec4 {10.0f, -8.0f, -10.0f, 100.0f},
                 },
             };
 

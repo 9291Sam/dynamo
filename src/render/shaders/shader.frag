@@ -27,6 +27,6 @@ void main()
         // Diffuse lighting component
         out_color.xyz += 
             (in_color * max(dot(normal_vector, direction_to_light), 0.0) * in_uniform_buffer.lights[i].w *
-            (1.0 / (dot(distance_to_light, distance_to_light))));
+            (1.0 / sqrt((dot(distance_to_light, distance_to_light)))));
     }
 }

@@ -13,9 +13,9 @@ namespace world
         this->objects.at(1).transform.scale = {100.0f, 100.0f, 100.0f};
         this->objects.at(1).transform.translation.y -= 120.0f;
 
-        auto [k, l] = render::Object::readVerticesFromFile("../models/saucer.obj");
+        auto [k, l] = render::Object::readVerticesFromFile("../models/512ksph.obj");
         this->objects.push_back(renderer.createObject(std::move(k), std::move(l)));
-        this->objects.at(2).transform.scale = {5.0f, 5.0f, 5.0f};
+        this->objects.at(2).transform.scale = {50.0f, 50.0f, 50.0f};
         this->objects.at(2).transform.translation.y += 50.0f;
     }
 
