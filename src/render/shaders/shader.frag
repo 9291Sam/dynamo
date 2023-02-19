@@ -1,8 +1,14 @@
 #version 460
 
 layout(location = 0) in vec3 in_color;
-layout(location = 1) in vec3 in_pos;
+layout(location = 1) in vec3 in_pos_world;
 layout(location = 2) in vec3 in_normal;
+
+layout(push_constant) uniform PushConstantsGLSL
+{
+    mat4 view_projection;
+    mat4 model;
+} in_push_constants;
 
 layout(binding = 0) uniform UniformBuffer
 {
@@ -16,19 +22,12 @@ const vec4 ambient_light = vec4(1.0, 1.0, 1.0, 0.02);
 
 void main() 
 {
-    out_color = vec4(in_color.xyz * ambient_light_power, 0.25);
-
     const vec3 normal_vector = normalize(in_normal);
-    const vec3 distance_to_light = in_uniform_buffer.lights[i].xyz - in_pos;
+    const vec3 distance_to_light = in_uniform_buffer.light_position - in_pos_world;
     const vec3 direction_to_light = normalize(distance_to_light);
     
-    for (int i = 0; i < in_uniform_buffer.number_of_lights; ++i)
-    {
-        
-
-        // Diffuse lighting component
-        out_color.xyz += 
-            (in_color * max(dot(normal_vector, direction_to_light), 0.0) * in_uniform_buffer.lights[i].w *
-            (1.0 / sqrt((dot(distance_to_light, distance_to_light)))));
-    }
+    out_color.xyz =
+        (in_color * in_uniform_buffer.light_color.xyz * max(dot(normal_vector, direction_to_light), 0.0) *
+        in_uniform_buffer.light_color.w *
+        (1.0 / sqrt((dot(distance_to_light, distance_to_light)))));
 }

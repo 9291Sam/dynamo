@@ -111,7 +111,7 @@ namespace render
             std::array<PushConstants, 1> pushConstants {
                 PushConstants
                 {
-                    .model_view_projection {
+                    .view_projection {
                         Camera::getPerspectiveMatrix(
                             glm::radians(70.f),
                             static_cast<float>(swapchain.getExtent().width) / 
@@ -119,18 +119,10 @@ namespace render
                             0.1f,
                             200000.0f
                         ) * 
-                        camera.asViewMatrix() * 
-                        o.transform.asModelMatrix()
+                        camera.asViewMatrix()
                     },
-                    .normal_matrix {
-                        glm::transpose(
-                            glm::inverse(
-                                glm::mat3 {
-                                    // camera.asViewMatrix() * 
-                                    o.transform.asModelMatrix() 
-                                }
-                            )
-                        )
+                    .model {
+                        o.transform.asModelMatrix()
                     }
                 },
             };
@@ -138,7 +130,7 @@ namespace render
 
             this->command_buffer->pushConstants<render::PushConstants>(
                 pipeline.getLayout(),
-                vk::ShaderStageFlagBits::eVertex,
+                vk::ShaderStageFlagBits::eAllGraphics,
                 0,
                 pushConstants
             );

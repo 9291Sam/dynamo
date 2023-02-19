@@ -55,14 +55,8 @@ namespace render
             // update Uniform Buffers TODO: refactor
 
             UniformBuffer uniformBuffer {
-                .numberOfLights {1},
-                ._padding {},
-                .lights {
-                    glm::vec4 {25 * std::cos(idx / 7.0f), 22.0f * std::sin(idx / 9.0f), 25.0f * std::sin(idx / 11.0f), 10.0f},
-                    // glm::vec4 {30.0f, 8 + 3 * std::sin(idx), 10.0f, 100.0f},
-                    // glm::vec4 {10.0f, -10.0f, 15.2f, 100.0f},
-                    // glm::vec4 {10.0f, -8.0f, -10.0f, 100.0f},
-                },
+                .light_position {25 * std::cos(idx / 7.0f), 22.0f * std::sin(idx / 9.0f), 25.0f * std::sin(idx / 11.0f)},
+                .light_color {1.0f, 1.0f, 1.0f, 10.0f}
             };
 
             std::memcpy(

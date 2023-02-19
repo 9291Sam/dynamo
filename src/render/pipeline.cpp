@@ -171,7 +171,7 @@ namespace render
         };
 
         vk::PushConstantRange pushConstantsInformation{
-            .stageFlags {vk::ShaderStageFlagBits::eVertex},
+            .stageFlags {vk::ShaderStageFlagBits::eAllGraphics},
             .offset     {0},
             .size       {sizeof(PushConstants)},
         };
