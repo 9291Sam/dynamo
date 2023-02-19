@@ -8,7 +8,7 @@ layout(location = 3) in vec2 in_uv;
 layout(push_constant) uniform PushConstantsGLSL
 {
     mat4 model_view_projection_matrix;
-    mat4 normal_matrix;
+    mat3 normal_matrix;
 } in_push_constants;
 
 layout(binding = 0) uniform UniformBuffer
@@ -27,5 +27,5 @@ void main()
     
     out_color = in_color;
     out_pos = in_position;
-    out_normal = mat3(in_push_constants.normal_matrix) * in_normal;
+    out_normal = in_push_constants.normal_matrix * in_normal;
 }

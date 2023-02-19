@@ -123,9 +123,13 @@ namespace render
                         o.transform.asModelMatrix()
                     },
                     .normal_matrix {
-                        glm::inverse(
-                        //    camera.asViewMatrix() * 
-                            o.transform.asModelMatrix() 
+                        glm::transpose(
+                            glm::inverse(
+                                glm::mat3 {
+                                    // camera.asViewMatrix() * 
+                                    o.transform.asModelMatrix() 
+                                }
+                            )
                         )
                     }
                 },

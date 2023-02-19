@@ -56,7 +56,7 @@ namespace render
     struct PushConstants
     {
         glm::mat4 model_view_projection;
-        glm::mat4 normal_matrix;
+        glm::mat3 normal_matrix;
     };
 
     struct UniformBuffer

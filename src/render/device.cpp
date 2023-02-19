@@ -95,37 +95,47 @@ namespace render
 
         this->queue = this->logical_device->getQueue(this->queue_index, 0);
 
-        
-
         this->stage_buffers = [this]
         {
             auto memoryProperties = this->physical_device.getMemoryProperties();
 
             std::vector<vk::MemoryType> memoryTypes;
             std::vector<vk::MemoryHeap> memoryHeaps;
+
+            std::optional<std::size_t> idx_of_gpu_main_memory = std::nullopt;
             
             for (std::size_t i = 0; i < memoryProperties.memoryTypeCount; i++)
             {
-                memoryTypes.push_back(memoryProperties.memoryTypes[i]);
+                memoryTypes.push_back(memoryProperties.memoryTypes.at(i));
             }
 
             for (std::size_t i = 0; i < memoryProperties.memoryHeapCount; i++)
             {
-                memoryHeaps.push_back(memoryProperties.memoryHeaps[i]);
+                memoryHeaps.push_back(memoryProperties.memoryHeaps.at(i));
             }
+
+            const vk::MemoryPropertyFlags desiredFlags = 
+                vk::MemoryPropertyFlagBits::eDeviceLocal |
+                vk::MemoryPropertyFlagBits::eHostVisible |
+                vk::MemoryPropertyFlagBits::eHostCoherent;
 
             for (auto t : memoryTypes)
             {
-                seb::logLog("Flags: {} | Idx: {}", vk::to_string(t.propertyFlags), t.heapIndex);
+                if ((t.propertyFlags & desiredFlags) == desiredFlags)
+                {
+                    seb::assertWarn(!idx_of_gpu_main_memory.has_value(), "There should only be one!");
+
+                    idx_of_gpu_main_memory = t.heapIndex;
+                }
             }
 
-            for (auto h : memoryHeaps)
+            if (idx_of_gpu_main_memory.has_value())
             {
-                seb::logLog("Flags: {} | Size: {}", vk::to_string(h.flags), h.size);
+                if (memoryProperties.memoryHeaps.at(idx_of_gpu_main_memory.value()).size > 536870912)
+                {
+                    return false;
+                }
             }
-
-            seb::logWarn("Test for staging buffer support on a DMA system");
-
             return true;
         }();
     }
