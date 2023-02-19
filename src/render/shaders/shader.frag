@@ -6,17 +6,17 @@ layout(location = 2) in vec3 in_normal;
 
 layout(binding = 0) uniform UniformBuffer
 {
-    int number_of_lights;
-    vec4[32] lights;
+    vec3 light_position;
+    vec4 light_color;
 } in_uniform_buffer;
 
-layout(location = 0) out vec4 out_color;
+layout(location = 0) out vec3 out_color;
 
-const float ambient_light_power = 0.02;
+const vec4 ambient_light = vec4(1.0, 1.0, 1.0, 0.02);
 
 void main() 
 {
-    out_color = vec4(in_color.xyz * ambient_light_power, 1.0);
+    out_color = vec4(in_color.xyz * ambient_light_power, 0.25);
     
     for (int i = 0; i < in_uniform_buffer.number_of_lights; ++i)
     {

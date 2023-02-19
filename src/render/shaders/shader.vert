@@ -13,10 +13,11 @@ layout(push_constant) uniform PushConstantsGLSL
 
 layout(binding = 0) uniform UniformBuffer
 {
-    int number_of_lights;
-    vec4[32] lights;
+    vec3 light_position;
+    vec4 light_color;
 } in_uniform_buffer;
 
+// This is in model and not world space right now
 layout(location = 0) out vec3 out_color;
 layout(location = 1) out vec3 out_pos;
 layout(location = 2) out vec3 out_normal;
@@ -27,5 +28,5 @@ void main()
     
     out_color = in_color;
     out_pos = in_position;
-    out_normal = in_push_constants.normal_matrix * in_normal;
+    out_normal = normalize(in_push_constants.normal_matrix * in_normal);
 }
