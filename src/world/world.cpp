@@ -8,14 +8,14 @@ namespace world
         this->objects.push_back(renderer.createObject(std::move(v), std::move(i)));
         this->objects.at(0).transform.scale = {4.0f, 4.0f, 4.0f};
 
-        auto [b, j] = render::Object::readVerticesFromFile("../models/floor.obj");
+        auto [b, j] = render::Object::readVerticesFromFile("../models/colored_cube.obj");
         this->objects.push_back(renderer.createObject(std::move(b), std::move(j)));
         this->objects.at(1).transform.scale = {100.0f, 100.0f, 100.0f};
-        this->objects.at(1).transform.translation.y -= 10.0f;
+        this->objects.at(1).transform.translation.y -= 120.0f;
 
-        auto [k, l] = render::Object::readVerticesFromFile("../models/cube.obj");
+        auto [k, l] = render::Object::readVerticesFromFile("../models/saucer.obj");
         this->objects.push_back(renderer.createObject(std::move(k), std::move(l)));
-        this->objects.at(2).transform.scale = {1.0f, 1.0f, 1.0f};
+        this->objects.at(2).transform.scale = {5.0f, 5.0f, 5.0f};
         this->objects.at(2).transform.translation.y += 50.0f;
     }
 

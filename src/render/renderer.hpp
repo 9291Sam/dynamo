@@ -56,8 +56,8 @@ namespace render
                 .lights {
                     glm::vec4 {0.0f, 55.0f, 0.0f, 100.0f},
                     glm::vec4 {30.0f, 10.0f, 10.0f, 100.0f},
-                    glm::vec4 {10.0f, 30.0f, 15.2f, 100.0f},
-                    glm::vec4 {10.0f, 10.0f, -10.0f, 100.0f},
+                    glm::vec4 {10.0f, -10.0f, 15.2f, 100.0f},
+                    glm::vec4 {10.0f, -8.0f, -10.0f, 100.0f},
                 },
             };
 

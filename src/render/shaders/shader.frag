@@ -12,10 +12,12 @@ layout(binding = 0) uniform UniformBuffer
 
 layout(location = 0) out vec4 out_color;
 
+const float ambient_light_power = 0.02;
+
 void main() 
 {
-    out_color = vec4(0.0, 0.0, 0.0, 1.0);
-
+    out_color = vec4(in_color.xyz * ambient_light_power, 1.0);
+    
     for (int i = 0; i < in_uniform_buffer.number_of_lights; ++i)
     {
         const vec3 normal_vector = normalize(in_normal);
