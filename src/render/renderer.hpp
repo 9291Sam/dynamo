@@ -50,12 +50,12 @@ namespace render
 
             static float idx = 0.0f;
 
-            idx += 0.01f;
+            idx += 0.1f;
 
             // update Uniform Buffers TODO: refactor
 
             UniformBuffer uniformBuffer {
-                .light_position {25 * std::cos(idx / 7.0f), 22.0f * std::sin(idx / 9.0f), 25.0f * std::sin(idx / 11.0f)},
+                .light_position {50 * std::cos(idx / 7.0f), 7.0f * std::sin(idx / 9.0f) + 15.0f, 50.0f * std::sin(idx / 11.0f)},
                 .light_color {1.0f, 1.0f, 1.0f, 10.0f}
             };
 
