@@ -65,6 +65,11 @@ namespace render
         };
     }
 
+    std::pair<double, double> Renderer::getMouseDelta()
+    {
+        return this->window.getMouseDelta();
+    }
+
     bool Renderer::shouldClose() const
     {
         return this->window.shouldClose();

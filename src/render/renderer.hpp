@@ -41,6 +41,7 @@ namespace render
         // This function list is a mess TODO: redesign
         [[nodiscard, gnu::pure]] Object createObject(std::vector<Vertex>, std::optional<std::vector<Index>>) const;
         [[nodiscard, gnu::const]] auto getKeyCallback() const -> std::function<bool(vkfw::Key)>;
+        [[nodiscard]] std::pair<double, double> getMouseDelta();
         [[nodiscard, gnu::pure]] float getDeltaTimeSeconds() const;
         [[nodiscard, gnu::pure]] bool shouldClose() const;
 

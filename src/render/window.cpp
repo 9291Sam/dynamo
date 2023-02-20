@@ -70,3 +70,18 @@ bool Window::isKeyPressed(vkfw::Key key) const
 {
     return this->window_ptr->getKey(key);
 }
+
+std::pair<double, double> Window::getMouseDelta()
+{
+    auto [x, y] = this->window_ptr->getCursorPos();
+
+    std::pair<double, double> delta {
+        x - this->previous_mouse_pos.first,
+        y - this->previous_mouse_pos.second
+    };
+
+    // moving doubles :eyes:
+    this->previous_mouse_pos = std::make_pair<double, double>(std::move(x), std::move(y));
+
+    return delta;
+}

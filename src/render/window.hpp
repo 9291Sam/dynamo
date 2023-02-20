@@ -34,6 +34,7 @@ public:
     [[nodiscard, gnu::pure]] float getDeltaTimeSeconds() const;
     [[nodiscard, gnu::pure]] bool shouldClose() const;
     [[nodiscard]] bool isKeyPressed(vkfw::Key key) const;
+    [[nodiscard]] auto getMouseDelta() -> std::pair<double, double>;
 
     [[nodiscard]] vk::UniqueSurfaceKHR createSurface(vk::Instance) const;
 
@@ -46,6 +47,9 @@ private:
     vkfw::UniqueWindow window_ptr;
     std::string window_name;
     
+
+    std::pair<double, double> previous_mouse_pos;
+
     std::chrono::time_point<std::chrono::steady_clock> last_frame_time;
     std::chrono::duration<std::int64_t, std::nano>    last_frame_duration {160000000};
 }; // class Window
