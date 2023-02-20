@@ -237,10 +237,10 @@ namespace render
         this->transform.translation += positionToAdd;
     }
 
-    void Camera::updateFromKeys(std::function<bool(vkfw::Key)> keyPollCallback, float deltaTime)
+    void Camera::update(std::function<bool(vkfw::Key)> keyPollCallback, std::pair<double, double> mouseDeltas, float deltaTime)
     {
         const float moveSpeedScale = keyPollCallback(vkfw::Key::eLeftShift) ? 35.0f : 15.0f;
-        const float rotateSpeedScale = 5.0f;
+        const float rotateSpeedScale = 0.05f;
 
         if (keyPollCallback(vkfw::Key::eW))
         {
@@ -273,26 +273,10 @@ namespace render
         }
 
 
+        auto [xDelta, yDelta] = mouseDeltas;
 
-        if (keyPollCallback(vkfw::Key::eLeft))
-        {
-            this->addYaw(deltaTime * rotateSpeedScale * -1.0f);
-        }
-
-        if (keyPollCallback(vkfw::Key::eRight))
-        {
-            this->addYaw(deltaTime * rotateSpeedScale);
-        }
-
-        if (keyPollCallback(vkfw::Key::eUp))
-        {
-            this->addPitch(deltaTime * rotateSpeedScale);
-        }
-
-        if (keyPollCallback(vkfw::Key::eDown))
-        {
-            this->addPitch(deltaTime * rotateSpeedScale * -1.0f);
-        }
+        this->addYaw(xDelta * deltaTime * rotateSpeedScale);
+        this->addPitch(yDelta * deltaTime * rotateSpeedScale * -1.0f);
     }
 
     void Camera::addPitch(float pitchToAdd)

@@ -76,7 +76,7 @@ namespace render
 
         void addPosition(const glm::vec3& positionToAdd);
 
-        void updateFromKeys(std::function<bool(vkfw::Key)>, float deltaTime);
+        void update(std::function<bool(vkfw::Key)>, std::pair<double, double> mouseDeltas, float deltaTime);
 
         void addPitch(float pitchToAdd);
         void addYaw(float yawToAdd);

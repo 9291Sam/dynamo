@@ -30,9 +30,7 @@ int main()
                 );
             }
 
-            camera.updateFromKeys(renderer.getKeyCallback(), renderer.getDeltaTimeSeconds());
-
-            // seb::logLog("Mouse delta: {X} {X}", renderer.getMouseDelta().first, renderer.getMouseDelta().second);
+            camera.update(renderer.getKeyCallback(), renderer.getMouseDelta(), renderer.getDeltaTimeSeconds());
 
             renderer.drawFrame(camera, world.getObjects());
         }

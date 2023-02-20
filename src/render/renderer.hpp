@@ -51,7 +51,7 @@ namespace render
 
             static float idx = 0.0f;
 
-            idx += 0.005f;
+            idx += 0.05f;
 
             // update Uniform Buffers TODO: refactor
 

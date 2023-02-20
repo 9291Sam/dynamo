@@ -12,6 +12,7 @@ Window::Window(vk::Extent2D size, std::string name)
 
     this->window_ptr = vkfw::createWindowUnique(size.width, size.height, name.c_str());
 
+    this->window_ptr->set<vkfw::InputMode::eCursor>(vkfw::CursorMode::eDisabled);
 }
 
 Window::~Window() 
