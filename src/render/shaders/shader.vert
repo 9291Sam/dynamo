@@ -5,7 +5,7 @@ layout(location = 1) in vec3 in_color;
 layout(location = 2) in vec3 in_normal;
 layout(location = 3) in vec2 in_uv;
 
-layout(push_constant) uniform PushConstantsGLSL
+layout(push_constant) uniform PushConstants
 {
     mat4 view_projection;
     mat4 model;
