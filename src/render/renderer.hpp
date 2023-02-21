@@ -45,13 +45,13 @@ namespace render
         [[nodiscard, gnu::pure]] float getDeltaTimeSeconds() const;
         [[nodiscard, gnu::pure]] bool shouldClose() const;
 
-        void drawFrame(const Camera& camera, std::ranges::input_range auto& objectView)
+        void drawFrame(const Camera& camera, const auto& objectView)
         {
             this->window.pollEvents();
 
             static float idx = 0.0f;
 
-            idx += 0.05f;
+            idx += 5.5f * this->getDeltaTimeSeconds();
 
             // update Uniform Buffers TODO: refactor
 

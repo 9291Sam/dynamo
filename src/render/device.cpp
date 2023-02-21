@@ -123,7 +123,10 @@ namespace render
             {
                 if ((t.propertyFlags & desiredFlags) == desiredFlags)
                 {
-                    seb::assertWarn(!idx_of_gpu_main_memory.has_value(), "There should only be one!");
+                    seb::assertWarn(
+                        !idx_of_gpu_main_memory.has_value(),
+                        "There should only be one memory pool with `desiredFlags`!"
+                    );
 
                     idx_of_gpu_main_memory = t.heapIndex;
                 }
@@ -131,13 +134,18 @@ namespace render
 
             if (idx_of_gpu_main_memory.has_value())
             {
-                if (memoryProperties.memoryHeaps.at(idx_of_gpu_main_memory.value()).size > 536870912)
+                if (memoryProperties.memoryHeaps.at(idx_of_gpu_main_memory.value()).size > 257 * 1024 * 1024)
                 {
                     return false;
                 }
             }
             return true;
         }();
+
+        if (!this->stage_buffers)
+        {
+            seb::logLog("Resizable BAR support detected");
+        }
     }
 
     bool Device::shouldBuffersStage() const

@@ -34,6 +34,12 @@ vk::Extent2D Window::size() const
 
 float Window::getDeltaTimeSeconds() const
 {
+    if (this->last_frame_duration.count() > 160000000.0f * 360)
+    {
+        seb::logWarn("Frame time longer than one second! Is the window minimized?");
+        return 0.01f; 
+    }
+
     return static_cast<float>(this->last_frame_duration.count()) / 1'000'000'000.0f;
 }
 
