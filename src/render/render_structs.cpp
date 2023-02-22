@@ -274,7 +274,7 @@ namespace render
 
 
         auto [xDelta, yDelta] = mouseDeltas;
-
+        
         this->addYaw(xDelta * deltaTime * rotateSpeedScale);
         this->addPitch(yDelta * deltaTime * rotateSpeedScale * -1.0f);
     }

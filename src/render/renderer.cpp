@@ -48,7 +48,7 @@ namespace render
 
         this->initializeRenderer();
 
-        seb::logTrace("Renderer initalized successfully");
+        seb::logLog("Renderer initalized successfully");
     }
 
     Renderer::~Renderer()

@@ -37,7 +37,7 @@ float Window::getDeltaTimeSeconds() const
     if (this->last_frame_duration.count() > 160000000.0f * 360)
     {
         seb::logWarn("Frame time longer than one second! Is the window minimized?");
-        return 0.01f; 
+        return 0.0001f; 
     }
 
     return static_cast<float>(this->last_frame_duration.count()) / 1'000'000'000.0f;
@@ -80,6 +80,17 @@ bool Window::isKeyPressed(vkfw::Key key) const
 
 std::pair<double, double> Window::getMouseDelta()
 {
+    static std::uint_fast8_t number_of_frames = 0;
+
+    // hack to ignore the first few values since they're basically random and cause the camera to be screwy
+    if (number_of_frames < 3) [[unlikely]]
+    {
+        auto [x, y] = this->window_ptr->getCursorPos();
+        this->previous_mouse_pos = std::make_pair<double, double>(std::move(x), std::move(y));
+        ++number_of_frames;
+        return std::make_pair<double, double>(0.0, 0.0);
+    }
+
     auto [x, y] = this->window_ptr->getCursorPos();
 
     std::pair<double, double> delta {

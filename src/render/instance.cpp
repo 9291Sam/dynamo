@@ -209,7 +209,7 @@ namespace render
         #endif
 
         
-        seb::logTrace("Vulkan initalized successfully");
+        seb::logLog("Vulkan initalized successfully");
     }
 
     Instance::~Instance()
