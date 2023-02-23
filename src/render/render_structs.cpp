@@ -262,12 +262,12 @@ namespace render
             this->addPosition(this->getRightVector() * deltaTime * moveSpeedScale * -1.0f);
         }
 
-        if (keyPollCallback(vkfw::Key::eE) || keyPollCallback(vkfw::Key::eSpace))
+        if (keyPollCallback(vkfw::Key::eSpace))
         {
             this->addPosition(render::Transform::UpVector * deltaTime * moveSpeedScale * -1.0f);
         }
 
-        if (keyPollCallback(vkfw::Key::eQ))
+        if (keyPollCallback(vkfw::Key::eLeftControl))
         {
             this->addPosition(render::Transform::UpVector * deltaTime * moveSpeedScale);
         }
