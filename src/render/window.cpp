@@ -34,7 +34,7 @@ vk::Extent2D Window::size() const
 
 float Window::getDeltaTimeSeconds() const
 {
-    if (this->last_frame_duration.count() > 160000000.0f * 360)
+    if (this->last_frame_duration.count() > 160000000UL * 360UL)
     {
         seb::logWarn("Frame time longer than one second! Is the window minimized?");
         return 0.0001f; 
@@ -98,8 +98,11 @@ std::pair<double, double> Window::getMouseDelta()
         y - this->previous_mouse_pos.second
     };
 
-    // moving doubles :eyes:
+    // :eyes:
     this->previous_mouse_pos = std::make_pair<double, double>(std::move(x), std::move(y));
 
-    return delta;
+    return std::make_pair<double, double>(
+        delta.first * (0.001 * static_cast<double>(this->window_ptr->getFramebufferWidth())),
+        delta.second * (0.001 * static_cast<double>(this->window_ptr->getFramebufferHeight()))
+    );
 }
