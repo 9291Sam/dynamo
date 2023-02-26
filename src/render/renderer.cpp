@@ -50,7 +50,8 @@ namespace render
             dl.getProcAddress<PFN_vkGetDeviceProcAddr>("vkGetDeviceProcAddr")
         );
 
-        // this->texture initalization
+        // this->texture && this->texture_sampler initalization
+        this->extra_commands.push([&](vk::CommandBuffer commandBuffer)
         {
             int width;
             int height;
@@ -90,28 +91,25 @@ namespace render
                 vk::MemoryPropertyFlagBits::eDeviceLocal
             );
 
-            this->extra_commands.push([&](vk::CommandBuffer commandBuffer)
-            {
-                this->texture->transitionLayout(
-                    commandBuffer,
-                    vk::ImageLayout::eUndefined,
-                    vk::ImageLayout::eTransferDstOptimal,
-                    vk::PipelineStageFlagBits::eTopOfPipe,
-                    vk::PipelineStageFlagBits::eTransfer,
-                    vk::AccessFlagBits::eNone,
-                    vk::AccessFlagBits::eTransferWrite
-                );
-                this->texture->copyFromBuffer(commandBuffer, imageStagingBuffer);
-                this->texture->transitionLayout(
-                    commandBuffer,
-                    vk::ImageLayout::eTransferDstOptimal,
-                    vk::ImageLayout::eShaderReadOnlyOptimal,
-                    vk::PipelineStageFlagBits::eTransfer,
-                    vk::PipelineStageFlagBits::eFragmentShader,
-                    vk::AccessFlagBits::eTransferWrite,
-                    vk::AccessFlagBits::eShaderRead
-                );
-            });
+            this->texture->transitionLayout(
+                commandBuffer,
+                vk::ImageLayout::eUndefined,
+                vk::ImageLayout::eTransferDstOptimal,
+                vk::PipelineStageFlagBits::eTopOfPipe,
+                vk::PipelineStageFlagBits::eTransfer,
+                vk::AccessFlagBits::eNone,
+                vk::AccessFlagBits::eTransferWrite
+            );
+            this->texture->copyFromBuffer(commandBuffer, imageStagingBuffer);
+            this->texture->transitionLayout(
+                commandBuffer,
+                vk::ImageLayout::eTransferDstOptimal,
+                vk::ImageLayout::eShaderReadOnlyOptimal,
+                vk::PipelineStageFlagBits::eTransfer,
+                vk::PipelineStageFlagBits::eFragmentShader,
+                vk::AccessFlagBits::eTransferWrite,
+                vk::AccessFlagBits::eShaderRead
+            );
 
             const vk::SamplerCreateInfo samplerCreateInfo
             {
@@ -136,8 +134,9 @@ namespace render
             };
 
             this->texture_sampler = this->device->asLogicalDevice().createSamplerUnique(samplerCreateInfo);
-        }
 
+            seb::todo("There is an issue here, the buffer falls out of scope and is deallocated before it can actually be used by the gpu");
+        });
         this->initializeRenderer();
 
         seb::logLog("Renderer initalized successfully");
@@ -297,56 +296,61 @@ namespace render
             "Incorrect number of Descriptor sets returned!"
         );
 
-        // update
-        for (std::size_t i = 0; i < this->MaxFramesInFlight; i++)
+        // bind descriptorsets to their corresponding buffers
+        // this is in an extra command since it needs to be done after theyre created
+        this->extra_commands.push([&]([[maybe_unused]] vk::CommandBuffer)
         {
-            const vk::DescriptorBufferInfo uniformBufferBindingInfo
+            for (std::size_t i = 0; i < this->MaxFramesInFlight; i++)
             {
-                .buffer {**this->uniform_buffers.at(i)},
-                .offset {0},
-                .range  {sizeof(UniformBuffer)},
-            };
-
-            const vk::DescriptorImageInfo textureImageBindingInfo
-            {
-                .sampler     {*this->texture_sampler},
-                .imageView   {**this->texture},
-                .imageLayout {this->texture->getLayout()},
-            };
-
-            std::array<vk::WriteDescriptorSet, 2> writeInfo
-            {
-                vk::WriteDescriptorSet
+                const vk::DescriptorBufferInfo uniformBufferBindingInfo
                 {
-                    .sType            {vk::StructureType::eWriteDescriptorSet},
-                    .pNext            {nullptr},
-                    .dstSet           {*this->descriptor_sets.at(i)},
-                    .dstBinding       {0},
-                    .dstArrayElement  {0},
-                    .descriptorCount  {1},
-                    .descriptorType   {vk::DescriptorType::eUniformBuffer},
-                    .pImageInfo       {nullptr},
-                    .pBufferInfo      {&uniformBufferBindingInfo},
-                    .pTexelBufferView {nullptr},
-                },
-                vk::WriteDescriptorSet
+                    .buffer {**this->uniform_buffers.at(i)},
+                    .offset {0},
+                    .range  {sizeof(UniformBuffer)},
+                };
+
+                const vk::DescriptorImageInfo textureImageBindingInfo
                 {
-                    .sType            {vk::StructureType::eWriteDescriptorSet},
-                    .pNext            {nullptr},
-                    .dstSet           {*this->descriptor_sets.at(i)},
-                    .dstBinding       {1},
-                    .dstArrayElement  {0},
-                    .descriptorCount  {1},
-                    .descriptorType   {vk::DescriptorType::eCombinedImageSampler},
-                    .pImageInfo       {&textureImageBindingInfo},
-                    .pBufferInfo      {nullptr},
-                    .pTexelBufferView {nullptr},
-                },
-            };
+                    .sampler     {*this->texture_sampler},
+                    .imageView   {**this->texture},
+                    // this isn't the image's current state, it's the final state it will be in
+                    .imageLayout {vk::ImageLayout::eShaderReadOnlyOptimal},
+                };
 
+                std::array<vk::WriteDescriptorSet, 2> writeInfo
+                {
+                    vk::WriteDescriptorSet
+                    {
+                        .sType            {vk::StructureType::eWriteDescriptorSet},
+                        .pNext            {nullptr},
+                        .dstSet           {*this->descriptor_sets.at(i)},
+                        .dstBinding       {0},
+                        .dstArrayElement  {0},
+                        .descriptorCount  {1},
+                        .descriptorType   {vk::DescriptorType::eUniformBuffer},
+                        .pImageInfo       {nullptr},
+                        .pBufferInfo      {&uniformBufferBindingInfo},
+                        .pTexelBufferView {nullptr},
+                    },
+                    vk::WriteDescriptorSet
+                    {
+                        .sType            {vk::StructureType::eWriteDescriptorSet},
+                        .pNext            {nullptr},
+                        .dstSet           {*this->descriptor_sets.at(i)},
+                        .dstBinding       {1},
+                        .dstArrayElement  {0},
+                        .descriptorCount  {1},
+                        .descriptorType   {vk::DescriptorType::eCombinedImageSampler},
+                        .pImageInfo       {&textureImageBindingInfo},
+                        .pBufferInfo      {nullptr},
+                        .pTexelBufferView {nullptr},
+                    },
+                };
 
-            this->device->asLogicalDevice().updateDescriptorSets(writeInfo, nullptr);
-        }
+                this->device->asLogicalDevice().updateDescriptorSets(writeInfo, nullptr);
+            }
+        });
+        
 
 
         // recreate frames

@@ -17,7 +17,7 @@
         const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
         [[maybe_unused]] void* pUserData)
     {
-        seb::logFatal("Validation Layer Message: Severity: {} | Type: {} | \n{}",
+        seb::panic("Validation Layer Message: Severity: {} | Type: {} | \n{}",
             messageSeverity,
             messageType,
             pCallbackData->pMessage

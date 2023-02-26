@@ -142,7 +142,7 @@ namespace render
             .subresourceRange    {
                 vk::ImageSubresourceRange
                 {
-                    .aspectMask     {aspect},
+                    .aspectMask     {this->aspect},
                     .baseMipLevel   {0},
                     .levelCount     {1},
                     .baseArrayLayer {0},
@@ -191,9 +191,24 @@ namespace render
                 .bufferOffset      {0},
                 .bufferRowLength   {0},
                 .bufferImageHeight {0},
-                .imageSubresource  {this->aspect},
+                .imageSubresource  {
+                    vk::ImageSubresourceLayers
+                    {
+                        .aspectMask     {this->aspect},
+                        .mipLevel       {0},
+                        .baseArrayLayer {0},
+                        .layerCount     {1},
+                    }
+                },
                 .imageOffset       {},
-                .imageExtent       {},
+                .imageExtent       {
+                    vk::Extent3D
+                    {
+                        .width  {this->extent.width},
+                        .height {this->extent.height},
+                        .depth  {1}
+                    }
+                }
             }
         };
 

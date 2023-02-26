@@ -75,7 +75,8 @@ namespace render
             #endif // __APPLE__
         };
 
-        const vk::PhysicalDeviceFeatures DeviceFeatures = {};
+        vk::PhysicalDeviceFeatures deviceFeatures = {};
+        deviceFeatures.samplerAnisotropy = true;
 
         const vk::DeviceCreateInfo deviceCreateInfo
         {
@@ -88,7 +89,7 @@ namespace render
             .ppEnabledLayerNames     {nullptr},
             .enabledExtensionCount   {static_cast<std::uint32_t>(DeviceExtensions.size())},
             .ppEnabledExtensionNames {DeviceExtensions.data()},
-            .pEnabledFeatures        {&DeviceFeatures},
+            .pEnabledFeatures        {&deviceFeatures},
         };
 
         this->logical_device = this->physical_device.createDeviceUnique(deviceCreateInfo);

@@ -4,13 +4,13 @@
 
 namespace render
 {
-    Buffer::Buffer(VmaAllocator allocator_,  std::size_t sizeBytes, 
+    Buffer::Buffer(VmaAllocator allocator_,  std::size_t sizeBytes_, 
         vk::BufferUsageFlags usage_, vk::MemoryPropertyFlags memoryProperty)
         : allocator  {allocator_}
         , buffer     {nullptr}
         , allocation {nullptr}
         , usage      {usage_}
-        , size_bytes {sizeBytes}
+        , size_bytes {sizeBytes_}
         , mapped_ptr {nullptr}
     {
         const VkBufferCreateInfo bufferCreateInfo
@@ -18,7 +18,7 @@ namespace render
             .sType                 {VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO},
             .pNext                 {nullptr},
             .flags                 {},
-            .size                  {sizeBytes},
+            .size                  {this->size_bytes},
             .usage                 {static_cast<VkBufferUsageFlags>(this->usage)},
             .sharingMode           {VK_SHARING_MODE_EXCLUSIVE},
             .queueFamilyIndexCount {0},
