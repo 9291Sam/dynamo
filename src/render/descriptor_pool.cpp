@@ -7,11 +7,20 @@ namespace render
         : device {device_}
         , number_of_sets {numberOfSets}
     {
-        const vk::DescriptorPoolSize poolSize
+        const std::array<vk::DescriptorPoolSize, 2> pools
         {
-            .type            {vk::DescriptorType::eUniformBuffer},
-            .descriptorCount {static_cast<std::uint32_t>(numberOfSets)}
+            vk::DescriptorPoolSize
+            {
+                .type            {vk::DescriptorType::eUniformBuffer},
+                .descriptorCount {static_cast<std::uint32_t>(numberOfSets)}
+            },
+            vk::DescriptorPoolSize
+            {
+                .type            {vk::DescriptorType::eCombinedImageSampler},
+                .descriptorCount {static_cast<std::uint32_t>(numberOfSets)}
+            },
         };
+        
 
         const vk::DescriptorPoolCreateInfo poolCreateInfo
         {
@@ -19,8 +28,8 @@ namespace render
             .pNext         {nullptr},
             .flags         {vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet},
             .maxSets       {static_cast<std::uint32_t>(numberOfSets)},
-            .poolSizeCount {1},
-            .pPoolSizes    {&poolSize}
+            .poolSizeCount {static_cast<std::uint32_t>(pools.size())},
+            .pPoolSizes    {pools.data()}
         };
 
         this->pool = device.createDescriptorPoolUnique(poolCreateInfo);

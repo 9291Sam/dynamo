@@ -112,6 +112,11 @@ namespace render
         return this->format;
     }
 
+    vk::ImageLayout Image2D::getLayout() const
+    {
+        return this->layout;
+    }
+
     void Image2D::transitionLayout(vk::CommandBuffer commandBuffer,
         vk::ImageLayout from, vk::ImageLayout to,
         vk::PipelineStageFlags sourceStage, vk::PipelineStageFlags destinationStage,

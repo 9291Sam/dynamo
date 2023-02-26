@@ -17,9 +17,10 @@ layout(binding = 0) uniform UniformBuffer
     vec4 light_color;
 } in_uniform_buffer;
 
-layout(location = 0) out vec3 out_color;
-layout(location = 1) out vec3 out_pos_world;
+layout(location = 0) out vec3 out_pos_world;
+layout(location = 1) out vec3 out_color;
 layout(location = 2) out vec3 out_normal;
+layout(location = 3) out vec2 out_uv;
 
 void main() 
 {
@@ -29,4 +30,5 @@ void main()
     out_color = in_color;
     out_pos_world = pos_world_affine.xyz * pos_world_affine.w;
     out_normal = inverse(transpose(mat3(in_push_constants.model))) * in_normal;
+    out_uv = in_uv;
 }

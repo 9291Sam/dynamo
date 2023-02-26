@@ -92,7 +92,6 @@ namespace render
 
             this->extra_commands.push([&](vk::CommandBuffer commandBuffer)
             {
-                seb::todo("implement barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;");
                 this->texture->transitionLayout(
                     commandBuffer,
                     vk::ImageLayout::eUndefined,
@@ -136,8 +135,8 @@ namespace render
                 .unnormalizedCoordinates {false},
             };
 
+            this->texture_sampler = this->device->asLogicalDevice().createSamplerUnique(samplerCreateInfo);
         }
-        seb::todo("Implement texturing");
 
         this->initializeRenderer();
 
@@ -308,7 +307,14 @@ namespace render
                 .range  {sizeof(UniformBuffer)},
             };
 
-            std::array<vk::WriteDescriptorSet, 1> writeInfo
+            const vk::DescriptorImageInfo textureImageBindingInfo
+            {
+                .sampler     {*this->texture_sampler},
+                .imageView   {**this->texture},
+                .imageLayout {this->texture->getLayout()},
+            };
+
+            std::array<vk::WriteDescriptorSet, 2> writeInfo
             {
                 vk::WriteDescriptorSet
                 {
@@ -322,7 +328,20 @@ namespace render
                     .pImageInfo       {nullptr},
                     .pBufferInfo      {&uniformBufferBindingInfo},
                     .pTexelBufferView {nullptr},
-                }
+                },
+                vk::WriteDescriptorSet
+                {
+                    .sType            {vk::StructureType::eWriteDescriptorSet},
+                    .pNext            {nullptr},
+                    .dstSet           {*this->descriptor_sets.at(i)},
+                    .dstBinding       {1},
+                    .dstArrayElement  {0},
+                    .descriptorCount  {1},
+                    .descriptorType   {vk::DescriptorType::eCombinedImageSampler},
+                    .pImageInfo       {&textureImageBindingInfo},
+                    .pBufferInfo      {nullptr},
+                    .pTexelBufferView {nullptr},
+                },
             };
 
 

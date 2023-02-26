@@ -46,7 +46,7 @@ namespace render
     Pipeline::Pipeline(vk::Device device, vk::RenderPass renderPass, vk::Extent2D swapchainExtent,
         vk::UniqueShaderModule vertexShader, vk::UniqueShaderModule fragmentShader)
     {
-        vk::PipelineShaderStageCreateInfo vertexCreateInfo {
+        const vk::PipelineShaderStageCreateInfo vertexCreateInfo {
             .sType               {vk::StructureType::ePipelineShaderStageCreateInfo},
             .pNext               {nullptr},
             .flags               {},
@@ -56,7 +56,7 @@ namespace render
             .pSpecializationInfo {nullptr},
         };
 
-        vk::PipelineShaderStageCreateInfo fragmentCreateInfo {
+        const vk::PipelineShaderStageCreateInfo fragmentCreateInfo {
             .sType               {vk::StructureType::ePipelineShaderStageCreateInfo},
             .pNext               {nullptr},
             .flags               {},
@@ -66,12 +66,12 @@ namespace render
             .pSpecializationInfo {nullptr},
         };
 
-        std::array<vk::PipelineShaderStageCreateInfo, 2> shaderStages {
+        const std::array<vk::PipelineShaderStageCreateInfo, 2> shaderStages {
             vertexCreateInfo,
             fragmentCreateInfo
         };
 
-        vk::PipelineVertexInputStateCreateInfo pipeVertexCreateInfo {
+        const vk::PipelineVertexInputStateCreateInfo pipeVertexCreateInfo {
             .sType                           {
                 vk::StructureType::ePipelineVertexInputStateCreateInfo},
             .pNext                           {nullptr},
@@ -83,7 +83,7 @@ namespace render
             .pVertexAttributeDescriptions    {Vertex::getAttributeDescriptions()->data()},
         };
 
-        vk::PipelineInputAssemblyStateCreateInfo inputAssemblyCreateInfo {
+        const vk::PipelineInputAssemblyStateCreateInfo inputAssemblyCreateInfo {
             .sType                  {vk::StructureType::ePipelineInputAssemblyStateCreateInfo},
             .pNext                  {},
             .flags                  {},
@@ -91,7 +91,7 @@ namespace render
             .primitiveRestartEnable {false}, // enables 0xFFFFFFFF triangle strip restart
         };
 
-        vk::Viewport viewport {
+        const vk::Viewport viewport {
             .x        {0.0f},
             .y        {0.0f},
             .width    {static_cast<float>(swapchainExtent.width)},
@@ -100,12 +100,12 @@ namespace render
             .maxDepth {1.0f},
         };
 
-        vk::Rect2D scissor {
+        const vk::Rect2D scissor {
             .offset {0, 0},
             .extent {swapchainExtent}
         };
 
-        vk::PipelineViewportStateCreateInfo viewportState {
+        const vk::PipelineViewportStateCreateInfo viewportState {
             .sType         {vk::StructureType::ePipelineViewportStateCreateInfo},
             .pNext         {nullptr},
             .flags         {},
@@ -115,7 +115,7 @@ namespace render
             .pScissors     {&scissor},
         };
 
-        vk::PipelineRasterizationStateCreateInfo rasterizationCreateInfo {
+        const vk::PipelineRasterizationStateCreateInfo rasterizationCreateInfo {
             .sType                   {vk::StructureType::ePipelineRasterizationStateCreateInfo},
             .pNext                   {nullptr},
             .flags                   {},
@@ -131,7 +131,7 @@ namespace render
             .lineWidth               {1.0f},
         };
         
-        vk::PipelineMultisampleStateCreateInfo multiSampleStateCreateInfo {
+        const vk::PipelineMultisampleStateCreateInfo multiSampleStateCreateInfo {
             .sType                 {vk::StructureType::ePipelineMultisampleStateCreateInfo},
             .pNext                 {nullptr},
             .flags                 {},
@@ -143,7 +143,7 @@ namespace render
             .alphaToOneEnable      {false},
         };
 
-        vk::PipelineColorBlendAttachmentState colorBlendAttachment {
+        const vk::PipelineColorBlendAttachmentState colorBlendAttachment {
             .blendEnable         {false},
             .srcColorBlendFactor {VULKAN_HPP_NAMESPACE::BlendFactor::eZero},
             .dstColorBlendFactor {VULKAN_HPP_NAMESPACE::BlendFactor::eOne},
@@ -159,7 +159,7 @@ namespace render
             },
         };
         
-        vk::PipelineColorBlendStateCreateInfo colorBlendCreateInfo {
+        const vk::PipelineColorBlendStateCreateInfo colorBlendCreateInfo {
             .sType           {vk::StructureType::ePipelineColorBlendStateCreateInfo},
             .pNext           {nullptr},
             .flags           {},
@@ -170,28 +170,40 @@ namespace render
             .blendConstants  {{0.0f, 0.0f, 0.0f, 0.0f}},
         };
 
-        vk::PushConstantRange pushConstantsInformation{
+        const vk::PushConstantRange pushConstantsInformation{
             .stageFlags {vk::ShaderStageFlagBits::eAllGraphics},
             .offset     {0},
             .size       {sizeof(PushConstants)},
         };
 
-        const vk::DescriptorSetLayoutBinding descriptorSetBinding
+        const std::array<vk::DescriptorSetLayoutBinding, 2> descriptorSetBindings
         {
-            .binding            {0},
-            .descriptorType     {vk::DescriptorType::eUniformBuffer},
-            .descriptorCount    {1},
-            .stageFlags         {vk::ShaderStageFlagBits::eAllGraphics},
-            .pImmutableSamplers {nullptr},
+            vk::DescriptorSetLayoutBinding
+            {
+                .binding            {0},
+                .descriptorType     {vk::DescriptorType::eUniformBuffer},
+                .descriptorCount    {1},
+                .stageFlags         {vk::ShaderStageFlagBits::eAllGraphics},
+                .pImmutableSamplers {nullptr},
+            },
+            vk::DescriptorSetLayoutBinding
+            {
+                .binding            {1},
+                .descriptorType     {vk::DescriptorType::eCombinedImageSampler},
+                .descriptorCount    {1},
+                .stageFlags         {vk::ShaderStageFlagBits::eFragment},
+                .pImmutableSamplers {nullptr},
+            }
         };
+        
 
         const vk::DescriptorSetLayoutCreateInfo descriptorSetLayoutInfo
         {
             .sType        {vk::StructureType::eDescriptorSetLayoutCreateInfo},
             .pNext        {nullptr},
             .flags        {},
-            .bindingCount {1},
-            .pBindings    {&descriptorSetBinding},
+            .bindingCount {descriptorSetBindings.size()},
+            .pBindings    {descriptorSetBindings.data()},
         };
 
         this->descriptor_layout = device.createDescriptorSetLayoutUnique(descriptorSetLayoutInfo);

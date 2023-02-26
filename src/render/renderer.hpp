@@ -106,6 +106,7 @@ namespace render
 
         // scratch stuff
         std::unique_ptr<Image2D> texture;
+        vk::UniqueSampler        texture_sampler;
 
         // Vulkan Rendering 
         std::unique_ptr<Swapchain>      swapchain;
