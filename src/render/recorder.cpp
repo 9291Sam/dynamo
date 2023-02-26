@@ -32,7 +32,8 @@ namespace render
         const RenderPass& renderPass, const Pipeline& pipeline, 
         const std::vector<vk::UniqueFramebuffer>& framebuffers, 
         vk::DescriptorSet descriptorSet,
-        const std::vector<Object>& objectsToDraw, const Camera& camera)
+        const std::vector<Object>& objectsToDraw, const Camera& camera,
+        std::queue<seb::Fn<void(vk::CommandBuffer)>>& extraCommandsQueue)
     {
         // seb::logWarn("BIND UNIFORMB UFF");
         const auto timeout = std::numeric_limits<std::uint64_t>::max();
@@ -65,6 +66,13 @@ namespace render
         };
 
         this->command_buffer->begin(commandBufferBeginInfo);
+
+        while (!extraCommandsQueue.empty())
+        {
+            extraCommandsQueue.front()(*this->command_buffer);
+
+            extraCommandsQueue.pop();
+        }
 
         std::array<vk::ClearValue, 2> clearValues
         {

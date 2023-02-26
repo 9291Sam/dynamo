@@ -4,11 +4,14 @@
 
 namespace render
 {
-    Image2D::Image2D(const Allocator& allocator_, vk::Device device, vk::Extent2D extent, 
-        vk::Format format_, vk::ImageUsageFlags usage, vk::ImageAspectFlags aspect,
+    Image2D::Image2D(const Allocator& allocator_, vk::Device device, vk::Extent2D extent_, 
+        vk::Format format_, vk::ImageUsageFlags usage, vk::ImageAspectFlags aspect_,
         vk::ImageTiling tiling, vk::MemoryPropertyFlags memoryFlags)
         : image          {nullptr}
+        , extent         {extent_}
+        , aspect         {aspect_}
         , format         {format_}
+        , layout         {vk::ImageLayout::eUndefined}
         , view           {nullptr}
         , memory         {nullptr}
         , maybeAllocator {&allocator_}
@@ -79,7 +82,7 @@ namespace render
             .subresourceRange {
                 vk::ImageSubresourceRange
                 {
-                    .aspectMask     {aspect},
+                    .aspectMask     {this->aspect},
                     .baseMipLevel   {0},
                     .levelCount     {1},
                     .baseArrayLayer {0},
@@ -99,19 +102,6 @@ namespace render
         }
     }
 
-    // Image2D::Image2D(Image2D&& other)
-    // {
-    //     this->image          = other.image;
-    //     this->format         = other.format;
-    //     this->view           = std::move(other.view);
-    //     this->memory         = other.memory;
-    //     this->maybeAllocator = other.maybeAllocator;
-
-    //     other.image = nullptr;
-    //     other.memory = nullptr;
-    //     other.maybeAllocator = nullptr;
-    // }
-
     vk::ImageView Image2D::operator*() const
     {
         return *this->view;
@@ -120,6 +110,85 @@ namespace render
     vk::Format Image2D::getFormat() const
     {
         return this->format;
+    }
+
+    void Image2D::transitionLayout(vk::CommandBuffer commandBuffer, vk::ImageLayout from, vk::ImageLayout to)
+    {
+        seb::assertFatal(this->layout == from, 
+            "Incompatible layouts! {} | {}",
+            vk::to_string(this->layout),
+            vk::to_string(from)
+        );
+
+        const vk::ImageMemoryBarrier barrier
+        {   
+            .sType               {vk::StructureType::eImageMemoryBarrier},
+            .pNext               {nullptr},
+            .srcAccessMask       {},
+            .dstAccessMask       {},
+            .oldLayout           {from},
+            .newLayout           {to},
+            .srcQueueFamilyIndex {VK_QUEUE_FAMILY_IGNORED},
+            .dstQueueFamilyIndex {VK_QUEUE_FAMILY_IGNORED},
+            .image               {this->image},
+            .subresourceRange    {
+                vk::ImageSubresourceRange
+                {
+                    .aspectMask     {aspect},
+                    .baseMipLevel   {0},
+                    .levelCount     {1},
+                    .baseArrayLayer {0},
+                    .layerCount     {1},
+                }
+            },
+        };
+
+        commandBuffer.pipelineBarrier()
+    }
+
+
+    void Image2D::copyFromBuffer(vk::CommandBuffer commandBuffer, const Buffer& buffer) const
+    {
+        std::size_t size_of_format;
+        switch (this->format)
+        {
+            case vk::Format::eR32G32B32A32Sfloat:
+                size_of_format = 16;
+                break;
+            case vk::Format::eR8G8B8A8Srgb:
+                size_of_format = 4;
+                break;
+            case vk::Format::eD32Sfloat:
+                size_of_format = 4;
+                break;
+            default:
+                seb::panic("Unimplemented data type!");
+        }
+        
+        const std::size_t totalBytes = this->extent.width * this->extent.height *  size_of_format;
+
+        seb::assertFatal(
+            totalBytes == buffer.sizeBytes(),
+            "Incorrect sizes of buffers! {} : {}",
+            totalBytes,
+            buffer.sizeBytes()
+        );
+
+        const std::array<vk::BufferImageCopy, 1> region
+        {
+            vk::BufferImageCopy
+            {
+                .bufferOffset      {0},
+                .bufferRowLength   {0},
+                .bufferImageHeight {0},
+                .imageSubresource  {this->aspect},
+                .imageOffset       {},
+                .imageExtent       {},
+            }
+        };
+
+        commandBuffer.copyBufferToImage(*buffer, this->image, this->layout, region);
+
     }
     
 } // namespace render

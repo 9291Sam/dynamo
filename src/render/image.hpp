@@ -6,6 +6,7 @@
 #include "vulkan_includes.hpp"
 
 #include "allocator.hpp"
+#include "buffer.hpp"
 
 namespace render
 {
@@ -25,13 +26,19 @@ namespace render
 
         [[nodiscard, gnu::pure]] vk::ImageView operator*() const;
         [[nodiscard, gnu::pure]] vk::Format getFormat() const;
+        
+        void transitionLayout(vk::CommandBuffer, vk::ImageLayout from, vk::ImageLayout to);
+        void copyFromBuffer(vk::CommandBuffer, const Buffer&) const;
 
     private:
-        vk::Image           image;
-        vk::Format          format;
-        vk::UniqueImageView view;
-        VmaAllocation       memory;
-        const Allocator*    maybeAllocator;
+        vk::Image            image;
+        vk::Extent2D         extent;
+        vk::ImageAspectFlags aspect;
+        vk::Format           format;
+        vk::ImageLayout      layout;
+        vk::UniqueImageView  view;
+        VmaAllocation        memory;
+        const Allocator*     maybeAllocator;
     };
 
 } // namespace render

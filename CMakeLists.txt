@@ -48,6 +48,15 @@ target_compile_options(Dynamo PUBLIC -march=native)
 target_compile_options(Dynamo PUBLIC -fvisibility=default)
 target_compile_options(Dynamo PUBLIC -Wfatal-errors)
 
+target_compile_options(Dynamo PUBLIC -D_GLIBCXX_DEBUG)
+target_compile_options(Dynamo PUBLIC -D_GLIBCXX_ASSERTIONS)
+target_compile_options(Dynamo PUBLIC -D_GLIBCXX_CONCEPT_CHECKS)
+# target_compile_options(Dynamo PUBLIC -D_GLIBCXX_DEBUG_BACKTRACE)
+# target_compile_options(Dynamo PUBLIC --enable-libstdcxx-backtrace=yes)
+# target_compile_options(Dynamo PUBLIC -lstdc++_libbacktrace)
+
+
+
 target_compile_options(Dynamo PUBLIC -Wall)
 target_compile_options(Dynamo PUBLIC -Wextra)
 target_compile_options(Dynamo PUBLIC -Wpedantic)
@@ -131,6 +140,11 @@ target_link_libraries(Dynamo vma)
 add_library(tinyobjloader INTERFACE)
 target_include_directories(tinyobjloader INTERFACE ${CMAKE_SOURCE_DIR}/inc/tinyobjloader)
 target_link_libraries(Dynamo tinyobjloader)
+
+# Add stb
+add_library(stb INTERFACE)
+target_include_directories(stb INTERFACE ${CMAKE_SOURCE_DIR}/inc/stb)
+target_link_libraries(Dynamo stb)
 
 # Add sebib
 add_library(sebib INTERFACE)

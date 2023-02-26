@@ -13,6 +13,7 @@ namespace render
         , device       {nullptr}
         , allocator    {nullptr}
         , command_pool {nullptr}
+        , texture      {nullptr}
         , swapchain    {nullptr}
         , depth_buffer {nullptr}
         , render_pass  {nullptr}
@@ -37,6 +38,9 @@ namespace render
         VULKAN_HPP_DEFAULT_DISPATCHER.init(**this->instance, this->device->asLogicalDevice());
 
         this->command_pool = std::make_unique<CommandPool>(*this->device);
+
+        // this->texture = std::make_unique<Image2D>()
+        seb::todo("Implement texturing");
 
         this->allocator = std::make_unique<Allocator>(
             **this->instance,

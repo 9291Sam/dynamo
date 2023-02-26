@@ -3,12 +3,15 @@
 #ifndef SRC_RENDER_RECORDER_HPP
 #define SRC_RENDER_RECORDER_HPP
 
-#include "vulkan_includes.hpp"
+#include <queue>
+
+#include <sebib/sebmis.hpp>
 
 #include "pipeline.hpp"
 #include "render_structs.hpp"
 #include "render_pass.hpp"
 #include "swapchain.hpp"
+#include "vulkan_includes.hpp"
 
 namespace render
 {
@@ -27,7 +30,8 @@ namespace render
         vk::Result render(
             const Device&, const Swapchain&, const RenderPass&, const Pipeline&, 
             const std::vector<vk::UniqueFramebuffer>&, vk::DescriptorSet,
-            const std::vector<Object>&, const Camera&
+            const std::vector<Object>&, const Camera&, 
+            std::queue<seb::Fn<void(vk::CommandBuffer)>>&
         );
 
     private:

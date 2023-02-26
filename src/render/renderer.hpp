@@ -6,6 +6,7 @@
 #include <ranges>
 
 #include <sebib/seblog.hpp>
+#include <sebib/sebmis.hpp>
 
 #include "allocator.hpp"
 #include "command_pool.hpp"
@@ -70,7 +71,7 @@ namespace render
                 *this->device, *this->swapchain, *this->render_pass, *this->pipeline,
                 this->framebuffers,
                 *this->descriptor_sets.at(this->render_index),
-                objectView, camera
+                objectView, camera, this->extra_commands
             );
 
             this->render_index = (this->render_index + 1) % this->MaxFramesInFlight;
@@ -94,6 +95,7 @@ namespace render
 
 
         Window window;
+        std::queue<seb::Fn<void(vk::CommandBuffer)>> extra_commands;
 
         // Vulkan Initialization 
         std::unique_ptr<Instance>    instance;
@@ -101,6 +103,9 @@ namespace render
         std::unique_ptr<Device>      device;
         std::unique_ptr<Allocator>   allocator;
         std::unique_ptr<CommandPool> command_pool; // one pool per thread
+
+        // scratch stuff
+        std::unique_ptr<Image2D> texture;
 
         // Vulkan Rendering 
         std::unique_ptr<Swapchain>      swapchain;
