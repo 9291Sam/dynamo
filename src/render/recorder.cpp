@@ -33,7 +33,7 @@ namespace render
         const std::vector<vk::UniqueFramebuffer>& framebuffers, 
         vk::DescriptorSet descriptorSet,
         const std::vector<Object>& objectsToDraw, const Camera& camera,
-        std::queue<seb::Fn<void(vk::CommandBuffer)>>& extraCommandsQueue)
+        std::queue<std::function<void(vk::CommandBuffer)>>& extraCommandsQueue)
     {
         // seb::logWarn("BIND UNIFORMB UFF");
         const auto timeout = std::numeric_limits<std::uint64_t>::max();

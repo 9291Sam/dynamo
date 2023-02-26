@@ -31,7 +31,7 @@ namespace render
             const Device&, const Swapchain&, const RenderPass&, const Pipeline&, 
             const std::vector<vk::UniqueFramebuffer>&, vk::DescriptorSet,
             const std::vector<Object>&, const Camera&, 
-            std::queue<seb::Fn<void(vk::CommandBuffer)>>&
+            std::queue<std::function<void(vk::CommandBuffer)>>&
         );
 
     private:

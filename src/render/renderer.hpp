@@ -95,7 +95,7 @@ namespace render
 
 
         Window window;
-        std::queue<seb::Fn<void(vk::CommandBuffer)>> extra_commands;
+        std::queue<std::function<void(vk::CommandBuffer)>> extra_commands;
 
         // Vulkan Initialization 
         std::unique_ptr<Instance>    instance;

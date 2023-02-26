@@ -1,6 +1,9 @@
-#include "vulkan_includes.hpp"
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb/stb_image.h>
 
 #include <sebib/seblog.hpp>
+
+#include "vulkan_includes.hpp"
 
 #include "renderer.hpp"
 
@@ -39,7 +42,93 @@ namespace render
 
         this->command_pool = std::make_unique<CommandPool>(*this->device);
 
-        // this->texture = std::make_unique<Image2D>()
+        // this->texture initalization
+        {
+            int width;
+            int height;
+            int textureChannels;
+            stbi_uc* pixels = stbi_load("../textures/texture.jpeg", &width, &height, &textureChannels, STBI_rgb_alpha);
+
+            seb::assertFatal(pixels, "Failed to load from file, is the filepath correct?");
+
+            const vk::DeviceSize imageSize = width * height * 4; // 4 is for the rgba component being 4 bytes;
+
+            const Buffer imageStagingBuffer {
+                **this->allocator,
+                imageSize,
+                vk::BufferUsageFlagBits::eTransferSrc,
+                vk::MemoryPropertyFlagBits::eHostVisible |
+                vk::MemoryPropertyFlagBits::eHostCoherent
+            };
+
+            imageStagingBuffer.write(std::span<std::byte>{reinterpret_cast<std::byte*>(pixels), imageSize});
+
+            stbi_image_free(pixels);
+            // Quite possibly the first time i've ever called a free function not in a destructor
+            // RAII my beloved
+
+            this->texture = std::make_unique<Image2D>(
+                *this->allocator,
+                this->device->asLogicalDevice(),
+                vk::Extent2D
+                {
+                    .width  {static_cast<std::uint32_t>(width)},
+                    .height {static_cast<std::uint32_t>(height)}
+                },
+                vk::Format::eR8G8B8A8Srgb,
+                vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled,
+                vk::ImageAspectFlagBits::eColor,
+                vk::ImageTiling::eOptimal,
+                vk::MemoryPropertyFlagBits::eDeviceLocal
+            );
+
+            this->extra_commands.push([&](vk::CommandBuffer commandBuffer)
+            {
+                seb::todo("implement barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;");
+                this->texture->transitionLayout(
+                    commandBuffer,
+                    vk::ImageLayout::eUndefined,
+                    vk::ImageLayout::eTransferDstOptimal,
+                    vk::PipelineStageFlagBits::eTopOfPipe,
+                    vk::PipelineStageFlagBits::eTransfer,
+                    vk::AccessFlagBits::eNone,
+                    vk::AccessFlagBits::eTransferWrite
+                );
+                this->texture->copyFromBuffer(commandBuffer, imageStagingBuffer);
+                this->texture->transitionLayout(
+                    commandBuffer,
+                    vk::ImageLayout::eTransferDstOptimal,
+                    vk::ImageLayout::eShaderReadOnlyOptimal,
+                    vk::PipelineStageFlagBits::eTransfer,
+                    vk::PipelineStageFlagBits::eFragmentShader,
+                    vk::AccessFlagBits::eTransferWrite,
+                    vk::AccessFlagBits::eShaderRead
+                );
+            });
+
+            const vk::SamplerCreateInfo samplerCreateInfo
+            {
+                .sType                   {vk::StructureType::eSamplerCreateInfo},
+                .pNext                   {nullptr},
+                .flags                   {},
+                .magFilter               {VULKAN_HPP_NAMESPACE::Filter::eNearest},
+                .minFilter               {VULKAN_HPP_NAMESPACE::Filter::eNearest},
+                .mipmapMode              {VULKAN_HPP_NAMESPACE::SamplerMipmapMode::eNearest},
+                .addressModeU            {VULKAN_HPP_NAMESPACE::SamplerAddressMode::eRepeat},
+                .addressModeV            {VULKAN_HPP_NAMESPACE::SamplerAddressMode::eRepeat},
+                .addressModeW            {VULKAN_HPP_NAMESPACE::SamplerAddressMode::eRepeat},
+                .mipLodBias              {},
+                .anisotropyEnable        {true},
+                .maxAnisotropy           {this->device->asPhysicalDevice().getProperties().limits.maxSamplerAnisotropy},
+                .compareEnable           {false},
+                .compareOp               {VULKAN_HPP_NAMESPACE::CompareOp::eAlways},
+                .minLod                  {},
+                .maxLod                  {},
+                .borderColor             {VULKAN_HPP_NAMESPACE::BorderColor::eIntOpaqueBlack},
+                .unnormalizedCoordinates {false},
+            };
+
+        }
         seb::todo("Implement texturing");
 
         this->allocator = std::make_unique<Allocator>(

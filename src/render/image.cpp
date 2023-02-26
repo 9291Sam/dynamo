@@ -112,7 +112,10 @@ namespace render
         return this->format;
     }
 
-    void Image2D::transitionLayout(vk::CommandBuffer commandBuffer, vk::ImageLayout from, vk::ImageLayout to)
+    void Image2D::transitionLayout(vk::CommandBuffer commandBuffer,
+        vk::ImageLayout from, vk::ImageLayout to,
+        vk::PipelineStageFlags sourceStage, vk::PipelineStageFlags destinationStage,
+        vk::AccessFlags sourceAccess, vk::AccessFlags destinationAccess)
     {
         seb::assertFatal(this->layout == from, 
             "Incompatible layouts! {} | {}",
@@ -124,8 +127,8 @@ namespace render
         {   
             .sType               {vk::StructureType::eImageMemoryBarrier},
             .pNext               {nullptr},
-            .srcAccessMask       {},
-            .dstAccessMask       {},
+            .srcAccessMask       {sourceAccess},
+            .dstAccessMask       {destinationAccess},
             .oldLayout           {from},
             .newLayout           {to},
             .srcQueueFamilyIndex {VK_QUEUE_FAMILY_IGNORED},
@@ -143,7 +146,9 @@ namespace render
             },
         };
 
-        commandBuffer.pipelineBarrier()
+        commandBuffer.pipelineBarrier(sourceStage, destinationStage, {}, nullptr, nullptr, barrier);
+
+        this->layout = to;
     }
 
 

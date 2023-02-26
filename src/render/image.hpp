@@ -27,7 +27,9 @@ namespace render
         [[nodiscard, gnu::pure]] vk::ImageView operator*() const;
         [[nodiscard, gnu::pure]] vk::Format getFormat() const;
         
-        void transitionLayout(vk::CommandBuffer, vk::ImageLayout from, vk::ImageLayout to);
+        void transitionLayout(vk::CommandBuffer, vk::ImageLayout from, vk::ImageLayout to,
+            vk::PipelineStageFlags sourceStage, vk::PipelineStageFlags destinationStage,
+            vk::AccessFlags sourceAccess, vk::AccessFlags destinationAccess);
         void copyFromBuffer(vk::CommandBuffer, const Buffer&) const;
 
     private:
