@@ -105,6 +105,7 @@ namespace render
         std::unique_ptr<CommandPool> command_pool; // one pool per thread
 
         // scratch stuff
+        std::unique_ptr<Buffer>  image_buffer;
         std::unique_ptr<Image2D> texture;
         vk::UniqueSampler        texture_sampler;
 

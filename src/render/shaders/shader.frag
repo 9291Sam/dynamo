@@ -17,7 +17,7 @@ layout(binding = 0) uniform UniformBuffer
     vec4 light_color;
 } in_uniform_buffer;
 
-// layout(binding = 1) uniform sampler2D in_texture_sampler;
+layout(binding = 1) uniform sampler2D in_texture_sampler;
 
 layout(location = 0) out vec4 out_color;
 
@@ -35,5 +35,5 @@ void main()
     //     (in_color * in_uniform_buffer.light_color.xyz * max(dot(normal_vector, direction_to_light), 0.0) *
     //     in_uniform_buffer.light_color.w *
     //     (1.0 / sqrt((dot(distance_to_light, distance_to_light)))));
-    out_color = vec4(in_uv, 1.0, 1.0);
+    out_color = texture(in_texture_sampler, in_uv);
 }

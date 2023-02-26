@@ -16,6 +16,7 @@ namespace render
         , device       {nullptr}
         , allocator    {nullptr}
         , command_pool {nullptr}
+        , image_buffer {nullptr}
         , texture      {nullptr}
         , swapchain    {nullptr}
         , depth_buffer {nullptr}
@@ -62,15 +63,17 @@ namespace render
 
             const vk::DeviceSize imageSize = width * height * 4; // 4 is for the rgba component being 4 bytes;
 
-            const Buffer imageStagingBuffer {
+
+
+            this->image_buffer = std::make_unique<Buffer>(
                 **this->allocator,
                 imageSize,
                 vk::BufferUsageFlagBits::eTransferSrc,
                 vk::MemoryPropertyFlagBits::eHostVisible |
                 vk::MemoryPropertyFlagBits::eHostCoherent
-            };
+            );
 
-            imageStagingBuffer.write(std::span<std::byte>{reinterpret_cast<std::byte*>(pixels), imageSize});
+            this->image_buffer->write(std::span<std::byte>{reinterpret_cast<std::byte*>(pixels), imageSize});
 
             stbi_image_free(pixels);
             // Quite possibly the first time i've ever called a free function not in a destructor
@@ -100,7 +103,7 @@ namespace render
                 vk::AccessFlagBits::eNone,
                 vk::AccessFlagBits::eTransferWrite
             );
-            this->texture->copyFromBuffer(commandBuffer, imageStagingBuffer);
+            this->texture->copyFromBuffer(commandBuffer, *this->image_buffer);
             this->texture->transitionLayout(
                 commandBuffer,
                 vk::ImageLayout::eTransferDstOptimal,
@@ -135,7 +138,7 @@ namespace render
 
             this->texture_sampler = this->device->asLogicalDevice().createSamplerUnique(samplerCreateInfo);
 
-            seb::todo("There is an issue here, the buffer falls out of scope and is deallocated before it can actually be used by the gpu");
+            // seb::todo("There is an issue here, the buffer falls out of scope and is deallocated before it can actually be used by the gpu");
         });
         this->initializeRenderer();
 
