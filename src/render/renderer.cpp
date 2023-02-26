@@ -42,6 +42,14 @@ namespace render
 
         this->command_pool = std::make_unique<CommandPool>(*this->device);
 
+        this->allocator = std::make_unique<Allocator>(
+            **this->instance,
+            this->device->asPhysicalDevice(),
+            this->device->asLogicalDevice(),
+            dynVkGetInstanceProcAddr,
+            dl.getProcAddress<PFN_vkGetDeviceProcAddr>("vkGetDeviceProcAddr")
+        );
+
         // this->texture initalization
         {
             int width;
@@ -130,14 +138,6 @@ namespace render
 
         }
         seb::todo("Implement texturing");
-
-        this->allocator = std::make_unique<Allocator>(
-            **this->instance,
-            this->device->asPhysicalDevice(),
-            this->device->asLogicalDevice(),
-            dynVkGetInstanceProcAddr,
-            dl.getProcAddress<PFN_vkGetDeviceProcAddr>("vkGetDeviceProcAddr")
-        );
 
         this->initializeRenderer();
 
