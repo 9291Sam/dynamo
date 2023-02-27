@@ -24,7 +24,7 @@ int main()
         {
             if (renderer.getKeyCallback()(vkfw::Key::eJ))
             {
-                seb::logLog("FPS: {} | Camera: {:.52}", 
+                seb::logLog("FPS: {} | Camera: {}", 
                     1.0f / renderer.getDeltaTimeSeconds(), 
                     static_cast<std::string>(camera)
                 );

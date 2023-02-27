@@ -239,7 +239,7 @@ namespace render
 
     void Camera::update(std::function<bool(vkfw::Key)> keyPollCallback, std::pair<double, double> mouseDeltas, float deltaTime)
     {
-        const float moveSpeedScale = keyPollCallback(vkfw::Key::eLeftShift) ? 150.0f : 50.0f;
+        const float moveSpeedScale = keyPollCallback(vkfw::Key::eLeftShift) ? 350.0f : 165.0f;
         const float rotateSpeedScale = 1.0f;
 
         if (keyPollCallback(vkfw::Key::eW))
@@ -282,6 +282,7 @@ namespace render
     void Camera::addPitch(float pitchToAdd)
     {
         this->pitch += pitchToAdd;
+        // this->pitch = std::clamp(this->pitch, static_cast<float>(-std::numbers::pi), static_cast<float>(std::numbers::pi));
         this->updateRotation();
     }
 
@@ -340,7 +341,7 @@ namespace render
     {
         glm::quat q {1.0f, 0.0f, 0.0f, 0.0f};
 
-        this->pitch = glm::mod(this->pitch, glm::two_pi<float>());
+        this->pitch = std::clamp(this->pitch, -glm::half_pi<float>(), glm::half_pi<float>());
         this->yaw = glm::mod(this->yaw, glm::two_pi<float>());
 
         q *= glm::angleAxis(this->pitch, glm::vec3 {1.0f, 0.0f, 0.0f});
