@@ -30,10 +30,9 @@ void main()
     const vec3 direction_to_light = normalize(distance_to_light);
     
 
-    // out_color = ambient_light.xyz * ambient_light.w;
-    // out_color.xyz +=
-    //     (in_color * in_uniform_buffer.light_color.xyz * max(dot(normal_vector, direction_to_light), 0.0) *
-    //     in_uniform_buffer.light_color.w *
-    //     (1.0 / sqrt((dot(distance_to_light, distance_to_light)))));
-    out_color = texture(in_texture_sampler, in_uv);
+    out_color = vec4(ambient_light.xyz * ambient_light.w, 1.0);
+    out_color.xyz +=
+        (vec3(texture(in_texture_sampler, in_uv)) * in_uniform_buffer.light_color.xyz * max(dot(normal_vector, direction_to_light), 0.0) *
+        in_uniform_buffer.light_color.w *
+        (1.0 / sqrt((dot(distance_to_light, distance_to_light)))));
 }

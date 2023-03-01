@@ -137,8 +137,6 @@ namespace render
             };
 
             this->texture_sampler = this->device->asLogicalDevice().createSamplerUnique(samplerCreateInfo);
-
-            // seb::todo("There is an issue here, the buffer falls out of scope and is deallocated before it can actually be used by the gpu");
         });
         this->initializeRenderer();
 

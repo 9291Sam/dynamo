@@ -14,7 +14,6 @@ namespace render
         vulkanFunctions.vkGetDeviceProcAddr   = dynVkGetDeviceProcAddr;
 
         VmaAllocatorCreateInfo allocatorCreateInfo {};
-        // allocatorCreateInfo.flags  = {}; /* TODO: threadsafety performance flag! */
         allocatorCreateInfo.physicalDevice              = {physicalDevice};
         allocatorCreateInfo.device                      = {logicalDevice};
         allocatorCreateInfo.pVulkanFunctions            = {&vulkanFunctions}; 
