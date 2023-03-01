@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef SRC_RENDER_RENDERER_HPP
 #define SRC_RENDER_RENDERER_HPP
 
@@ -127,10 +125,10 @@ namespace render
             // Each one can have a Recorder Thread
 
         // renderer
-        std::size_t                                           render_index;
-        constexpr static std::size_t                          MaxFramesInFlight = 2;
+        std::size_t                                              render_index;
+        constexpr static std::size_t                             MaxFramesInFlight = 2;
         std::array<std::unique_ptr<Buffer>, MaxFramesInFlight>   uniform_buffers;
-        std::vector<vk::UniqueDescriptorSet> descriptor_sets;
+        std::vector<vk::UniqueDescriptorSet>                     descriptor_sets;
         std::array<std::unique_ptr<Recorder>, MaxFramesInFlight> frames; // wait why the fuck do you need multiple frame buffers
         
     }; // class Renderer

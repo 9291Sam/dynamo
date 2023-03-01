@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef SRC_RENDER_PIPELINE_HPP
 #define SRC_RENDER_PIPELINE_HPP
 

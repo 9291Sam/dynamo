@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef SRC_WORLD_WORLD_HPP
 #define SRC_WORLD_WORLD_HPP
 

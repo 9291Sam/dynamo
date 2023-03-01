@@ -30,7 +30,6 @@ int main()
                 );
             }
 
-
             camera.update(renderer.getKeyCallback(), renderer.getMouseDelta(), renderer.getDeltaTimeSeconds());
 
             renderer.drawFrame(camera, world.getObjects());

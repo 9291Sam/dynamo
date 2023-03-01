@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef SRC_RENDER_COMMAND__POOL_HPP
 #define SRC_RENDER_COMMAND__POOL_HPP
 

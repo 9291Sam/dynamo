@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef SRC_WINDOW_HPP
 #define SRC_WINDOW_HPP
 
