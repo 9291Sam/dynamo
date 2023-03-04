@@ -34,7 +34,7 @@ vk::Extent2D Window::size() const
 
 float Window::getDeltaTimeSeconds() const
 {
-    if (this->last_frame_duration.count() > 160000000L * 360L)
+    if (this->last_frame_duration.count() > 160000000LL * 360LL)
     {
         return 0.0001f; 
     }
