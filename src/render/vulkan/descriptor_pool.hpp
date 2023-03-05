@@ -13,7 +13,7 @@ namespace render
         DescriptorPool(
             vk::Device, 
             vk::DescriptorSetLayout,
-            const std::vector<vk::DescriptorPoolSize >&
+            const std::vector<vk::DescriptorPoolSize>&
         );
         ~DescriptorPool()                                = default;
 

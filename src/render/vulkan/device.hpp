@@ -25,19 +25,14 @@ namespace render
         [[nodiscard]] vk::PhysicalDevice asPhysicalDevice() const;
         [[nodiscard]] vk::Device asLogicalDevice() const;
 
-        [[nodiscard]] std::uint32_t getRenderIndex() const;
-        [[nodiscard]] vk::Queue getRenderQueue() const;
-
-        // [[nodiscard]] std::uint32_t getComputeIndex() const;
-        // [[nodiscard]] vk::Queue getComputeQueue() const;
+        [[nodiscard]] std::uint32_t getRenderComputeTransferIndex() const;
+        [[nodiscard]] vk::Queue getRenderComputeTransferQueue() const;
 
     private:
         vk::PhysicalDevice physical_device;
         vk::UniqueDevice   logical_device;
         std::uint32_t      render_index;
         vk::Queue          render_queue;
-        // std::uint32_t      compute_index;
-        // vk::Queue          compute_queue;
         bool               stage_buffers;
     }; // class Device
 } // namespace render 

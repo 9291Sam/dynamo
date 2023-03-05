@@ -30,4 +30,4 @@ namespace render
 
 } // namespace render
 
-#endif // SRC_RENDER_ALLOCATOR_HPP
+#endif // SRC_RENDER_VULKAN_ALLOCATOR_HPP

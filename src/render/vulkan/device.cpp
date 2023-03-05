@@ -5,10 +5,15 @@
 std::uint32_t findIndexOfGraphicsAndPresentQueue(vk::PhysicalDevice pD, vk::SurfaceKHR surface)
 {
     std::uint32_t idx = 0;
+
     for (auto q : pD.getQueueFamilyProperties())
     {
-        seb::logTrace("Avilable queue: {} | idx {}", vk::to_string(q.queueFlags), idx);
         if (!(q.queueFlags & vk::QueueFlagBits::eGraphics))
+        {
+            continue;
+        }
+
+        if (!(q.queueFlags & vk::QueueFlagBits::eTransfer))
         {
             continue;
         }
@@ -21,7 +26,7 @@ std::uint32_t findIndexOfGraphicsAndPresentQueue(vk::PhysicalDevice pD, vk::Surf
         return idx;
     }
 
-    seb::panic("Failed to find a suitable Graphics + Present queue");
+    seb::panic("Failed to find a suitable queue");
 }
 
 std::size_t getDeviceRating(vk::PhysicalDevice device)
@@ -167,12 +172,12 @@ namespace render
     }
 
 
-    std::uint32_t Device::getRenderIndex() const
+    std::uint32_t Device::getRenderComputeTransferIndex() const
     {
         return this->render_index;
     }
 
-    vk::Queue Device::getRenderQueue() const
+    vk::Queue Device::getRenderComputeTransferQueue() const
     {
         return this->render_queue;
     }

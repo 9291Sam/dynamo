@@ -44,4 +44,4 @@ namespace render
 
 } // namespace render
 
-#endif // SRC_RENDER_IMAGE_HPP
+#endif // SRC_RENDER_VULKAN_IMAGE_HPP
