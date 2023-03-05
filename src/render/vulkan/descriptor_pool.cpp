@@ -3,31 +3,21 @@
 namespace render
 {
 
-    DescriptorPool::DescriptorPool(vk::Device device_, std::size_t numberOfSets)
+    DescriptorPool::DescriptorPool(
+        vk::Device device_, 
+        vk::DescriptorSetLayout layout_,
+        const std::vector<vk::DescriptorPoolSize>& pools
+    )
         : device {device_}
-        , number_of_sets {numberOfSets}
-    {
-        const std::array<vk::DescriptorPoolSize, 2> pools
-        {
-            vk::DescriptorPoolSize
-            {
-                .type            {vk::DescriptorType::eUniformBuffer},
-                .descriptorCount {static_cast<std::uint32_t>(numberOfSets)}
-            },
-            vk::DescriptorPoolSize
-            {
-                .type            {vk::DescriptorType::eCombinedImageSampler},
-                .descriptorCount {static_cast<std::uint32_t>(numberOfSets)}
-            },
-        };
-        
-
+        , layout {layout_}
+        , number_of_sets {pools.size()}
+    {    
         const vk::DescriptorPoolCreateInfo poolCreateInfo
         {
             .sType         {vk::StructureType::eDescriptorPoolCreateInfo},
             .pNext         {nullptr},
             .flags         {vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet},
-            .maxSets       {static_cast<std::uint32_t>(numberOfSets)},
+            .maxSets       {static_cast<std::uint32_t>(this->number_of_sets)},
             .poolSizeCount {static_cast<std::uint32_t>(pools.size())},
             .pPoolSizes    {pools.data()}
         };
@@ -35,10 +25,10 @@ namespace render
         this->pool = device.createDescriptorPoolUnique(poolCreateInfo);
     }
 
-    auto DescriptorPool::allocate(vk::DescriptorSetLayout layout) const
+    auto DescriptorPool::allocate() const
         -> std::vector<vk::UniqueDescriptorSet>
     {
-        const std::vector<vk::DescriptorSetLayout> layouts {this->number_of_sets, layout};
+        const std::vector<vk::DescriptorSetLayout> layouts {this->number_of_sets, this->layout};
 
         const vk::DescriptorSetAllocateInfo allocateInfo
         {

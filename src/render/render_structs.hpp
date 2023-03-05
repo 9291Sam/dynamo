@@ -4,7 +4,7 @@
 #include <optional>
 #include <vector>
 
-#include "buffer.hpp"
+#include "vulkan/buffer.hpp"
 #include "gpu_structs.hpp"
 
 namespace render
@@ -26,9 +26,9 @@ namespace render
         [[nodiscard]] glm::mat4 asRotationMatrix() const;
         [[nodiscard]] glm::mat4 asScaleMatrix() const;
 
-        [[nodiscard, gnu::pure]] glm::vec3 getForwardVector() const;
-        [[nodiscard, gnu::pure]] glm::vec3 getUpVector() const;
-        [[nodiscard, gnu::pure]] glm::vec3 getRightVector() const;
+        [[nodiscard]] glm::vec3 getForwardVector() const;
+        [[nodiscard]] glm::vec3 getUpVector() const;
+        [[nodiscard]] glm::vec3 getRightVector() const;
 
         [[nodiscard]] explicit operator std::string() const;
     };
@@ -79,11 +79,11 @@ namespace render
         void addPitch(float pitchToAdd);
         void addYaw(float yawToAdd);
 
-        [[nodiscard, gnu::pure]] auto getForwardVector()
+        [[nodiscard]] auto getForwardVector()
             -> glm::vec3;
-        [[nodiscard, gnu::pure]] auto getRightVector()
+        [[nodiscard]] auto getRightVector()
             -> glm::vec3;
-        [[nodiscard, gnu::pure]] auto getUpVector()
+        [[nodiscard]] auto getUpVector()
             -> glm::vec3;
 
         [[nodiscard]] explicit operator std::string() const;

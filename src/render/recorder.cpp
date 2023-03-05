@@ -178,7 +178,7 @@ namespace render
             }
         };
 
-        device.getRenderQueue().submit(submitInfos, *this->frame_in_flight);
+        device.getRenderComputeTransferQueue().submit(submitInfos, *this->frame_in_flight);
 
         vk::SwapchainKHR swapchainPtr = *swapchain;
 
@@ -193,12 +193,10 @@ namespace render
             .pImageIndices      {&maybeNextIdx},
             .pResults           {nullptr},
         };
-
-        // also present queue TODO: fix
-
+        
         try
         {
-            (void)device.getRenderQueue().presentKHR(presentInfo);
+            (void)device.getRenderComputeTransferQueue().presentKHR(presentInfo);
         }
         catch (vk::OutOfDateKHRError& e)
         {

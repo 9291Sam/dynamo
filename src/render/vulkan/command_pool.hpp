@@ -1,8 +1,8 @@
-#ifndef SRC_RENDER_COMMAND__POOL_HPP
-#define SRC_RENDER_COMMAND__POOL_HPP
+#ifndef SRC_RENDER_VULKAN_COMMAND__POOL_HPP
+#define SRC_RENDER_VULKAN_COMMAND__POOL_HPP
 
 #include "device.hpp"
-#include "vulkan_includes.hpp"
+#include "includes.hpp"
 
 namespace render
 {
@@ -16,15 +16,14 @@ namespace render
 
         CommandPool()                              = delete;
         CommandPool(const CommandPool&)            = delete;
-        CommandPool(CommandPool&&)                 = delete;
+        CommandPool(CommandPool&&)                 = default;
         CommandPool& operator=(const CommandPool&) = delete;
-        CommandPool& operator=(CommandPool&&)      = delete; 
+        CommandPool& operator=(CommandPool&&)      = default; 
 
-        [[nodiscard, gnu::pure]] vk::CommandPool operator*() const;
+        [[nodiscard]] vk::CommandPool operator*() const;
 
     private:
         vk::UniqueCommandPool command_pool;
-
     }; // class CommandPool
 
 } // namespace render

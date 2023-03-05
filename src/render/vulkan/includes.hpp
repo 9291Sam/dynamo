@@ -8,6 +8,6 @@
 #include <vulkan/vulkan_to_string.hpp>
 #include <vulkan/vulkan_beta.h>
 
-#include "vk_mem_alloc.h"
+#include <vk_mem_alloc.h>
 
 #endif // SRC_RENDER_VULKAN__INCLUDES_HPP

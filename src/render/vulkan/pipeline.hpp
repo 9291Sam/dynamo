@@ -1,7 +1,7 @@
-#ifndef SRC_RENDER_PIPELINE_HPP
-#define SRC_RENDER_PIPELINE_HPP
+#ifndef SRC_RENDER_VULKAN_PIPELINE_HPP
+#define SRC_RENDER_VULKAN_PIPELINE_HPP
 
-#include "vulkan_includes.hpp"
+#include "includes.hpp"
 
 namespace render
 {
@@ -21,11 +21,10 @@ namespace render
         Pipeline& operator=(const Pipeline&) = delete;
         Pipeline& operator=(Pipeline&&)      = delete; 
 
-        [[nodiscard, gnu::pure]] vk::Pipeline operator*() const;
-        [[nodiscard, gnu::pure]] vk::PipelineLayout getLayout() const;
-        [[nodiscard, gnu::pure]] auto getDescriptorSetLayout() const
-            -> vk::DescriptorSetLayout;
-
+        [[nodiscard]] vk::Pipeline operator*() const;
+        [[nodiscard]] vk::PipelineLayout getLayout() const;
+        [[nodiscard]] vk::DescriptorSetLayout getDescriptorSetLayout() const;
+            
     private:
         vk::UniqueDescriptorSetLayout descriptor_layout;
         vk::UniquePipelineLayout      layout;

@@ -1,7 +1,7 @@
-#ifndef SRC_RENDER_INSTANCE_HPP
-#define SRC_RENDER_INSTANCE_HPP
+#ifndef SRC_RENDER_VULKAN_INSTANCE_HPP
+#define SRC_RENDER_VULKAN_INSTANCE_HPP
 
-#include "vulkan_includes.hpp"
+#include "includes.hpp"
 
 namespace render
 {
@@ -19,7 +19,7 @@ namespace render
         Instance& operator=(const Instance&) = delete;
         Instance& operator=(Instance&&)      = delete;
 
-        [[nodiscard, gnu::pure]] vk::Instance operator*() const;
+        [[nodiscard]] vk::Instance operator*() const;
 
     private:
         vk::UniqueInstance instance;

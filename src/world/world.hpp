@@ -3,7 +3,7 @@
 
 #include <cstdint>
 #include <vector>
-#include <unordered_set>
+#include <set>
 #include <ranges>
 
 #include <render/renderer.hpp>
@@ -22,12 +22,11 @@ namespace world
         World& operator=(const World&) = delete;
         World& operator=(World&&)      = delete;
 
-        void tick();
-        // bool contains(const Object&) const;
         [[nodiscard]] const std::vector<render::Object>& getObjects() const;
 
+        void tick();
 
-    public:
+    private:
         std::vector<render::Object> objects;
     };
 }

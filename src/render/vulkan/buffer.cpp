@@ -4,8 +4,12 @@
 
 namespace render
 {
-    Buffer::Buffer(VmaAllocator allocator_,  std::size_t sizeBytes_, 
-        vk::BufferUsageFlags usage_, vk::MemoryPropertyFlags memoryProperty)
+    Buffer::Buffer(
+        VmaAllocator allocator_, 
+        std::size_t sizeBytes_, 
+        vk::BufferUsageFlags usage_,
+        vk::MemoryPropertyFlags memoryProperty
+    )
         : allocator  {allocator_}
         , buffer     {nullptr}
         , allocation {nullptr}
@@ -75,7 +79,11 @@ namespace render
 
     Buffer& Buffer::operator=(Buffer&& other)
     {
-        seb::assertFatal(this->allocator == other.allocator, "Allocators were not the same");
+        seb::assertFatal(
+            this->allocator == other.allocator,
+            "Allocators were not the same"
+        );
+        
         this->buffer     = other.buffer;
         this->allocation = other.allocation;
         this->usage      = other.usage;
@@ -100,7 +108,7 @@ namespace render
         return this->size_bytes;
     }
 
-    void* Buffer::get_persistent_ptr()
+    void* Buffer::get_mapped_ptr() const
     {
         if (!this->mapped_ptr)
         {
@@ -109,9 +117,13 @@ namespace render
                     this->allocator, 
                     this->allocation,
                     &this->mapped_ptr
-                ) == VK_SUCCESS, "Failed to map buffer memory"
+                ) == VK_SUCCESS,
+                "Failed to map buffer memory"
             );
-            seb::assertFatal(this->mapped_ptr != nullptr, "Tried to map a nullptr");
+            seb::assertFatal(
+                this->mapped_ptr != nullptr,
+                "Tried to map a nullptr"
+            );
         }
 
         return this->mapped_ptr;
