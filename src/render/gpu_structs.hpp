@@ -1,7 +1,7 @@
 #ifndef SRC_RENDER_GPU__STRUCTS_HPP
 #define SRC_RENDER_GPU__STRUCTS_HPP
 
-#include "vulkan_includes.hpp"
+#include "vulkan/includes.hpp"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
@@ -39,10 +39,10 @@ namespace render
         glm::vec3 normal;
         glm::vec2 uv;
 
-        [[nodiscard, gnu::const]] static auto getBindingDescription()
+        [[nodiscard]] static auto getBindingDescription()
             -> const vk::VertexInputBindingDescription*;
         
-        [[nodiscard, gnu::const]] static auto getAttributeDescriptions()
+        [[nodiscard]] static auto getAttributeDescriptions()
             -> const std::array<vk::VertexInputAttributeDescription, 4>*;
 
         [[nodiscard]] operator std::string() const;

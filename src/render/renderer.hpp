@@ -1,23 +1,24 @@
 #ifndef SRC_RENDER_RENDERER_HPP
 #define SRC_RENDER_RENDERER_HPP
 
-#include <ranges>
+#include <set>
 
 #include <sebib/seblog.hpp>
 #include <sebib/sebmis.hpp>
 
-#include "allocator.hpp"
-#include "command_pool.hpp"
-#include "descriptor_pool.hpp"
-#include "device.hpp"
+#include "vulkan/allocator.hpp"
+#include "vulkan/command_pool.hpp"
+#include "vulkan/descriptor_pool.hpp"
+#include "vulkan/device.hpp"
 #include "recorder.hpp"
-#include "instance.hpp"
-#include "pipeline.hpp"
-#include "render_pass.hpp"
-#include "image.hpp"
-#include "swapchain.hpp"
+#include "vulkan/instance.hpp"
+#include "vulkan/pipeline.hpp"
+#include "vulkan/render_pass.hpp"
+#include "vulkan/image.hpp"
+#include "vulkan/swapchain.hpp"
+#include "vulkan/includes.hpp"
+
 #include "window.hpp"
-#include "vulkan_includes.hpp"
 
 namespace render
 {
@@ -38,53 +39,13 @@ namespace render
         Renderer& operator=(Renderer&&)      = delete;
 
         // This function list is a mess TODO: redesign
-        [[nodiscard, gnu::pure]] Object createObject(std::vector<Vertex>, std::optional<std::vector<Index>>) const;
-        [[nodiscard, gnu::const]] auto getKeyCallback() const -> std::function<bool(vkfw::Key)>;
+        [[nodiscard]] Object createObject(std::vector<Vertex>, std::optional<std::vector<Index>>) const;
+        [[nodiscard]] auto getKeyCallback() const -> std::function<bool(vkfw::Key)>;
         [[nodiscard]] std::pair<double, double> getMouseDelta();
-        [[nodiscard, gnu::pure]] float getDeltaTimeSeconds() const;
-        [[nodiscard, gnu::pure]] bool shouldClose() const;
+        [[nodiscard]] float getDeltaTimeSeconds() const;
+        [[nodiscard]] bool shouldClose() const;
 
-        void drawFrame(const Camera& camera, const auto& objectView)
-        {
-            this->window.pollEvents();
-
-            static float idx = 0.0f;
-
-            idx += 5.5f * this->getDeltaTimeSeconds();
-
-            // update Uniform Buffers TODO: refactor
-
-            UniformBuffer uniformBuffer {
-                .light_position {50 * std::cos(idx / 7.0f), 7.0f * std::sin(idx / 9.0f) + 15.0f, 50.0f * std::sin(idx / 11.0f)},
-                .light_color {1.0f, 1.0f, 1.0f, 10.0f}
-            };
-
-            std::memcpy(
-                this->uniform_buffers.at(this->render_index)->get_persistent_ptr(),
-                &uniformBuffer,
-                sizeof(UniformBuffer)
-            );
-
-            auto result = this->frames.at(this->render_index)->render(
-                *this->device, *this->swapchain, *this->render_pass, *this->pipeline,
-                this->framebuffers,
-                *this->descriptor_sets.at(this->render_index),
-                objectView, camera, this->extra_commands
-            );
-
-            this->render_index = (this->render_index + 1) % this->MaxFramesInFlight;
-
-            switch (result)
-            {
-                case vk::Result::eSuccess:
-                    return;
-                case vk::Result::eErrorOutOfDateKHR:
-                    this->resize();
-                    return;
-                default:
-                    seb::panic("Draw frame failed result: {}", vk::to_string(result));
-            }
-        }
+        void drawFrame(const Camera& camera, const std::vector<Object>& objectView);
         
         void resize();
 

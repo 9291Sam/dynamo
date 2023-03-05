@@ -3,8 +3,6 @@
 
 #include <sebib/seblog.hpp>
 
-#include "vulkan_includes.hpp"
-
 #include "renderer.hpp"
 
 namespace render
@@ -180,6 +178,48 @@ namespace render
         return this->window.getDeltaTimeSeconds();
     }
 
+    void Renderer::drawFrame(const Camera& camera, const std::vector<Object>& objectView)
+    {
+            this->window.pollEvents();
+
+            static float idx = 0.0f;
+
+            idx += 5.5f * this->getDeltaTimeSeconds();
+
+            // update Uniform Buffers TODO: refactor
+
+            UniformBuffer uniformBuffer {
+                .light_position {50 * std::cos(idx / 7.0f), 7.0f * std::sin(idx / 9.0f) + 15.0f, 50.0f * std::sin(idx / 11.0f)},
+                .light_color {1.0f, 1.0f, 1.0f, 10.0f}
+            };
+
+            std::memcpy(
+                this->uniform_buffers.at(this->render_index)->get_mapped_ptr(),
+                &uniformBuffer,
+                sizeof(UniformBuffer)
+            );
+
+            auto result = this->frames.at(this->render_index)->render(
+                *this->device, *this->swapchain, *this->render_pass, *this->pipeline,
+                this->framebuffers,
+                *this->descriptor_sets.at(this->render_index),
+                objectView, camera, this->extra_commands
+            );
+
+            this->render_index = (this->render_index + 1) % this->MaxFramesInFlight;
+
+            switch (result)
+            {
+                case vk::Result::eSuccess:
+                    return;
+                case vk::Result::eErrorOutOfDateKHR:
+                    this->resize();
+                    return;
+                default:
+                    seb::panic("Draw frame failed result: {}", vk::to_string(result));
+            }
+        }
+
     void Renderer::resize()
     {
         seb::logTrace("Renderer resizimg!");
@@ -246,8 +286,22 @@ namespace render
             )
         );
 
+        seb::logWarn("Unhardcode");
         this->descriptor_pool = std::make_unique<DescriptorPool>(
-            this->device->asLogicalDevice(), this->MaxFramesInFlight
+            this->device->asLogicalDevice(),
+            this->pipeline->getDescriptorSetLayout(),
+            std::vector {
+                vk::DescriptorPoolSize
+                {
+                    .type            {vk::DescriptorType::eUniformBuffer},
+                    .descriptorCount {static_cast<std::uint32_t>(this->MaxFramesInFlight)}
+                },
+                vk::DescriptorPoolSize
+                {
+                    .type            {vk::DescriptorType::eCombinedImageSampler},
+                    .descriptorCount {static_cast<std::uint32_t>(this->MaxFramesInFlight)}
+                }
+            }
         );
 
         // framebuffer creation
@@ -291,7 +345,7 @@ namespace render
 
         // bind uniform buffers to descriptor sets
         // allocate
-        this->descriptor_sets = this->descriptor_pool->allocate(this->pipeline->getDescriptorSetLayout());
+        this->descriptor_sets = this->descriptor_pool->allocate();
         seb::assertFatal(
             this->descriptor_sets.size() == this->MaxFramesInFlight,
             "Incorrect number of Descriptor sets returned!"

@@ -1,7 +1,7 @@
-#ifndef SRC_RENDER_SWAPCHAIN_HPP
-#define SRC_RENDER_SWAPCHAIN_HPP
+#ifndef SRC_RENDER_VULKAN_SWAPCHAIN_HPP
+#define SRC_RENDER_VULKAN_SWAPCHAIN_HPP
 
-#include "vulkan_includes.hpp"
+#include "includes.hpp"
 
 #include "device.hpp"
 
@@ -20,13 +20,13 @@ namespace render
         Swapchain& operator=(const Swapchain&) = delete;
         Swapchain& operator=(Swapchain&&)      = delete;
 
-        [[nodiscard, gnu::pure]] vk::SwapchainKHR operator*() const;
+        [[nodiscard]] vk::SwapchainKHR operator*() const;
 
-        [[nodiscard, gnu::pure]] vk::Extent2D getExtent() const;
+        [[nodiscard]] vk::Extent2D getExtent() const;
 
-        [[nodiscard, gnu::pure]] vk::SurfaceFormatKHR getSurfaceFormat() const;
+        [[nodiscard]] vk::SurfaceFormatKHR getSurfaceFormat() const;
 
-        [[nodiscard, gnu::const]] auto getImageViews() const
+        [[nodiscard]] auto getImageViews() const
             -> const std::vector<vk::UniqueImageView>&;
 
     private:

@@ -9,7 +9,7 @@ namespace render
             .sType            {vk::StructureType::eCommandPoolCreateInfo},
             .pNext            {nullptr},
             .flags            {vk::CommandPoolCreateFlagBits::eResetCommandBuffer},
-            .queueFamilyIndex {device.getRenderQueueIndex()}
+            .queueFamilyIndex {device.getRenderIndex()}
         };
 
         this->command_pool = device.asLogicalDevice()

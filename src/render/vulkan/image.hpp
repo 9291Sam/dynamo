@@ -1,7 +1,7 @@
-#ifndef SRC_RENDER_IMAGE_HPP
-#define SRC_RENDER_IMAGE_HPP
+#ifndef SRC_RENDER_VULKAN_IMAGE_HPP
+#define SRC_RENDER_VULKAN_IMAGE_HPP
 
-#include "vulkan_includes.hpp"
+#include "includes.hpp"
 
 #include "allocator.hpp"
 #include "buffer.hpp"
@@ -22,9 +22,9 @@ namespace render
         Image2D& operator=(const Image2D&) = delete;
         Image2D& operator=(Image2D&&)      = delete;
 
-        [[nodiscard, gnu::pure]] vk::ImageView operator*() const;
-        [[nodiscard, gnu::pure]] vk::Format getFormat() const;
-        [[nodiscard, gnu::pure]] vk::ImageLayout getLayout() const;
+        [[nodiscard]] vk::ImageView operator*() const;
+        [[nodiscard]] vk::Format getFormat() const;
+        [[nodiscard]] vk::ImageLayout getLayout() const;
         
         void transitionLayout(vk::CommandBuffer, vk::ImageLayout from, vk::ImageLayout to,
             vk::PipelineStageFlags sourceStage, vk::PipelineStageFlags destinationStage,

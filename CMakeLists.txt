@@ -5,21 +5,21 @@ set(SOURCES_CPP
   src/main.cpp
 
   # Render
-  src/render/allocator.cpp
-  src/render/buffer.cpp
-  src/render/command_pool.cpp
-  src/render/descriptor_pool.cpp
-  src/render/device.cpp
+  src/render/vulkan/allocator.cpp
+  src/render/vulkan/buffer.cpp
+  src/render/vulkan/command_pool.cpp
+  src/render/vulkan/descriptor_pool.cpp
+  src/render/vulkan/device.cpp
+  src/render/vulkan/image.cpp
+  src/render/vulkan/instance.cpp
+  src/render/vulkan/pipeline.cpp
+  src/render/vulkan/render_pass.cpp
+  src/render/vulkan/swapchain.cpp
+  src/render/vulkan/includes.cpp
   src/render/gpu_structs.cpp
-  src/render/image.cpp
-  src/render/instance.cpp
-  src/render/pipeline.cpp
-  src/render/recorder.cpp
-  src/render/render_pass.cpp
-  src/render/render_structs.cpp
   src/render/renderer.cpp
-  src/render/swapchain.cpp
-  src/render/vulkan_includes.cpp
+  src/render/recorder.cpp
+  src/render/render_structs.cpp
   src/render/window.cpp
 
   # World
@@ -78,8 +78,8 @@ target_compile_options(Dynamo PUBLIC -Winfinite-recursion)
 target_compile_options(Dynamo PUBLIC -Wimplicit-fallthrough)
 target_compile_options(Dynamo PUBLIC -Wignored-qualifiers)
 target_compile_options(Dynamo PUBLIC -Wmissing-include-dirs)
-target_compile_options(Dynamo PUBLIC -Wsuggest-attribute=pure)
-target_compile_options(Dynamo PUBLIC -Wsuggest-attribute=const)
+# target_compile_options(Dynamo PUBLIC -Wsuggest-attribute=pure)
+# target_compile_options(Dynamo PUBLIC -Wsuggest-attribute=const)
 target_compile_options(Dynamo PUBLIC -Wsuggest-attribute=noreturn)
 target_compile_options(Dynamo PUBLIC -Wmissing-noreturn)
 # target_compile_options(Dynamo PUBLIC -Wsuggest-attribute=malloc)

@@ -6,7 +6,7 @@
 #include <chrono>
 #include <deque>
 
-#include "vulkan_includes.hpp"
+#include "vulkan/includes.hpp"
 
 /// @brief Abstraction over a system Window
 /// Allows for easy creation of a window surface
@@ -28,9 +28,9 @@ public:
     Window& operator=(const Window&) = delete;
     Window& operator=(Window&&)      = delete;
 
-    [[nodiscard, gnu::pure]] vk::Extent2D size() const;
-    [[nodiscard, gnu::pure]] float getDeltaTimeSeconds() const;
-    [[nodiscard, gnu::pure]] bool shouldClose() const;
+    [[nodiscard]] vk::Extent2D size() const;
+    [[nodiscard]] float getDeltaTimeSeconds() const;
+    [[nodiscard]] bool shouldClose() const;
     [[nodiscard]] bool isKeyPressed(vkfw::Key key) const;
     [[nodiscard]] auto getMouseDelta() -> std::pair<double, double>;
 

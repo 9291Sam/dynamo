@@ -1,7 +1,7 @@
-#ifndef SRC_RENDER_RENDER__PASS_HPP
-#define SRC_RENDER_RENDER__PASS_HPP
+#ifndef SRC_RENDER_VULKAN_RENDER__PASS_HPP
+#define SRC_RENDER_VULKAN_RENDER__PASS_HPP
 
-#include "vulkan_includes.hpp"
+#include "includes.hpp"
 
 #include "swapchain.hpp"
 #include "image.hpp"
@@ -22,7 +22,7 @@ namespace render
         RenderPass& operator=(const RenderPass&) = delete;
         RenderPass& operator=(RenderPass&&)      = delete; 
 
-        [[nodiscard, gnu::pure]] vk::RenderPass operator*() const;
+        [[nodiscard]] vk::RenderPass operator*() const;
 
     private:
         vk::UniqueRenderPass render_pass;

@@ -2,7 +2,7 @@
 
 #include <sebib/seblog.hpp>
 
-#include "gpu_structs.hpp"
+#include "../gpu_structs.hpp"
 
 #include "pipeline.hpp"
 

@@ -7,6 +7,7 @@ std::uint32_t findIndexOfGraphicsAndPresentQueue(vk::PhysicalDevice pD, vk::Surf
     std::uint32_t idx = 0;
     for (auto q : pD.getQueueFamilyProperties())
     {
+        seb::logTrace("Avilable queue: {} | idx {}", vk::to_string(q.queueFlags), idx);
         if (!(q.queueFlags & vk::QueueFlagBits::eGraphics))
         {
             continue;
@@ -53,7 +54,7 @@ namespace render
     {
         this->physical_device = findBestDevice(instance.enumeratePhysicalDevices());
         
-        this->queue_index = findIndexOfGraphicsAndPresentQueue(this->physical_device, drawSurface);
+        this->render_index = findIndexOfGraphicsAndPresentQueue(this->physical_device, drawSurface);
         const float One = 1.0f;
         const std::vector<vk::DeviceQueueCreateInfo> queueCreateInfos
         {
@@ -62,7 +63,7 @@ namespace render
                 .sType            {vk::StructureType::eDeviceQueueCreateInfo},
                 .pNext            {nullptr},
                 .flags            {},
-                .queueFamilyIndex {this->queue_index},
+                .queueFamilyIndex {this->render_index},
                 .queueCount       {1},
                 .pQueuePriorities {&One},
             }
@@ -94,7 +95,7 @@ namespace render
 
         this->logical_device = this->physical_device.createDeviceUnique(deviceCreateInfo);
 
-        this->queue = this->logical_device->getQueue(this->queue_index, 0);
+        this->render_queue = this->logical_device->getQueue(this->render_index, 0);
 
         this->stage_buffers = [this]
         {
@@ -166,14 +167,14 @@ namespace render
     }
 
 
-    std::uint32_t Device::getRenderQueueIndex() const
+    std::uint32_t Device::getRenderIndex() const
     {
-        return this->queue_index;
+        return this->render_index;
     }
 
     vk::Queue Device::getRenderQueue() const
     {
-        return this->queue;
+        return this->render_queue;
     }
 } // namespace render
 

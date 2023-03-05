@@ -1,15 +1,17 @@
 #ifndef SRC_RENDER_RECORDER_HPP
 #define SRC_RENDER_RECORDER_HPP
 
+#include <set>
 #include <queue>
 
 #include <sebib/sebmis.hpp>
 
-#include "pipeline.hpp"
+#include "vulkan/pipeline.hpp"
+#include "vulkan/swapchain.hpp"
+#include "vulkan/includes.hpp"
+#include "vulkan/render_pass.hpp"
+
 #include "render_structs.hpp"
-#include "render_pass.hpp"
-#include "swapchain.hpp"
-#include "vulkan_includes.hpp"
 
 namespace render
 {
