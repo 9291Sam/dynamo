@@ -57,13 +57,15 @@ namespace render
             int width;
             int height;
             int textureChannels;
-            stbi_uc* pixels = stbi_load("../textures/texture.jpeg", &width, &height, &textureChannels, STBI_rgb_alpha);
 
-            seb::assertFatal(pixels, "Failed to load from file, is the filepath correct?");
+            std::unique_ptr<stbi_uc, decltype(&stbi_image_free)> pixels {
+                stbi_load("../textures/texture.jpeg", &width, &height, &textureChannels, STBI_rgb_alpha),
+                stbi_image_free
+            };
+
+            seb::assertFatal(*pixels, "Failed to load from file, is the filepath correct?");
 
             const vk::DeviceSize imageSize = width * height * 4; // 4 is for the rgba component being 4 bytes;
-
-
 
             this->image_buffer = std::make_unique<Buffer>(
                 **this->allocator,
@@ -73,12 +75,8 @@ namespace render
                 vk::MemoryPropertyFlagBits::eHostCoherent
             );
 
-            this->image_buffer->write(std::span<std::byte>{reinterpret_cast<std::byte*>(pixels), imageSize});
-
-            stbi_image_free(pixels);
-            // Quite possibly the first time i've ever called a free function not in a destructor
-            // RAII my beloved
-
+            this->image_buffer->write(std::span<std::byte>{reinterpret_cast<std::byte*>(*pixels), imageSize});
+    
             this->texture = std::make_unique<Image2D>(
                 *this->allocator,
                 this->device->asLogicalDevice(),

@@ -4,6 +4,9 @@
 #include <render/renderer.hpp>
 #include <world/world.hpp>
 
+#include <memory>
+#include <optional>
+
 int main()
 {
     seb::logLog("Dynamo started | Version: {}.{}.{}.{}",
