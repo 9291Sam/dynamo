@@ -108,7 +108,7 @@ namespace render
         return this->size_bytes;
     }
 
-    void* Buffer::get_mapped_ptr() const
+    void* Buffer::getMappedPtr() const
     {
         if (!this->mapped_ptr)
         {

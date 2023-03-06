@@ -192,7 +192,7 @@ namespace render
             };
 
             std::memcpy(
-                this->uniform_buffers.at(this->render_index)->get_mapped_ptr(),
+                this->uniform_buffers.at(this->render_index)->getMappedPtr(),
                 &uniformBuffer,
                 sizeof(UniformBuffer)
             );

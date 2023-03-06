@@ -2,7 +2,7 @@
 
 #include <sebib/seblog.hpp>
 
-#include "../gpu_structs.hpp"
+#include "gpu_structs.hpp"
 
 #include "pipeline.hpp"
 
@@ -29,7 +29,7 @@ static inline auto createShaderModuleFromSPIRV(
         .sType    {vk::StructureType::eShaderModuleCreateInfo},
         .pNext    {nullptr},
         .flags    {},
-        .codeSize {spirvBytes.size()}, // std::vector's default allocator ensures this is fine
+        .codeSize {spirvBytes.    size()}, // std::vector's default allocator ensures this is fine
         .pCode    {reinterpret_cast<const uint32_t*>(spirvBytes.data())}, 
     };
 
@@ -122,7 +122,7 @@ namespace render
             .depthClampEnable        {false},
             .rasterizerDiscardEnable {false},
             .polygonMode             {vk::PolygonMode::eFill},
-            .cullMode                {vk::CullModeFlagBits::eNone}, // PERF: change to back once refactor
+            .cullMode                {vk::CullModeFlagBits::eBack}, // PERF: change to back once refactor
             .frontFace               {vk::FrontFace::eCounterClockwise},
             .depthBiasEnable         {false},
             .depthBiasConstantFactor {0.0f},

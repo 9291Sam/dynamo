@@ -28,7 +28,7 @@ namespace render
 
         [[nodiscard]] vk::Buffer operator*() const;
         [[nodiscard]] std::size_t sizeBytes() const;
-        [[nodiscard]] void* get_mapped_ptr() const;
+        [[nodiscard]] void* getMappedPtr() const;
 
         void write(std::span<const std::byte>) const;
         void copyFrom(const Buffer&, vk::CommandBuffer) const; 

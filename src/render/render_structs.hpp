@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "vulkan/buffer.hpp"
-#include "gpu_structs.hpp"
+#include "vulkan/gpu_structs.hpp"
 
 namespace render
 {

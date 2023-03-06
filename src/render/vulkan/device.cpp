@@ -83,6 +83,7 @@ namespace render
 
         vk::PhysicalDeviceFeatures deviceFeatures = {};
         deviceFeatures.samplerAnisotropy = true;
+        deviceFeatures.fillModeNonSolid = true;
 
         const vk::DeviceCreateInfo deviceCreateInfo
         {

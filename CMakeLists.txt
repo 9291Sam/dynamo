@@ -4,19 +4,21 @@ set(SOURCES_CPP
   # mainfiles
   src/main.cpp
 
-  # Render
+  # render/vulkan
   src/render/vulkan/allocator.cpp
   src/render/vulkan/buffer.cpp
   src/render/vulkan/command_pool.cpp
   src/render/vulkan/descriptor_pool.cpp
   src/render/vulkan/device.cpp
+  src/render/vulkan/gpu_structs.cpp
   src/render/vulkan/image.cpp
+  src/render/vulkan/includes.cpp
   src/render/vulkan/instance.cpp
   src/render/vulkan/pipeline.cpp
   src/render/vulkan/render_pass.cpp
   src/render/vulkan/swapchain.cpp
-  src/render/vulkan/includes.cpp
-  src/render/gpu_structs.cpp
+
+  # render
   src/render/renderer.cpp
   src/render/recorder.cpp
   src/render/render_structs.cpp

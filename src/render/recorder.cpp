@@ -1,6 +1,6 @@
 #include <sebib/seblog.hpp>
 
-#include "gpu_structs.hpp"
+#include "vulkan/gpu_structs.hpp"
 #include "recorder.hpp"
 
 namespace render
@@ -35,7 +35,6 @@ namespace render
         const std::vector<Object>& objectsToDraw, const Camera& camera,
         std::queue<std::function<void(vk::CommandBuffer)>>& extraCommandsQueue)
     {
-        // seb::logWarn("BIND UNIFORMB UFF");
         const auto timeout = std::numeric_limits<std::uint64_t>::max();
 
         auto result = device.asLogicalDevice().waitForFences(*this->frame_in_flight, true, timeout);
@@ -78,7 +77,7 @@ namespace render
         {
             vk::ClearValue
             {
-                .color {vk::ClearColorValue {std::array<float, 4>{0.02f, 0.02f, 0.02f, 1.0f}}}
+                .color {vk::ClearColorValue {std::array<float, 4>{0.98f, 0.98f, 0.98f, 1.0f}}}
             },
             vk::ClearValue
             {
