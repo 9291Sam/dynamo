@@ -53,7 +53,7 @@ namespace render
             : vk::PresentModeKHR::eFifo;
 
         
-        const std::array<std::uint32_t, 1> QueueFamilyIndicies {device.getRenderIndex()};
+        const std::array<std::uint32_t, 1> QueueFamilyIndicies {device.getRenderComputeTransferIndex()};
         const vk::SwapchainCreateInfoKHR SwapchainCreateInfoKHR
         {
             .sType   {vk::StructureType::eSwapchainCreateInfoKHR},

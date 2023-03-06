@@ -57,11 +57,11 @@ namespace render
             int textureChannels;
 
             std::unique_ptr<stbi_uc, decltype(&stbi_image_free)> pixels {
-                stbi_load("../textures/texture.jpeg", &width, &height, &textureChannels, STBI_rgb_alpha),
+                stbi_load("../textures/face.jpeg", &width, &height, &textureChannels, STBI_rgb_alpha),
                 stbi_image_free
             };
 
-            seb::assertFatal(*pixels, "Failed to load from file, is the filepath correct?");
+            seb::assertFatal(pixels.get(), "Failed to load from file, is the filepath correct?");
 
             const vk::DeviceSize imageSize = width * height * 4; // 4 is for the rgba component being 4 bytes;
 
@@ -73,7 +73,7 @@ namespace render
                 vk::MemoryPropertyFlagBits::eHostCoherent
             );
 
-            this->image_buffer->write(std::span<std::byte>{reinterpret_cast<std::byte*>(*pixels), imageSize});
+            this->image_buffer->write(std::span<std::byte>{reinterpret_cast<std::byte*>(pixels.get()), imageSize});
     
             this->texture = std::make_unique<Image2D>(
                 *this->allocator,
