@@ -74,16 +74,9 @@ namespace render
         std::unique_ptr<RenderPass>     render_pass;
         std::unique_ptr<Pipeline>       pipeline;
         std::unique_ptr<DescriptorPool> descriptor_pool; // one pool per thread
-
-
+        
         // Frames in Flight
         std::vector<vk::UniqueFramebuffer>   framebuffers;
-
-
-        // TODO: re-do the Recorder abstraction to properly handle multi threaded recording
-        
-        // Frame in flight
-            // Each one can have a Recorder Thread
 
         // renderer
         std::size_t                                              render_index;

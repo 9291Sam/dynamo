@@ -197,11 +197,16 @@ namespace render
                 sizeof(UniformBuffer)
             );
 
+            std::vector<std::pair<const Pipeline&, const std::vector<Object>&>> objects;
+
+            objects.push_back({*this->pipeline, objectView});
+
             auto result = this->frames.at(this->render_index)->render(
-                *this->device, *this->swapchain, *this->render_pass, *this->pipeline,
+                *this->device, *this->swapchain, *this->render_pass,
                 this->framebuffers,
                 *this->descriptor_sets.at(this->render_index),
-                objectView, camera, this->extra_commands
+                objects,
+                camera, this->extra_commands
             );
 
             this->render_index = (this->render_index + 1) % this->MaxFramesInFlight;

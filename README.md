@@ -2,21 +2,42 @@
 
 TODO:
 Add suopport for multiple pipelines and descriptor sets
-make the pipelines take in a reference to the descriptro sets that they want to exist on them 
-remove vertex coloring
-fix pipeline abstraction because multiple pipelines is a reasonable thing :)
 completly re-do the descriptor pool / descriptor set abstraction since it's terribly segemnted right now
 
-const std::array<vk::DescriptorPoolSize, 2> pools
-        {
-            vk::DescriptorPoolSize
-            {
-                .type            {vk::DescriptorType::eUniformBuffer},
-                .descriptorCount {static_cast<std::uint32_t>(this->number_of_sets)}
-            },
-            vk::DescriptorPoolSize
-            {
-                .type            {vk::DescriptorType::eCombinedImageSampler},
-                .descriptorCount {static_cast<std::uint32_t>(this->number_of_sets)}
-            },
-        };
+
+Pipeline Refactor:
+    Renderer::createObject(std::vector<Vertex>, std::vector<Index>, enum Pipelines)
+
+
+    At start of renderer:
+        create all pipelines in a big vector
+        pass references to this to the objects that need them.
+
+
+```cpp
+enum Pipelines
+{
+    Voxel,
+    HUD,
+    Particle,
+    NoPipelineBound,
+}
+```
+
+actual drawing
+```cpp
+std::vector<std::pair<const Pipeline&, std::vector<Object>>> objectsWithPipeline;
+
+for (const auto [p, v_o] : objectsWithPipeline)
+{
+    commandBuffer.bindPipeline(*p);
+
+    for (const Object& o : v_o)
+    {
+        o.bind();
+        o.draw();
+    }
+}
+
+
+Pipelines currentPipeline;

@@ -28,9 +28,10 @@ namespace render
         Recorder& operator=(Recorder&&)      = delete;
 
         vk::Result render(
-            const Device&, const Swapchain&, const RenderPass&, const Pipeline&, 
+            const Device&, const Swapchain&, const RenderPass&,
             const std::vector<vk::UniqueFramebuffer>&, vk::DescriptorSet,
-            const std::vector<Object>&, const Camera&, 
+            const std::vector<std::pair<const Pipeline&, const std::vector<Object>&>>&,
+            const Camera&, 
             std::queue<std::function<void(vk::CommandBuffer)>>&
         );
 

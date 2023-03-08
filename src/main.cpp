@@ -7,6 +7,8 @@
 #include <memory>
 #include <optional>
 
+#include <ranges>
+
 int main()
 {
     seb::logLog("Dynamo started | Version: {}.{}.{}.{}",

@@ -29,10 +29,11 @@ namespace render
 
     vk::Result Recorder::render(
         const Device& device, const Swapchain& swapchain,
-        const RenderPass& renderPass, const Pipeline& pipeline, 
-        const std::vector<vk::UniqueFramebuffer>& framebuffers, 
+        const RenderPass& renderPass,
+        const std::vector<vk::UniqueFramebuffer>& framebuffers,
         vk::DescriptorSet descriptorSet,
-        const std::vector<Object>& objectsToDraw, const Camera& camera,
+        const std::vector<std::pair<const Pipeline&, std::vector<Object>>>& pipelinedObjects, 
+        const Camera& camera, 
         std::queue<std::function<void(vk::CommandBuffer)>>& extraCommandsQueue)
     {
         const auto timeout = std::numeric_limits<std::uint64_t>::max();
@@ -109,48 +110,52 @@ namespace render
         };
 
         this->command_buffer->beginRenderPass(renderPassBeginInfo, vk::SubpassContents::eInline);
-        this->command_buffer->bindPipeline(vk::PipelineBindPoint::eGraphics, *pipeline);
 
-        for (const Object& o : objectsToDraw)
+        for (const auto& [pipeline, objectVector] : pipelinedObjects)
         {
-            o.bind(this->command_buffer.get());
+            this->command_buffer->bindPipeline(vk::PipelineBindPoint::eGraphics, *pipeline);
 
-            std::array<PushConstants, 1> pushConstants {
-                PushConstants
-                {
-                    .view_projection {
-                        Camera::getPerspectiveMatrix(
-                            glm::radians(70.f),
-                            static_cast<float>(swapchain.getExtent().width) / 
-                            static_cast<float>(swapchain.getExtent().height),
-                            0.1f,
-                            200000.0f
-                        ) * 
-                        camera.asViewMatrix()
+            for (const Object& o : objectVector)
+            {
+                o.bind(this->command_buffer.get());
+
+                std::array<PushConstants, 1> pushConstants {
+                    PushConstants
+                    {
+                        .view_projection {
+                            Camera::getPerspectiveMatrix(
+                                glm::radians(70.f),
+                                static_cast<float>(swapchain.getExtent().width) / 
+                                static_cast<float>(swapchain.getExtent().height),
+                                0.1f,
+                                200000.0f
+                            ) * 
+                            camera.asViewMatrix()
+                        },
+                        .model {
+                            o.transform.asModelMatrix()
+                        }
                     },
-                    .model {
-                        o.transform.asModelMatrix()
-                    }
-                },
-            };
-            
+                };
+                
 
-            this->command_buffer->pushConstants<render::PushConstants>(
-                pipeline.getLayout(),
-                vk::ShaderStageFlagBits::eAllGraphics,
-                0,
-                pushConstants
-            );
+                this->command_buffer->pushConstants<render::PushConstants>(
+                    pipeline.getLayout(),
+                    vk::ShaderStageFlagBits::eAllGraphics,
+                    0,
+                    pushConstants
+                );
 
-            this->command_buffer->bindDescriptorSets(
-                vk::PipelineBindPoint::eGraphics,
-                pipeline.getLayout(), 
-                0,
-                std::array<vk::DescriptorSet, 1> {descriptorSet},
-                nullptr
-            );
+                this->command_buffer->bindDescriptorSets(
+                    vk::PipelineBindPoint::eGraphics,
+                    pipeline.getLayout(), 
+                    0,
+                    std::array<vk::DescriptorSet, 1> {descriptorSet},
+                    nullptr
+                );
 
-            o.draw(this->command_buffer.get());
+                o.draw(this->command_buffer.get());
+            }
         }
 
         this->command_buffer->endRenderPass();
