@@ -32,7 +32,7 @@ namespace render
         const RenderPass& renderPass,
         const std::vector<vk::UniqueFramebuffer>& framebuffers,
         vk::DescriptorSet descriptorSet,
-        const std::vector<std::pair<const Pipeline&, std::vector<Object>>>& pipelinedObjects, 
+        const std::vector<std::pair<const Pipeline&, const std::vector<Object>&>>& pipelinedObjects, 
         const Camera& camera, 
         std::queue<std::function<void(vk::CommandBuffer)>>& extraCommandsQueue)
     {
@@ -78,7 +78,7 @@ namespace render
         {
             vk::ClearValue
             {
-                .color {vk::ClearColorValue {std::array<float, 4>{0.98f, 0.98f, 0.98f, 1.0f}}}
+                .color {vk::ClearColorValue {std::array<float, 4>{0.02f, 0.02f, 0.02f, 1.0f}}}
             },
             vk::ClearValue
             {

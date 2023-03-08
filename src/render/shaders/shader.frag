@@ -21,7 +21,7 @@ layout(binding = 1) uniform sampler2D in_texture_sampler;
 
 layout(location = 0) out vec4 out_color;
 
-const vec4 ambient_light = vec4(1.0, 1.0, 1.0, 0.21);
+const vec4 ambient_light = vec4(1.0, 1.0, 1.0, 0.01);
 
 void main() 
 {
