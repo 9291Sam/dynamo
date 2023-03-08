@@ -16,7 +16,8 @@ namespace world
         auto [k, l] = render::Object::readVerticesFromFile("../models/64k.obj");
         this->objects.push_back(renderer.createObject(std::move(k), std::move(l)));
         this->objects.at(2).transform.scale = {500.0f, 500.0f, 500.0f};
-        this->objects.at(2).transform.translation.y += 600.0f;
+        this->objects.at(2).transform.translation.x += 400.0f;
+        this->objects.at(2).transform.translation.y += 100.0f;
     }
 
     const std::vector<render::Object>& World::getObjects() const
