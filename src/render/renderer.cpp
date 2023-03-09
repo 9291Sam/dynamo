@@ -19,7 +19,7 @@ namespace render
         , swapchain    {nullptr}
         , depth_buffer {nullptr}
         , render_pass  {nullptr}
-        , pipeline     {nullptr}
+        , pipelines    {nullptr}
         , framebuffers {0}
         , render_index {0}
         , frames       {nullptr, nullptr}
@@ -198,8 +198,12 @@ namespace render
         );
 
         std::vector<std::pair<const Pipeline*, std::vector<const Object*>>> objects;
-        objects.push_back({&*this->pipeline, std::vector<const Object*> {}}); 
-        // TODO: create for each pipelines
+        objects.reserve(this->pipelines->size());
+
+        for (const Pipeline& p : *this->pipelines)
+        {
+            objects.push_back({&p, std::vector<const Object*> {}});
+        }
 
         for (const PipelinedObject& pO : objectView)
         {
@@ -255,7 +259,7 @@ namespace render
         }
         this->framebuffers.clear();
         this->descriptor_pool.reset();
-        this->pipeline.reset();
+        this->pipelines.reset();
         this->render_pass.reset();
         this->depth_buffer.reset();
         this->swapchain.reset();
@@ -288,34 +292,51 @@ namespace render
             *this->depth_buffer
         );
 
-        this->pipeline = std::make_unique<Pipeline>(
-            this->device->asLogicalDevice(),
-            **this->render_pass,
-            this->swapchain->getExtent(),
-            Pipeline::createShaderFromFile(
+        this->pipelines = std::make_unique<PipelineArray>({
+            Pipeline 
+            {
                 this->device->asLogicalDevice(),
-                "src/render/shaders/shader.vert.bin"
-            ),
-            Pipeline::createShaderFromFile(
+                **this->render_pass,
+                this->swapchain->getExtent(),
+                Pipeline::createShaderFromFile(
+                    this->device->asLogicalDevice(),
+                    "src/render/shaders/face_texture.vert.bin"
+                ),
+                Pipeline::createShaderFromFile(
+                    this->device->asLogicalDevice(),
+                    "src/render/shaders/face_texture.frag.bin"
+                )
+            },
+            Pipeline 
+            {
                 this->device->asLogicalDevice(),
-                "src/render/shaders/shader.frag.bin"
-            )
-        );
+                **this->render_pass,
+                this->swapchain->getExtent(),
+                Pipeline::createShaderFromFile(
+                    this->device->asLogicalDevice(),
+                    "src/render/shaders/terrain_voxel.vert.bin"
+                ),
+                Pipeline::createShaderFromFile(
+                    this->device->asLogicalDevice(),
+                    "src/render/shaders/terrain_voxel.frag.bin"
+                )
+            }
+        });
 
         seb::logWarn("Unhardcode");
         this->descriptor_pool = std::make_unique<DescriptorPool>(
             this->device->asLogicalDevice(),
-            this->pipeline->getDescriptorSetLayout(),
+            this->pipelines->at(0).getDescriptorSetLayout(),
             std::vector {
                 vk::DescriptorPoolSize
                 {
                     .type            {vk::DescriptorType::eUniformBuffer},
-                    .descriptorCount {static_cast<std::uint32_t>(this->MaxFramesInFlight)}
+                    .descriptorCount {static_cast<std::uint32_t>(this->MaxFramesInFlight) * 2}
                 },
                 vk::DescriptorPoolSize
                 {
                     .type            {vk::DescriptorType::eCombinedImageSampler},
-                    .descriptorCount {static_cast<std::uint32_t>(this->MaxFramesInFlight)}
+                    .descriptorCount {static_cast<std::uint32_t>(this->MaxFramesInFlight) * 2}
                 }
             }
         );

@@ -183,6 +183,9 @@ compile_shader(Dynamo
   ENV vulkan1.0
   FORMAT bin
   SOURCES
-    src/render/shaders/shader.vert
-    src/render/shaders/shader.frag
+    src/render/shaders/face_texture.vert
+    src/render/shaders/face_texture.frag
+    
+    src/render/shaders/terrain_voxel.vert
+    src/render/shaders/terrain_voxel.frag
 )

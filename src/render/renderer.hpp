@@ -32,6 +32,8 @@ namespace render
         enum class Pipelines : std::size_t
         {
             FaceTexture = 0,
+            WorldVoxels = 1,
+            MAX_PIPELINE_SIZE = 2,
         };
 
         struct PipelinedObject
@@ -39,6 +41,11 @@ namespace render
             render::Renderer::Pipelines pipeline;
             render::Object              object;
         };
+    private:
+        using PipelineArray = std::array<
+            Pipeline, 
+            static_cast<std::size_t>(Pipelines::MAX_PIPELINE_SIZE)
+        >;
     public:
 
         Renderer(vk::Extent2D defaultSize, std::string name);
@@ -83,7 +90,7 @@ namespace render
         std::unique_ptr<Swapchain>      swapchain;
         std::unique_ptr<Image2D>        depth_buffer;
         std::unique_ptr<RenderPass>     render_pass;
-        std::unique_ptr<Pipeline>       pipeline;
+        std::unique_ptr<PipelineArray>  pipelines; 
         std::unique_ptr<DescriptorPool> descriptor_pool; // one pool per thread
         
         // Frames in Flight
@@ -94,7 +101,7 @@ namespace render
         constexpr static std::size_t                             MaxFramesInFlight = 2;
         std::array<std::unique_ptr<Buffer>, MaxFramesInFlight>   uniform_buffers;
         std::vector<vk::UniqueDescriptorSet>                     descriptor_sets;
-        std::array<std::unique_ptr<Recorder>, MaxFramesInFlight> frames; // wait why the fuck do you need multiple frame buffers
+        std::array<std::unique_ptr<Recorder>, MaxFramesInFlight> frames;
         
     }; // class Renderer
 } // namespace render
