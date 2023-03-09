@@ -29,6 +29,17 @@ namespace render
     class Renderer
     {
     public:
+        enum class Pipelines
+        {
+            FaceTexture
+        };
+
+        struct PipelinedObject
+        {
+            render::Renderer::Pipelines pipeline;
+            render::Object              object;
+        };
+    public:
 
         Renderer(vk::Extent2D defaultSize, std::string name);
         ~Renderer();
@@ -45,7 +56,7 @@ namespace render
         [[nodiscard]] float getDeltaTimeSeconds() const;
         [[nodiscard]] bool shouldClose() const;
 
-        void drawFrame(const Camera& camera, const std::vector<Object>& objectView);
+        void drawFrame(const Camera& camera, const std::vector<PipelinedObject>& objectView);
         
         void resize();
 

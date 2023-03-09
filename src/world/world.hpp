@@ -12,7 +12,7 @@
 namespace world
 {
     class World
-    {
+    {        
     public:
         World(const render::Renderer&);
         ~World()                       = default;
@@ -22,12 +22,13 @@ namespace world
         World& operator=(const World&) = delete;
         World& operator=(World&&)      = delete;
 
-        [[nodiscard]] const std::vector<render::Object>& getObjects() const;
+        [[nodiscard]] const std::vector<render::Renderer::PipelinedObject>& getObjects() const;
 
         void tick();
 
     private:
-        std::vector<render::Object> objects;
+
+        std::vector<render::Renderer::PipelinedObject> objects;
     };
 }
 
