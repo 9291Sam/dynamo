@@ -36,6 +36,7 @@ namespace render
         const Camera& camera, 
         std::queue<std::function<void(vk::CommandBuffer)>>& extraCommandsQueue)
     {
+
         const auto timeout = std::numeric_limits<std::uint64_t>::max();
 
         auto result = device.asLogicalDevice().waitForFences(*this->frame_in_flight, true, timeout);

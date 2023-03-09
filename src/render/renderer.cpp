@@ -178,63 +178,63 @@ namespace render
 
     void Renderer::drawFrame(const Camera& camera, const std::vector<PipelinedObject>& objectView)
     {
-            this->window.pollEvents();
+        this->window.pollEvents();
 
-            static float idx = 0.0f;
+        static float idx = 0.0f;
 
-            idx += 30.5f * this->getDeltaTimeSeconds();
+        idx += 30.5f * this->getDeltaTimeSeconds();
 
-            // update Uniform Buffers TODO: refactor
+        // update Uniform Buffers TODO: refactor
 
-            UniformBuffer uniformBuffer {
-                .light_position {110.0f * std::cos(idx / 4.0f), 50.0f * std::sin(idx / 9.3f) + 40.0f, 110.0f * std::sin(idx / 11.0f)},
-                .light_color {1.0f, 1.0f, 1.0f, 50.0f}
-            };
+        UniformBuffer uniformBuffer {
+            .light_position {110.0f * std::cos(idx / 4.0f), 50.0f * std::sin(idx / 9.3f) + 40.0f, 110.0f * std::sin(idx / 11.0f)},
+            .light_color {1.0f, 1.0f, 1.0f, 50.0f}
+        };
 
-            std::memcpy(
-                this->uniform_buffers.at(this->render_index)->getMappedPtr(),
-                &uniformBuffer,
-                sizeof(UniformBuffer)
-            );
+        std::memcpy(
+            this->uniform_buffers.at(this->render_index)->getMappedPtr(),
+            &uniformBuffer,
+            sizeof(UniformBuffer)
+        );
 
-            std::vector<std::pair<const Pipeline*, std::vector<const Object*>>> objects;
-            objects.push_back({&*this->pipeline, std::vector<const Object*> {}}); 
-            // TODO: create for each pipelines
+        std::vector<std::pair<const Pipeline*, std::vector<const Object*>>> objects;
+        objects.push_back({&*this->pipeline, std::vector<const Object*> {}}); 
+        // TODO: create for each pipelines
 
-            for (const PipelinedObject& pO : objectView)
+        for (const PipelinedObject& pO : objectView)
+        {
+            switch (pO.pipeline)
             {
-                switch (pO.pipeline)
-                {
-                case Pipelines::FaceTexture:
-                    objects.at(static_cast<std::size_t>(Pipelines::FaceTexture))
-                        .second.push_back(&pO.object);
-                    return;
-                default:
-                    seb::panic("Unimplemented case");
-                }
-            }
-
-            auto result = this->frames.at(this->render_index)->render(
-                *this->device, *this->swapchain, *this->render_pass,
-                this->framebuffers,
-                *this->descriptor_sets.at(this->render_index),
-                objects,
-                camera, this->extra_commands
-            );
-
-            this->render_index = (this->render_index + 1) % this->MaxFramesInFlight;
-
-            switch (result)
-            {
-                case vk::Result::eSuccess:
-                    return;
-                case vk::Result::eErrorOutOfDateKHR:
-                    this->resize();
-                    return;
-                default:
-                    seb::panic("Draw frame failed result: {}", vk::to_string(result));
+            case Pipelines::FaceTexture:
+                objects.at(static_cast<std::size_t>(Pipelines::FaceTexture))
+                    .second.push_back(&pO.object);
+                break;
+            default:
+                seb::panic("Unimplemented case");
             }
         }
+
+        auto result = this->frames.at(this->render_index)->render(
+            *this->device, *this->swapchain, *this->render_pass,
+            this->framebuffers,
+            *this->descriptor_sets.at(this->render_index),
+            objects,
+            camera, this->extra_commands
+        );
+
+        this->render_index = (this->render_index + 1) % this->MaxFramesInFlight;
+
+        switch (result)
+        {
+            case vk::Result::eSuccess:
+                return;
+            case vk::Result::eErrorOutOfDateKHR:
+                this->resize();
+                return;
+            default:
+                seb::panic("Draw frame failed result: {}", vk::to_string(result));
+        }
+    }
 
     void Renderer::resize()
     {
