@@ -176,7 +176,7 @@ namespace render
         return this->window.getDeltaTimeSeconds();
     }
 
-    void Renderer::drawFrame(const Camera& camera, const std::vector<Object>& objectView)
+    void Renderer::drawFrame(const Camera& camera, const std::vector<PipelinedObject>& objectView)
     {
             this->window.pollEvents();
 
@@ -197,9 +197,22 @@ namespace render
                 sizeof(UniformBuffer)
             );
 
-            std::vector<std::pair<const Pipeline&, const std::vector<Object>&>> objects;
+            std::vector<std::pair<const Pipeline*, std::vector<const Object*>>> objects;
+            objects.push_back({&*this->pipeline, std::vector<const Object*> {}}); 
+            // TODO: create for each pipelines
 
-            objects.push_back({*this->pipeline, objectView});
+            for (const PipelinedObject& pO : objectView)
+            {
+                switch (pO.pipeline)
+                {
+                case Pipelines::FaceTexture:
+                    objects.at(static_cast<std::size_t>(Pipelines::FaceTexture))
+                        .second.push_back(&pO.object);
+                    return;
+                default:
+                    seb::panic("Unimplemented case");
+                }
+            }
 
             auto result = this->frames.at(this->render_index)->render(
                 *this->device, *this->swapchain, *this->render_pass,

@@ -29,9 +29,9 @@ namespace render
     class Renderer
     {
     public:
-        enum class Pipelines
+        enum class Pipelines : std::size_t
         {
-            FaceTexture
+            FaceTexture = 0,
         };
 
         struct PipelinedObject

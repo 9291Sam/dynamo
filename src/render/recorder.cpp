@@ -32,7 +32,7 @@ namespace render
         const RenderPass& renderPass,
         const std::vector<vk::UniqueFramebuffer>& framebuffers,
         vk::DescriptorSet descriptorSet,
-        const std::vector<std::pair<const Pipeline&, const std::vector<Object>&>>& pipelinedObjects, 
+        const std::vector<std::pair<const Pipeline*, std::vector<const Object*>>>& pipelinedObjects, 
         const Camera& camera, 
         std::queue<std::function<void(vk::CommandBuffer)>>& extraCommandsQueue)
     {
@@ -82,7 +82,7 @@ namespace render
             },
             vk::ClearValue
             {
-                .depthStencil {
+                .depthStencil { 
                     vk::ClearDepthStencilValue {
                         .depth {1.0f},
                         .stencil {0}
@@ -113,11 +113,11 @@ namespace render
 
         for (const auto& [pipeline, objectVector] : pipelinedObjects)
         {
-            this->command_buffer->bindPipeline(vk::PipelineBindPoint::eGraphics, *pipeline);
+            this->command_buffer->bindPipeline(vk::PipelineBindPoint::eGraphics, **pipeline);
 
-            for (const Object& o : objectVector)
+            for (const Object* o : objectVector)
             {
-                o.bind(this->command_buffer.get());
+                o->bind(this->command_buffer.get());
 
                 std::array<PushConstants, 1> pushConstants {
                     PushConstants
@@ -133,14 +133,14 @@ namespace render
                             camera.asViewMatrix()
                         },
                         .model {
-                            o.transform.asModelMatrix()
+                            o->transform.asModelMatrix()
                         }
                     },
                 };
                 
 
                 this->command_buffer->pushConstants<render::PushConstants>(
-                    pipeline.getLayout(),
+                    pipeline->getLayout(),
                     vk::ShaderStageFlagBits::eAllGraphics,
                     0,
                     pushConstants
@@ -148,13 +148,13 @@ namespace render
 
                 this->command_buffer->bindDescriptorSets(
                     vk::PipelineBindPoint::eGraphics,
-                    pipeline.getLayout(), 
+                    pipeline->getLayout(), 
                     0,
                     std::array<vk::DescriptorSet, 1> {descriptorSet},
                     nullptr
                 );
 
-                o.draw(this->command_buffer.get());
+                o->draw(this->command_buffer.get());
             }
         }
 

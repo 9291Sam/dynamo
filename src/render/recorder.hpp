@@ -30,7 +30,7 @@ namespace render
         vk::Result render(
             const Device&, const Swapchain&, const RenderPass&,
             const std::vector<vk::UniqueFramebuffer>&, vk::DescriptorSet,
-            const std::vector<std::pair<const Pipeline&, const std::vector<Object>&>>&,
+            const std::vector<std::pair<const Pipeline*, std::vector<const Object*>>>&,
             const Camera&, 
             std::queue<std::function<void(vk::CommandBuffer)>>&
         );
