@@ -256,7 +256,7 @@ namespace render
         this->framebuffers.clear();
         this->descriptor_pool.reset();
         this->pipeline.reset();
-        this->render_pass.reset(); // TODO: does this need to be reset?
+        this->render_pass.reset();
         this->depth_buffer.reset();
         this->swapchain.reset();
  

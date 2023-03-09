@@ -19,7 +19,7 @@ int main()
     try
     {
         render::Renderer renderer {{1200, 1200}, "Dynamo"};
-        world::World world {renderer};        
+        world::World world {renderer};     
 
         render::Camera camera {{-35.0f, 35.0f, 35.0f}, -0.570792479f, 0.785398f};
 
