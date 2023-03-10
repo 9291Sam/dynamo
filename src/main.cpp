@@ -33,6 +33,15 @@ int main()
                 );
             }
 
+            // Need two abstracted modes.
+            // Cursor infinite and disabled
+            // Clickable cursor on the screen (no camera change!)
+
+            if (renderer.getKeyCallback()(vkfw::Key::eT))
+            {
+                renderer.setCursorMode(vkfw::CursorMode::eNormal);
+            }
+        
             camera.update(renderer.getKeyCallback(), renderer.getMouseDelta(), renderer.getDeltaTimeSeconds());
             
             renderer.drawFrame(camera, world.getObjects());

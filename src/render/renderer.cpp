@@ -163,6 +163,11 @@ namespace render
         return this->window.shouldClose();
     }
 
+    void Renderer::setCursorMode(vkfw::CursorMode mode) const
+    {
+        this->window.setMouseInputMode(mode);
+    }
+
     std::function<bool(vkfw::Key)> Renderer::getKeyCallback() const
     {
         return [this](vkfw::Key key) -> bool
@@ -211,6 +216,10 @@ namespace render
             {
             case Pipelines::FaceTexture:
                 objects.at(static_cast<std::size_t>(Pipelines::FaceTexture))
+                    .second.push_back(&pO.object);
+                break;
+            case Pipelines::WorldVoxels:
+                objects.at(static_cast<std::size_t>(Pipelines::WorldVoxels))
                     .second.push_back(&pO.object);
                 break;
             default:
@@ -292,38 +301,6 @@ namespace render
             *this->depth_buffer
         );
 
-        PipelineArray p {{
-            Pipeline 
-            {
-                this->device->asLogicalDevice(),
-                **this->render_pass,
-                this->swapchain->getExtent(),
-                Pipeline::createShaderFromFile(
-                    this->device->asLogicalDevice(),
-                    "src/render/shaders/face_texture.vert.bin"
-                ),
-                Pipeline::createShaderFromFile(
-                    this->device->asLogicalDevice(),
-                    "src/render/shaders/face_texture.frag.bin"
-                )
-            },
-            Pipeline 
-            {
-                this->device->asLogicalDevice(),
-                **this->render_pass,
-                this->swapchain->getExtent(),
-                Pipeline::createShaderFromFile(
-                    this->device->asLogicalDevice(),
-                    "src/render/shaders/terrain_voxel.vert.bin"
-                ),
-                Pipeline::createShaderFromFile(
-                    this->device->asLogicalDevice(),
-                    "src/render/shaders/terrain_voxel.frag.bin"
-                )
-            }
-        }};
-
-        // this->pipelines: std::unique_ptr<PipelineArray>
         this->pipelines = std::unique_ptr<PipelineArray>(
             new PipelineArray {
                 Pipeline 
@@ -365,12 +342,12 @@ namespace render
                 vk::DescriptorPoolSize
                 {
                     .type            {vk::DescriptorType::eUniformBuffer},
-                    .descriptorCount {static_cast<std::uint32_t>(this->MaxFramesInFlight) * 2}
+                    .descriptorCount {static_cast<std::uint32_t>(this->MaxFramesInFlight)}
                 },
                 vk::DescriptorPoolSize
                 {
                     .type            {vk::DescriptorType::eCombinedImageSampler},
-                    .descriptorCount {static_cast<std::uint32_t>(this->MaxFramesInFlight) * 2}
+                    .descriptorCount {static_cast<std::uint32_t>(this->MaxFramesInFlight)}
                 }
             }
         );

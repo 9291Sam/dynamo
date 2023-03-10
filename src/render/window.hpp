@@ -36,6 +36,8 @@ public:
 
     [[nodiscard]] vk::UniqueSurfaceKHR createSurface(vk::Instance) const;
 
+    void setMouseInputMode(vkfw::CursorMode) const;
+
     void pollEvents();
 
     void blockThisThreadIfMinimized() const;
@@ -50,6 +52,7 @@ private:
 
     std::chrono::time_point<std::chrono::steady_clock> last_frame_time;
     std::chrono::duration<std::int64_t, std::nano>    last_frame_duration {160000000};
+    mutable std::uint_fast8_t ignore_frames {3};
 }; // class Window
 
 #endif // SRC_WINDOW_HPP

@@ -8,7 +8,7 @@ namespace world
         this->objects.push_back(
             render::Renderer::PipelinedObject
             {
-                .pipeline {render::Renderer::Pipelines::FaceTexture},
+                .pipeline {render::Renderer::Pipelines::WorldVoxels},
                 .object   {renderer.createObject(std::move(v), std::move(i))}
             }
         );

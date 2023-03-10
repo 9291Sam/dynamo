@@ -12,7 +12,11 @@ Window::Window(vk::Extent2D size, std::string name)
 
     this->window_ptr = vkfw::createWindowUnique(size.width, size.height, name.c_str());
 
-    this->window_ptr->set<vkfw::InputMode::eCursor>(vkfw::CursorMode::eDisabled);
+    this->window_ptr->callbacks()->on_window_focus = 
+    [this](vkfw::DynamicCallbackStorage::window_type, bool)
+    {
+        this->window_ptr->set<vkfw::InputMode::eCursor>(vkfw::CursorMode::eDisabled);
+    };    
 }
 
 Window::~Window() 
@@ -52,6 +56,12 @@ vk::UniqueSurfaceKHR Window::createSurface(vk::Instance instance) const
     return vkfw::createWindowSurfaceUnique(instance, *this->window_ptr); 
 }
 
+void Window::setMouseInputMode(vkfw::CursorMode mode) const
+{
+    this->window_ptr->set<vkfw::InputMode::eCursor>(mode);
+    this->ignore_frames = 3;
+}
+
 void Window::pollEvents() 
 {
     vkfw::pollEvents();
@@ -79,14 +89,12 @@ bool Window::isKeyPressed(vkfw::Key key) const
 
 std::pair<double, double> Window::getMouseDelta()
 {
-    static std::uint_fast8_t number_of_frames = 0;
-
     // hack to ignore the first few values since they're basically random and cause the camera to be screwy
-    if (number_of_frames < 3) [[unlikely]]
+    if (this->ignore_frames > 0) [[unlikely]]
     {
         auto [x, y] = this->window_ptr->getCursorPos();
         this->previous_mouse_pos = std::make_pair<double, double>(std::move(x), std::move(y));
-        ++number_of_frames;
+        --this->ignore_frames;
         return std::make_pair<double, double>(0.0, 0.0);
     }
 
