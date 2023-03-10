@@ -53,6 +53,7 @@ private:
     std::chrono::time_point<std::chrono::steady_clock> last_frame_time;
     std::chrono::duration<std::int64_t, std::nano>    last_frame_duration {160000000};
     mutable std::uint_fast8_t ignore_frames {3};
+    mutable bool is_currently_focused;
 }; // class Window
 
 #endif // SRC_WINDOW_HPP

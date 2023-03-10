@@ -7,6 +7,19 @@
 #include <memory>
 #include <optional>
 
+template<class T>
+const T& max(const T& t1, const T& t2)
+{
+    if (t1 < t2)
+    {
+        return t2;
+    }
+    else
+    {
+        return t1;
+    }
+}
+
 int main()
 {
     seb::logLog("Dynamo started | Version: {}.{}.{}.{}",
@@ -22,6 +35,8 @@ int main()
         world::World world {renderer};     
 
         render::Camera camera {{-35.0f, 35.0f, 35.0f}, -0.570792479f, 0.785398f};
+
+        renderer.setCursorMode(vkfw::CursorMode::eDisabled);
 
         while (!renderer.shouldClose())
         {
@@ -41,6 +56,12 @@ int main()
             {
                 renderer.setCursorMode(vkfw::CursorMode::eNormal);
             }
+
+            if (renderer.getKeyCallback()(vkfw::Key::eY))
+            {
+                renderer.setCursorMode(vkfw::CursorMode::eDisabled);
+            }
+        
         
             camera.update(renderer.getKeyCallback(), renderer.getMouseDelta(), renderer.getDeltaTimeSeconds());
             

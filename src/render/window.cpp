@@ -13,10 +13,10 @@ Window::Window(vk::Extent2D size, std::string name)
     this->window_ptr = vkfw::createWindowUnique(size.width, size.height, name.c_str());
 
     this->window_ptr->callbacks()->on_window_focus = 
-    [this](vkfw::DynamicCallbackStorage::window_type, bool)
+    [this](vkfw::DynamicCallbackStorage::window_type, bool wasFocused)
     {
-        this->window_ptr->set<vkfw::InputMode::eCursor>(vkfw::CursorMode::eDisabled);
-    };    
+        this->is_currently_focused = wasFocused;
+    };
 }
 
 Window::~Window() 
@@ -66,6 +66,14 @@ void Window::pollEvents()
 {
     vkfw::pollEvents();
 
+    std::cout << fmt::format(
+        "X: {} | Y: {}",
+        this->previous_mouse_pos.first,
+        this->previous_mouse_pos.second
+    ) << std::endl;
+
+    seb::logFatal("focused {}", this->is_currently_focused);
+
     auto currentTime = std::chrono::steady_clock::now();
 
     this->last_frame_duration = currentTime - this->last_frame_time;
@@ -89,12 +97,20 @@ bool Window::isKeyPressed(vkfw::Key key) const
 
 std::pair<double, double> Window::getMouseDelta()
 {
+    /// This entire function is a fucking disaster fix pls TODO:
     // hack to ignore the first few values since they're basically random and cause the camera to be screwy
     if (this->ignore_frames > 0) [[unlikely]]
     {
         auto [x, y] = this->window_ptr->getCursorPos();
         this->previous_mouse_pos = std::make_pair<double, double>(std::move(x), std::move(y));
         --this->ignore_frames;
+        return std::make_pair<double, double>(0.0, 0.0);
+    }
+
+    if (!this->is_currently_focused)
+    {
+        auto [x, y] = this->window_ptr->getCursorPos();
+        this->previous_mouse_pos = std::make_pair<double, double>(std::move(x), std::move(y));
         return std::make_pair<double, double>(0.0, 0.0);
     }
 
