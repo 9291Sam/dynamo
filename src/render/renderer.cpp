@@ -292,7 +292,7 @@ namespace render
             *this->depth_buffer
         );
 
-        this->pipelines = std::make_unique<PipelineArray>({
+        PipelineArray p {{
             Pipeline 
             {
                 this->device->asLogicalDevice(),
@@ -321,7 +321,41 @@ namespace render
                     "src/render/shaders/terrain_voxel.frag.bin"
                 )
             }
-        });
+        }};
+
+        // this->pipelines: std::unique_ptr<PipelineArray>
+        this->pipelines = std::unique_ptr<PipelineArray>(
+            new PipelineArray {
+                Pipeline 
+                {
+                    this->device->asLogicalDevice(),
+                    **this->render_pass,
+                    this->swapchain->getExtent(),
+                    Pipeline::createShaderFromFile(
+                        this->device->asLogicalDevice(),
+                        "src/render/shaders/face_texture.vert.bin"
+                    ),
+                    Pipeline::createShaderFromFile(
+                        this->device->asLogicalDevice(),
+                        "src/render/shaders/face_texture.frag.bin"
+                    )
+                },
+                Pipeline 
+                {
+                    this->device->asLogicalDevice(),
+                    **this->render_pass,
+                    this->swapchain->getExtent(),
+                    Pipeline::createShaderFromFile(
+                        this->device->asLogicalDevice(),
+                        "src/render/shaders/terrain_voxel.vert.bin"
+                    ),
+                    Pipeline::createShaderFromFile(
+                        this->device->asLogicalDevice(),
+                        "src/render/shaders/terrain_voxel.frag.bin"
+                    )
+                }
+            }
+        );
 
         seb::logWarn("Unhardcode");
         this->descriptor_pool = std::make_unique<DescriptorPool>(
