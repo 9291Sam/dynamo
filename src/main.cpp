@@ -1,24 +1,6 @@
-#include <iostream>
-
 #include <sebib/seblog.hpp>
 #include <render/renderer.hpp>
 #include <world/world.hpp>
-
-#include <memory>
-#include <optional>
-
-template<class T>
-const T& max(const T& t1, const T& t2)
-{
-    if (t1 < t2)
-    {
-        return t2;
-    }
-    else
-    {
-        return t1;
-    }
-}
 
 int main()
 {
@@ -46,22 +28,10 @@ int main()
                 );
             }
 
-            // Need two abstracted modes.
-            // Cursor infinite and disabled
-            // Clickable cursor on the screen (no camera change!)
-
-
-
             if (renderer.getKeyCallback()(vkfw::Key::eT))
             {
                 renderer.detachCursor();
             }
-
-            if (renderer.getKeyCallback()(vkfw::Key::eY))
-            {
-                renderer.attachCursor();
-            }
-        
         
             camera.update(renderer.getKeyCallback(), renderer.getMouseDelta(), renderer.getDeltaTimeSeconds());
             

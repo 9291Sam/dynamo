@@ -11,8 +11,6 @@ Window::Window(vk::Extent2D size, std::string name)
     vkfw::setWindowHints(vkfw::WindowHints {.clientAPI {vkfw::ClientAPI::eNone}});
 
     this->window_ptr = vkfw::createWindowUnique(size.width, size.height, name.c_str());
-
-    this->is_currently_focused = true;
     
     this->window_ptr->callbacks()->on_window_focus = 
     [this](vkfw::DynamicCallbackStorage::window_type, bool wasFocused)
@@ -34,7 +32,8 @@ Window::Window(vk::Extent2D size, std::string name)
             this->attachCursor();
         }
     };
-    // on click and focus attach cursor
+    
+    this->is_currently_focused = true;
 
     this->attachCursor();
 }
@@ -80,27 +79,19 @@ void Window::attachCursor() const
 {
     this->is_camera_mobile = true;
     this->window_ptr->set<vkfw::InputMode::eCursor>(vkfw::CursorMode::eDisabled);
-    this->ignore_frames += 3;
+    this->ignore_next_frame = true;
 }
 
 void Window::detachCursor() const
 {
     this->is_camera_mobile = false;
     this->window_ptr->set<vkfw::InputMode::eCursor>(vkfw::CursorMode::eNormal);
-    this->ignore_frames += 3;
+    this->ignore_next_frame = true;
 }
 
 void Window::pollEvents() 
 {
     vkfw::pollEvents();
-
-    std::cout << fmt::format(
-        "X: {} | Y: {}",
-        this->previous_mouse_pos.first,
-        this->previous_mouse_pos.second
-    ) << std::endl;
-
-    seb::logFatal("focused {} | camera mobi {}", this->is_currently_focused, this->is_camera_mobile);
 
     auto currentTime = std::chrono::steady_clock::now();
 
@@ -125,20 +116,18 @@ bool Window::isKeyPressed(vkfw::Key key) const
 
 std::pair<double, double> Window::getMouseDelta()
 {
-    /// This entire function is a fucking disaster fix pls TODO:
-    // hack to ignore the first few values since they're basically random and cause the camera to be screwy
-    if (this->ignore_frames > 0) [[unlikely]]
+    if (this->ignore_next_frame)
     {
         auto [x, y] = this->window_ptr->getCursorPos();
-        this->previous_mouse_pos = std::make_pair<double, double>(std::move(x), std::move(y));
-        --this->ignore_frames;
+        this->previous_mouse_pos = std::make_pair(x, y);
+        this->ignore_next_frame = false;
         return std::make_pair<double, double>(0.0, 0.0);
     }
 
     if (!this->is_currently_focused || !this->is_camera_mobile)
     {
         auto [x, y] = this->window_ptr->getCursorPos();
-        this->previous_mouse_pos = std::make_pair<double, double>(std::move(x), std::move(y));
+        this->previous_mouse_pos = std::make_pair(x, y);
         return std::make_pair<double, double>(0.0, 0.0);
     }
 
@@ -149,8 +138,7 @@ std::pair<double, double> Window::getMouseDelta()
         y - this->previous_mouse_pos.second
     };
 
-    // :eyes:
-    this->previous_mouse_pos = std::make_pair<double, double>(std::move(x), std::move(y));
+    this->previous_mouse_pos = std::make_pair(x, y);
 
     return std::make_pair<double, double>(
         delta.first * (0.001 * static_cast<double>(this->window_ptr->getFramebufferWidth())),
