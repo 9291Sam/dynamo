@@ -188,8 +188,6 @@ namespace render
 
     void Renderer::drawFrame(const Camera& camera, const std::vector<PipelinedObject>& objectView)
     {
-        this->window.pollEvents(std::chrono::duration<double>(1.0/120.0));
-
         static float idx = 0.0f;
 
         idx += 30.5f * this->getDeltaTimeSeconds();
@@ -241,6 +239,8 @@ namespace render
         );
 
         this->render_index = (this->render_index + 1) % this->MaxFramesInFlight;
+        
+        this->window.pollEvents();
 
         switch (result)
         {

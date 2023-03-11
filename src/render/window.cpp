@@ -93,29 +93,15 @@ void Window::detachCursor() const
     this->ignore_next_frame = true;
 }
 
-void Window::pollEvents(std::optional<std::chrono::duration<double>> desiredFrameTime) 
+void Window::pollEvents() 
 {
     vkfw::pollEvents();
 
-    // TODO: make this function numerically stable when you're not exausted
-
     const auto currentTime = std::chrono::steady_clock::now();
 
-    this->last_frame_duration = currentTime - this->last_frame_time;
+    this->last_frame_duration = currentTime - this->last_frame_end_time;
 
-    this->last_frame_time = currentTime;
-
-    if (desiredFrameTime.has_value())
-    {
-        const std::chrono::duration<double> lastFrameTimeSeconds = this->last_frame_duration;
-
-        if (lastFrameTimeSeconds < desiredFrameTime)
-        {
-            seb::logTrace("Sleeping for {}", (*desiredFrameTime - lastFrameTimeSeconds).count());
-            seb::logTrace("Desired {} | actual {}", desiredFrameTime->count(), lastFrameTimeSeconds.count());
-            std::this_thread::sleep_for(*desiredFrameTime - lastFrameTimeSeconds);
-        }
-    }
+    this->last_frame_end_time = currentTime;
 }
 
 void Window::blockThisThreadIfMinimized() const

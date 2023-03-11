@@ -39,7 +39,7 @@ public:
     void attachCursor() const;
     void detachCursor() const;
 
-    void pollEvents(std::optional<std::chrono::duration<double>> maxFramesPerSecond);
+    void pollEvents();
 
     void blockThisThreadIfMinimized() const;
 
@@ -51,7 +51,7 @@ private:
 
     std::pair<double, double> previous_mouse_pos;
 
-    std::chrono::time_point<std::chrono::steady_clock> last_frame_time;
+    std::chrono::time_point<std::chrono::steady_clock> last_frame_end_time;
     std::chrono::duration<std::int64_t, std::nano>    last_frame_duration {160000000};
     mutable std::atomic<bool> ignore_next_frame {true};
     mutable std::atomic<bool> is_currently_focused;
