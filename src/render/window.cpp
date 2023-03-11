@@ -93,9 +93,27 @@ void Window::detachCursor() const
     this->ignore_next_frame = true;
 }
 
-void Window::pollEvents() 
+void Window::pollEvents(std::optional<std::chrono::duration<double>> idealFrameTime)
 {
     vkfw::pollEvents();
+
+    const std::chrono::duration<double> currentFrameDuration 
+        {std::chrono::steady_clock::now() - this->last_frame_end_time};
+
+    if (idealFrameTime.has_value())
+    {
+        if (currentFrameDuration < *idealFrameTime)
+        {
+            seb::logTrace("Ideal: {} | Actual: {} | Sleep: {}",
+                idealFrameTime->count(),
+                currentFrameDuration.count(),
+                (*idealFrameTime - currentFrameDuration).count()
+            );
+            std::this_thread::sleep_for(*idealFrameTime - currentFrameDuration);
+        }
+    }
+
+    
 
     const auto currentTime = std::chrono::steady_clock::now();
 

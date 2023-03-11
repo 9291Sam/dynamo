@@ -240,7 +240,9 @@ namespace render
 
         this->render_index = (this->render_index + 1) % this->MaxFramesInFlight;
         
-        this->window.pollEvents();
+        this->window.pollEvents(
+            std::make_optional<std::chrono::duration<double>>(0.016)
+        );
 
         switch (result)
         {

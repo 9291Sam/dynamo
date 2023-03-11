@@ -39,7 +39,7 @@ public:
     void attachCursor() const;
     void detachCursor() const;
 
-    void pollEvents();
+    void pollEvents(std::optional<std::chrono::duration<double>> idealFrameTime);
 
     void blockThisThreadIfMinimized() const;
 
