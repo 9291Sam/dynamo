@@ -188,7 +188,7 @@ namespace render
 
     void Renderer::drawFrame(const Camera& camera, const std::vector<PipelinedObject>& objectView)
     {
-        this->window.pollEvents();
+        this->window.pollEvents(std::chrono::duration<double>(1.0/120.0));
 
         static float idx = 0.0f;
 

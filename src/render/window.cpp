@@ -86,18 +86,36 @@ void Window::detachCursor() const
 {
     this->is_camera_mobile = false;
     this->window_ptr->set<vkfw::InputMode::eCursor>(vkfw::CursorMode::eNormal);
+    this->window_ptr->setCursorPos(
+        static_cast<double>(this->window_ptr->getFramebufferWidth()) / 2.0,
+        static_cast<double>(this->window_ptr->getFramebufferHeight()) / 2.0
+    );
     this->ignore_next_frame = true;
 }
 
-void Window::pollEvents() 
+void Window::pollEvents(std::optional<std::chrono::duration<double>> desiredFrameTime) 
 {
     vkfw::pollEvents();
 
-    auto currentTime = std::chrono::steady_clock::now();
+    // TODO: make this function numerically stable when you're not exausted
+
+    const auto currentTime = std::chrono::steady_clock::now();
 
     this->last_frame_duration = currentTime - this->last_frame_time;
 
-    this->last_frame_time = currentTime;  
+    this->last_frame_time = currentTime;
+
+    if (desiredFrameTime.has_value())
+    {
+        const std::chrono::duration<double> lastFrameTimeSeconds = this->last_frame_duration;
+
+        if (lastFrameTimeSeconds < desiredFrameTime)
+        {
+            seb::logTrace("Sleeping for {}", (*desiredFrameTime - lastFrameTimeSeconds).count());
+            seb::logTrace("Desired {} | actual {}", desiredFrameTime->count(), lastFrameTimeSeconds.count());
+            std::this_thread::sleep_for(*desiredFrameTime - lastFrameTimeSeconds);
+        }
+    }
 }
 
 void Window::blockThisThreadIfMinimized() const
