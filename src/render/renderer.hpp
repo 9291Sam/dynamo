@@ -63,7 +63,8 @@ namespace render
         [[nodiscard]] float getDeltaTimeSeconds() const;
         [[nodiscard]] bool shouldClose() const;
 
-        void setCursorMode(vkfw::CursorMode) const;
+        void attachCursor() const;
+        void detachCursor() const;
         
         void drawFrame(const Camera& camera, const std::vector<PipelinedObject>& objectView);
         

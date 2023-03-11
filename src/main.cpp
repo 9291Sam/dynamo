@@ -36,8 +36,6 @@ int main()
 
         render::Camera camera {{-35.0f, 35.0f, 35.0f}, -0.570792479f, 0.785398f};
 
-        renderer.setCursorMode(vkfw::CursorMode::eDisabled);
-
         while (!renderer.shouldClose())
         {
             if (renderer.getKeyCallback()(vkfw::Key::eJ))
@@ -52,14 +50,16 @@ int main()
             // Cursor infinite and disabled
             // Clickable cursor on the screen (no camera change!)
 
+
+
             if (renderer.getKeyCallback()(vkfw::Key::eT))
             {
-                renderer.setCursorMode(vkfw::CursorMode::eNormal);
+                renderer.detachCursor();
             }
 
             if (renderer.getKeyCallback()(vkfw::Key::eY))
             {
-                renderer.setCursorMode(vkfw::CursorMode::eDisabled);
+                renderer.attachCursor();
             }
         
         

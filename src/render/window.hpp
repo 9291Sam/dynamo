@@ -36,7 +36,8 @@ public:
 
     [[nodiscard]] vk::UniqueSurfaceKHR createSurface(vk::Instance) const;
 
-    void setMouseInputMode(vkfw::CursorMode) const;
+    void attachCursor() const;
+    void detachCursor() const;
 
     void pollEvents();
 
@@ -52,8 +53,9 @@ private:
 
     std::chrono::time_point<std::chrono::steady_clock> last_frame_time;
     std::chrono::duration<std::int64_t, std::nano>    last_frame_duration {160000000};
-    mutable std::uint_fast8_t ignore_frames {3};
-    mutable bool is_currently_focused;
+    mutable std::atomic<std::uint_fast8_t> ignore_frames {3};
+    mutable std::atomic<bool> is_currently_focused;
+    mutable std::atomic<bool> is_camera_mobile;
 }; // class Window
 
 #endif // SRC_WINDOW_HPP

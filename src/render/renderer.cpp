@@ -163,9 +163,14 @@ namespace render
         return this->window.shouldClose();
     }
 
-    void Renderer::setCursorMode(vkfw::CursorMode mode) const
+    void Renderer::attachCursor() const
     {
-        this->window.setMouseInputMode(mode);
+        this->window.attachCursor();
+    }
+
+    void Renderer::detachCursor() const
+    {
+        this->window.detachCursor();
     }
 
     std::function<bool(vkfw::Key)> Renderer::getKeyCallback() const

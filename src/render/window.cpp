@@ -12,11 +12,31 @@ Window::Window(vk::Extent2D size, std::string name)
 
     this->window_ptr = vkfw::createWindowUnique(size.width, size.height, name.c_str());
 
+    this->is_currently_focused = true;
+    
     this->window_ptr->callbacks()->on_window_focus = 
     [this](vkfw::DynamicCallbackStorage::window_type, bool wasFocused)
     {
         this->is_currently_focused = wasFocused;
+        this->attachCursor();
     };
+
+    this->window_ptr->callbacks()->on_mouse_button =
+    [this](vkfw::DynamicCallbackStorage::window_type,
+        vkfw::MouseButton button,
+        vkfw::MouseButtonAction action,
+        vkfw::ModifierKeyFlags)
+    {
+        if (button == vkfw::MouseButton::eLeft &&
+            action == vkfw::MouseButtonAction::ePress &&
+            this->is_currently_focused)
+        {
+            this->attachCursor();
+        }
+    };
+    // on click and focus attach cursor
+
+    this->attachCursor();
 }
 
 Window::~Window() 
@@ -56,10 +76,18 @@ vk::UniqueSurfaceKHR Window::createSurface(vk::Instance instance) const
     return vkfw::createWindowSurfaceUnique(instance, *this->window_ptr); 
 }
 
-void Window::setMouseInputMode(vkfw::CursorMode mode) const
+void Window::attachCursor() const
 {
-    this->window_ptr->set<vkfw::InputMode::eCursor>(mode);
-    this->ignore_frames = 3;
+    this->is_camera_mobile = true;
+    this->window_ptr->set<vkfw::InputMode::eCursor>(vkfw::CursorMode::eDisabled);
+    this->ignore_frames += 3;
+}
+
+void Window::detachCursor() const
+{
+    this->is_camera_mobile = false;
+    this->window_ptr->set<vkfw::InputMode::eCursor>(vkfw::CursorMode::eNormal);
+    this->ignore_frames += 3;
 }
 
 void Window::pollEvents() 
@@ -72,7 +100,7 @@ void Window::pollEvents()
         this->previous_mouse_pos.second
     ) << std::endl;
 
-    seb::logFatal("focused {}", this->is_currently_focused);
+    seb::logFatal("focused {} | camera mobi {}", this->is_currently_focused, this->is_camera_mobile);
 
     auto currentTime = std::chrono::steady_clock::now();
 
@@ -107,7 +135,7 @@ std::pair<double, double> Window::getMouseDelta()
         return std::make_pair<double, double>(0.0, 0.0);
     }
 
-    if (!this->is_currently_focused)
+    if (!this->is_currently_focused || !this->is_camera_mobile)
     {
         auto [x, y] = this->window_ptr->getCursorPos();
         this->previous_mouse_pos = std::make_pair<double, double>(std::move(x), std::move(y));
