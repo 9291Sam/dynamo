@@ -1,2 +1,7 @@
 TODO:
-completly re-do the descriptor pool / descriptor set abstraction since it's terribly segemnted right now
+
+Re-do the descriptor pool abstraction with something that automatically allocates new ones dynamically
+Refactor the descriptor pool, set and pipeline abstraction since they're currently linked far too much
+
+set up compute shaders?
+start drawing voxels?
